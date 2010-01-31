@@ -43,7 +43,7 @@ class Concentrate_MinifierYuiCompressor
 		$filename = $this->writeTempFile($content);
 
 		$command = sprintf(
-			'%s -jar %s --nomunge %s',
+			'%s -jar %s --nomunge --preserve-semi %s',
 			$this->javaBin,
 			escapeshellarg($this->getJarFile()),
 			escapeshellarg($filename)

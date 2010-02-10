@@ -14,7 +14,7 @@ class Concentrate_DataProviderMemcache extends Concentrate_DataProvider
 	public function getData()
 	{
 		if (($data = $this->memcache->get($this->getCacheKey())) === false) {
-			$this->data = parent::loadData();
+			$this->data = parent::getData();
 			$this->memcache->set($this->getCacheKey(), $this->data);
 		} else {
 			$this->data = $data;
@@ -26,7 +26,7 @@ class Concentrate_DataProviderMemcache extends Concentrate_DataProvider
 	protected function getCacheKey()
 	{
 		$files = array_merge($this->loadedFiles, $this->pendingFiles);
-		return md5(implode(':', $files));
+		return 'concentrate-' . md5(implode(':', $files));
 	}
 }
 

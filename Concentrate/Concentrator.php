@@ -52,9 +52,35 @@ class Concentrate_Concentrator
 		return $this;
 	}
 
-	public function sort()
+	public function compareFiles($file1, $file2)
 	{
-		return $this->getFileSortOrder();
+		if ($file1 == $file2) {
+			return 0;
+		}
+
+		$sortOrder = $this->getFileSortOrder();
+
+		if (!isset($sortOrder[$file1]) && !isset($sortOrder[$file2])) {
+			return 0;
+		}
+
+		if (isset($sortOrder[$file1]) && !isset($sortOrder[$file2])) {
+			return -1;
+		}
+
+		if (!isset($sortOrder[$file1]) && isset($sortOrder[$file2])) {
+			return 1;
+		}
+
+		if ($sortOrder[$file1] < $sortOrder[$file2]) {
+			return -1;
+		}
+
+		if ($sortOrder[$file1] > $sortOrder[$file2]) {
+			return 1;
+		}
+
+		return 0;
 	}
 
 	public function getConflicts(array $files)
@@ -159,6 +185,7 @@ class Concentrate_Concentrator
 
 				// get flat list of file dependencies for each file
 				$fileDependencies = array();
+
 				if (isset($info['Provides']) && is_array($info['Provides'])) {
 					foreach ($info['Provides'] as $file => $fileInfo) {
 						if (!isset($fileDependencies[$file])) {
@@ -200,6 +227,39 @@ class Concentrate_Concentrator
 				$fileSortOrder = array_merge(
 					$fileSortOrder,
 					$order
+				);
+			}
+
+			$fileSortOrder = array_flip($fileSortOrder);
+
+			// add combines as dependencies of all contained files
+			$combines = false;
+			foreach ($data as $package_id => $info) {
+				if (isset($info['Combines']) && is_array($info['Combines'])) {
+					foreach ($info['Combines'] as $combine => $combineInfo) {
+						if (   isset($combineInfo['Contains'])
+							&& is_array($combineInfo['Contains'])
+						) {
+							foreach ($combineInfo['Contains'] as $file) {
+								if (   !isset($fileSortOrder[$file])
+									|| !is_array($fileSortOrder[$file])
+								) {
+									$fileSortOrder[$file] = array();
+								}
+								$fileSortOrder[$file][$combine] = array();
+								$combines = true;
+							}
+						}
+					}
+				}
+			}
+
+			// re-traverse to get dependency order of combines
+			if ($combines) {
+				$temp = array();
+				$fileSortOrder = $this->filterTree(
+					$fileSortOrder,
+					$temp
 				);
 			}
 
@@ -260,7 +320,9 @@ class Concentrate_Concentrator
 	protected function filterTree(array $nodes, array &$visited)
 	{
 		foreach ($nodes as $node => $childNodes) {
-			$this->filterTree($childNodes, $visited);
+			if (is_array($childNodes)) {
+				$this->filterTree($childNodes, $visited);
+			}
 			if (!in_array($node, $visited)) {
 				$visited[] = $node;
 			}

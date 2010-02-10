@@ -230,6 +230,7 @@ class Concentrate_Concentrator
 				);
 			}
 
+			// index by file, with values being the relative sort order
 			$fileSortOrder = array_flip($fileSortOrder);
 
 			// add combines as dependencies of all contained files
@@ -261,11 +262,12 @@ class Concentrate_Concentrator
 					$fileSortOrder,
 					$temp
 				);
+
+				// index by file, with values being the relative sort order
+				$fileSortOrder = array_flip($fileSortOrder);
 			}
 
-			// return indexed by file, with values being the relative sort
-			// order
-			$this->fileSortOrder = array_flip($fileSortOrder);
+			$this->fileSortOrder = $fileSortOrder;
 		}
 
 		return $this->fileSortOrder;

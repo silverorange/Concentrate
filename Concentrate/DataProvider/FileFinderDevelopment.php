@@ -35,7 +35,9 @@ class Concentrate_DataProvider_FileFinderDevelopment
 
 	protected function getIncludeDirs()
 	{
-		return explode(PATH_SEPARATOR, get_include_path());
+		$dirs = explode(PATH_SEPARATOR, get_include_path());
+		$dirs[] = '../';
+		return $dirs;
 	}
 }
 

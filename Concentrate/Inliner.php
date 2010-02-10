@@ -32,6 +32,32 @@ class Concentrate_Inliner
 		$this->inlinedFiles = $inlinedFiles;
 	}
 
+	public static function factory(
+		$root,
+		$sourceFilename,
+		$destinationFilename,
+		Concentrate_FileList $inlinedFiles
+	) {
+		$extension = pathinfo($sourceFilename, PATHINFO_EXTENSION);
+
+		switch (strtolower($extension)) {
+		case 'css':
+			include_once 'Concentrate/InlinerCss.php';
+			$class = 'Concentrate_InlinerCss';
+			break;
+		default:
+			$class = __CLASS__;
+			break;
+		}
+
+		return new $class(
+			$root,
+			$sourceFilename,
+			$destinationFilename,
+			$inlinedFiles
+		);
+	}
+
 	public function getInlineContent()
 	{
 		$this->inlinedFiles->add($this->sourceFilename);

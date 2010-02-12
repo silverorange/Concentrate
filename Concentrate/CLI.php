@@ -1,5 +1,6 @@
 <?php
 
+require_once 'Console/CommandLine.php';
 require_once 'Concentrate/Concentrator.php';
 require_once 'Concentrate/DataProvider.php';
 require_once 'Concentrate/DataProvider/FileFinderPear.php';

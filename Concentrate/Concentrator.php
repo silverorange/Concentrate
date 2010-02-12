@@ -284,19 +284,15 @@ class Concentrate_Concentrator
 			$combines = false;
 			foreach ($data as $package_id => $info) {
 				if (isset($info['Combines']) && is_array($info['Combines'])) {
-					foreach ($info['Combines'] as $combine => $combineInfo) {
-						if (   isset($combineInfo['Contains'])
-							&& is_array($combineInfo['Contains'])
-						) {
-							foreach ($combineInfo['Contains'] as $file) {
-								if (   !isset($fileSortOrder[$file])
-									|| !is_array($fileSortOrder[$file])
-								) {
-									$fileSortOrder[$file] = array();
-								}
-								$fileSortOrder[$file][$combine] = array();
-								$combines = true;
+					foreach ($info['Combines'] as $combine => $files) {
+						foreach ($files as $file) {
+							if (   !isset($fileSortOrder[$file])
+								|| !is_array($fileSortOrder[$file])
+							) {
+								$fileSortOrder[$file] = array();
 							}
+							$fileSortOrder[$file][$combine] = array();
+							$combines = true;
 						}
 					}
 				}
@@ -357,21 +353,15 @@ class Concentrate_Concentrator
 
 			foreach ($data as $packageId => $info) {
 				if (isset($info['Combines']) && is_array($info['Combines'])) {
-					foreach ($info['Combines'] as $combine => $combineInfo) {
-
-						// create entry for the combine set if it does not
-						// exist
-						if (!isset($this->combinesInfo[$combine])) {
-							$this->combinesInfo[$combine] = array();
-						}
-
+					foreach ($info['Combines'] as $combine => $files) {
 						// add entries to the set
-						if (   isset($combineInfo['Contains'])
-							&& is_array($combineInfo['Contains'])
-						) {
-							foreach ($combineInfo['Contains'] as $file) {
-								$this->combinesInfo[$combine][] = $file;
+						foreach ($files as $file) {
+							// create entry for the combine set if it does not
+							// exist
+							if (!isset($this->combinesInfo[$combine])) {
+								$this->combinesInfo[$combine] = array();
 							}
+							$this->combinesInfo[$combine][] = $file;
 						}
 					}
 				}

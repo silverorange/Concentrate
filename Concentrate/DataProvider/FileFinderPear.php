@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Concentrate/DataProvider/FileFinderInterface.php';
+require_once 'Concentrate/DataProvider/FileFinderDirectory.php';
 require_once 'PEAR/Config.php';
 
 class Concentrate_DataProvider_FileFinderPear
@@ -33,22 +34,12 @@ class Concentrate_DataProvider_FileFinderPear
 					DIRECTORY_SEPARATOR . $subDir .
 					DIRECTORY_SEPARATOR . 'dependencies';
 
-				if (!file_exists($dependencyDir) || !is_dir($dependencyDir)) {
-					continue;
-				}
+				$finder = new Concentrate_DataProvider_FileFinderDirectory(
+					$dependencyDir
+				);
 
-				// check each file in the data/$package/dependencies directory
-				$dependencyDirObject = dir($dependencyDir);
-				while (false !== ($file = $dependencyDirObject->read())) {
+				$files = array_merge($files, $finder->getDataFiles());
 
-					// if it is a YAML file, add it to the list
-					if (preg_match('/\.yaml$/i', $file) === 1) {
-						$files[] = $dependencyDir .
-							DIRECTORY_SEPARATOR . $file;
-					}
-
-				}
-				$dependencyDirObject->close();
 			}
 			$dataDirObject->close();
 		}

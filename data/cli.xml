@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+<command>
+	<description>Combines and and minifies static resources for a website, storing them in the specified directory.</description>
+	<version>@package-version@</version>
+	<option name="pearrc">
+		<short_name>-c</short_name>
+		<long_name>--pearrc</long_name>
+		<description>Location of pear configuration file.</description>
+		<action>StoreString</action>
+	</option>
+	<option name="combine">
+		<short_name>-C</short_name>
+		<long_name>--combine</long_name>
+		<description>Write combined files.</description>
+		<action>StoreTrue</action>
+	</option>
+	<option name="minify">
+		<short_name>-m</short_name>
+		<long_name>--minify</long_name>
+		<description>Minify files.</description>
+		<action>StoreTrue</action>
+	</option>
+	<argument name="webroot">
+		<description>The web root directory to which files will be written.</description>
+		<messages>
+			<message name="ARGUMENT_REQUIRED">No web root specified.</message>
+		</messages>
+	</argument>
+</command>

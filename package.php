@@ -56,6 +56,7 @@ $package->setOptions(
 		'dir_roles'               => array(
 			'Concentrate'         => 'php',
 			'tests'               => 'test',
+			'data'                => 'data',
 		),
 		'exceptions'              => array(
 			'scripts/concentrate' => 'script',
@@ -97,10 +98,31 @@ $package->addMaintainer(
 );
 
 $package->addReplacement(
+	'data/cli.xml',
+	'package-info',
+	'@package-version@',
+	'version'
+);
+
+$package->addReplacement(
 	'scripts/concentrate',
 	'pear-config',
 	'@php-bin@',
 	'php_bin'
+);
+
+$package->addReplacement(
+	'Concentrate/CLI.php',
+	'package-info',
+	'@package-name@',
+	'name'
+);
+
+$package->addReplacement(
+	'Concentrate/CLI.php',
+	'pear-config',
+	'@data-dir@',
+	'data_dir'
 );
 
 $package->setPhpDep('5.2.1');
@@ -111,6 +133,20 @@ $package->addPackageDepWithChannel(
 	'YAML',
 	'pear.symfony-project.com',
 	'1.0.2'
+);
+
+$package->addPackageDepWithChannel(
+	'required',
+	'PEAR',
+	'pear.php.net',
+	'1.4.0'
+);
+
+$package->addPackageDepWithChannel(
+	'required',
+	'Console_CommandLine',
+	'pear.php.net',
+	'1.1.0'
 );
 
 $package->setPearInstallerDep('1.4.0');

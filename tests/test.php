@@ -13,6 +13,8 @@ $pearrc = '/so/sites/dutch-bulbs/work-gauthierm' .
 $fileFinder   = new Concentrate_DataProvider_FileFinderPear($pearrc);
 $concentrator = new Concentrate_Concentrator();
 $concentrator->loadDataFiles($fileFinder->getDataFiles());
+$concentrator->loadDataFile('/so/sites/dutch-bulbs/work-gauthierm/dependencies/combines.yaml');
+$concentrator->loadDataFile('/so/sites/dutch-bulbs/work-gauthierm/dependencies/dutch-bulbs.yaml');
 
 print_r(
 	$concentrator->getConflicts(

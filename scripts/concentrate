@@ -1,0 +1,9 @@
+#!@php-bin@
+<?php
+
+require_once 'Concentrate/CLI.php';
+
+$cli = new Concentrate_CLI();
+$cli->run();
+
+?>

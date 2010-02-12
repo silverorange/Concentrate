@@ -12,6 +12,8 @@ class Concentrate_Concentrator
 
 	protected $fileInfo = null;
 
+	protected $combinesInfo = null;
+
 	public function __construct(array $options = array())
 	{
 		if (array_key_exists('dataProvider', $options)) {
@@ -111,6 +113,51 @@ class Concentrate_Concentrator
 		}
 
 		return $conflicts;
+	}
+
+	public function getCombines(array $files)
+	{
+		$superset = array();
+		$combines = array();
+
+		$combinesInfo = $this->getCombinesInfo();
+		foreach ($combinesInfo as $combine => $combinedFiles) {
+
+			// check if combine does not conflict with existing set and if
+			// combine contains one or more files in the required file list
+			if (   count(array_intersect($combinedFiles, $superset)) === 0
+				&& count(array_intersect($combinedFiles, $files)) > 0
+			) {
+				$superset   = array_merge($superset, $combinedFiles);
+				$combines[] = $combine;
+			}
+
+		}
+
+		// add files not included in the combines to the superset
+		$superset = array_unique(array_merge($files, $superset));
+
+		// exclude contents of combined sets from file list
+		foreach ($combines as $combine) {
+			$files = array_diff($files, $combinesInfo[$combine]);
+			$files[] = $combine;
+		}
+
+		$info = array(
+			// 'combines' contains the combined files that will be included.
+			'combines' => $combines,
+
+			// 'superset' contains all original files plus files pulled in by
+			// the combined sets. The content of these files will be included.
+			'superset' => $superset,
+
+			// 'files' contains combined files and files in the original set
+			// that did not fit in any combined set. These are the actual files
+			// that will be included.
+			'files'    => $files,
+		);
+
+		return $info;
 	}
 
 	// {{{ protected function getPackageSortOrder()
@@ -298,6 +345,62 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
+	// {{{ protected function getCombinesInfo()
+
+	protected function getCombinesInfo()
+	{
+		if ($this->combinesInfo === null) {
+
+			$data = $this->dataProvider->getData();
+
+			$this->combinesInfo = array();
+
+			foreach ($data as $packageId => $info) {
+				if (isset($info['Combines']) && is_array($info['Combines'])) {
+					foreach ($info['Combines'] as $combine => $combineInfo) {
+
+						// create entry for the combine set if it does not
+						// exist
+						if (!isset($this->combinesInfo[$combine])) {
+							$this->combinesInfo[$combine] = array();
+						}
+
+						// add entries to the set
+						if (   isset($combineInfo['Contains'])
+							&& is_array($combineInfo['Contains'])
+						) {
+							foreach ($combineInfo['Contains'] as $file) {
+								$this->combinesInfo[$combine][] = $file;
+							}
+						}
+					}
+				}
+			}
+
+			// sort largest sets first
+			uasort($this->combinesInfo, array($this, 'compareCombines'));
+		}
+
+		return $this->combinesInfo;
+	}
+
+	// }}}
+	// {{{ protected function compareCombine()
+
+	protected function compareCombines(array $combine1, array $combine2)
+	{
+		if (count($combine1) < count($combine2)) {
+			return 1;
+		}
+
+		if (count($combine1) > count($combine2)) {
+			return -1;
+		}
+
+		return 0;
+	}
+
+	// }}}
 	// {{{ protected function clearCachedValues()
 
 	protected function clearCachedValues()
@@ -305,6 +408,7 @@ class Concentrate_Concentrator
 		$this->packageSortOrder = null;
 		$this->fileSortOrder    = null;
 		$this->fileInfo         = null;
+		$this->combinesInfo     = null;
 	}
 
 	// }}}

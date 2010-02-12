@@ -77,7 +77,7 @@ $package->setSummary(
 	'silverorange\'s Site framework.'
 );
 $package->setDescription($description);
-$package->setChannel('pear.php.net');
+$package->setChannel('pear.silverorange.com');
 $package->setPackageType('php');
 $package->setLicense(
 	'LGPL License 2.1',

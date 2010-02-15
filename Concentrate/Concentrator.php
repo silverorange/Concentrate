@@ -160,60 +160,9 @@ class Concentrate_Concentrator
 		return $info;
 	}
 
-	// {{{ protected function getPackageSortOrder()
+	// {{{ public function getFileSortOrder()
 
-	protected function getPackageSortOrder()
-	{
-		if ($this->packageSortOrder === null) {
-
-			$data = $this->dataProvider->getData();
-
-			// get flat list of package dependencies for each package
-			$packageDependencies = array();
-			foreach ($data as $packageId => $info) {
-				if (!isset($packageDependencies[$packageId])) {
-					$packageDependencies[$packageId] = array();
-				}
-				if (isset($info['Depends'])) {
-					$packageDependencies[$packageId] = array_merge(
-						$packageDependencies[$packageId],
-						$info['Depends']
-					);
-				}
-			}
-
-			// build into a tree (tree will contain redundant info)
-			$tree = array();
-			foreach ($packageDependencies as $packageId => $dependencies) {
-				if (!isset($tree[$packageId])) {
-					$tree[$packageId] = array();
-				}
-				foreach ($dependencies as $dependentPackageId) {
-					if (!isset($tree[$dependentPackageId])) {
-						$tree[$dependentPackageId] = array();
-					}
-					$tree[$packageId][$dependentPackageId] =&
-						$tree[$dependentPackageId];
-				}
-			}
-
-			// traverse tree to filter out redundant info and get final order
-			$order = array();
-			$order = $this->filterTree($tree, $order);
-
-			// return indexed by package id, with values being the relative
-			// sort order
-			$this->packageSortOrder = array_flip($order);
-
-		}
-
-		return $this->packageSortOrder;
-	}
-
-	// }}}
-	// {{{ protected function getFileSortOrder()
-
-	protected function getFileSortOrder()
+	public function getFileSortOrder()
 	{
 		if ($this->fileSortOrder === null) {
 
@@ -317,9 +266,9 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ protected function getFileInfo()
+	// {{{ public function getFileInfo()
 
-	protected function getFileInfo()
+	public function getFileInfo()
 	{
 		if ($this->fileInfo === null) {
 
@@ -341,9 +290,9 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ protected function getCombinesInfo()
+	// {{{ public function getCombinesInfo()
 
-	protected function getCombinesInfo()
+	public function getCombinesInfo()
 	{
 		if ($this->combinesInfo === null) {
 
@@ -372,6 +321,57 @@ class Concentrate_Concentrator
 		}
 
 		return $this->combinesInfo;
+	}
+
+	// }}}
+	// {{{ protected function getPackageSortOrder()
+
+	protected function getPackageSortOrder()
+	{
+		if ($this->packageSortOrder === null) {
+
+			$data = $this->dataProvider->getData();
+
+			// get flat list of package dependencies for each package
+			$packageDependencies = array();
+			foreach ($data as $packageId => $info) {
+				if (!isset($packageDependencies[$packageId])) {
+					$packageDependencies[$packageId] = array();
+				}
+				if (isset($info['Depends'])) {
+					$packageDependencies[$packageId] = array_merge(
+						$packageDependencies[$packageId],
+						$info['Depends']
+					);
+				}
+			}
+
+			// build into a tree (tree will contain redundant info)
+			$tree = array();
+			foreach ($packageDependencies as $packageId => $dependencies) {
+				if (!isset($tree[$packageId])) {
+					$tree[$packageId] = array();
+				}
+				foreach ($dependencies as $dependentPackageId) {
+					if (!isset($tree[$dependentPackageId])) {
+						$tree[$dependentPackageId] = array();
+					}
+					$tree[$packageId][$dependentPackageId] =&
+						$tree[$dependentPackageId];
+				}
+			}
+
+			// traverse tree to filter out redundant info and get final order
+			$order = array();
+			$order = $this->filterTree($tree, $order);
+
+			// return indexed by package id, with values being the relative
+			// sort order
+			$this->packageSortOrder = array_flip($order);
+
+		}
+
+		return $this->packageSortOrder;
 	}
 
 	// }}}

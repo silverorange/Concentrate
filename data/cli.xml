@@ -2,10 +2,19 @@
 <command>
 	<description>Combines and and minifies static resources for a website, storing them in the specified directory.</description>
 	<version>@package-version@</version>
+	<messages>
+		<message name="ARGUMENT_REQUIRED">No web root specified. Try &quot;concentrate --help&quot;.</message>
+	</messages>
 	<option name="pearrc">
 		<short_name>-c</short_name>
 		<long_name>--pearrc</long_name>
-		<description>Location of pear configuration file.</description>
+		<description>Location of PEAR configuration file.</description>
+		<action>StoreString</action>
+	</option>
+	<option name="directory">
+		<short_name>-d</short_name>
+		<long_name>--directory</long_name>
+		<description>Optional additional directory to search for dependency data files.</description>
 		<action>StoreString</action>
 	</option>
 	<option name="combine">
@@ -20,10 +29,13 @@
 		<description>Minify files.</description>
 		<action>StoreTrue</action>
 	</option>
+	<option name="verbose">
+		<short_name>-v</short_name>
+		<long_name>--verbose</long_name>
+		<description>Sets verbosity level. Use multiples for more detail (e.g. "-vv").</description>
+		<action>Counter</action>
+	</option>
 	<argument name="webroot">
-		<description>The web root directory to which files will be written.</description>
-		<messages>
-			<message name="ARGUMENT_REQUIRED">No web root specified.</message>
-		</messages>
+		<description>The directory to which files will be written.</description>
 	</argument>
 </command>

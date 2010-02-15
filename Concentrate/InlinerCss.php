@@ -9,6 +9,10 @@ class Concentrate_InlinerCss extends Concentrate_Inliner
 		$content = parent::getInlineContent();
 		$content = $this->inlineImports($content);
 		$content = $this->updateUris($content);
+
+		$content = "\n/* inlined file \"{$this->sourceFilename}\" */\n" .
+			$content;
+
 		return $content;
 	}
 
@@ -93,7 +97,9 @@ class Concentrate_InlinerCss extends Concentrate_Inliner
 				$this->inlinedFiles
 			);
 
-			$replacement = $inliner->inlineImports($inliner->content);
+			$content      = $inliner->load($inliner->filename);
+			$replacement  = "\n/* at-import inlined file \"{$uri}\" */\n";
+			$replacement .= $inliner->inlineImports($content);
 
 			$this->inlinedFiles->add($uri);
 		}

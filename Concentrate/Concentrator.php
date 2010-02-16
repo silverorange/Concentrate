@@ -14,6 +14,8 @@ class Concentrate_Concentrator
 
 	protected $combinesInfo = null;
 
+	protected $dependsInfo = null;
+
 	public function __construct(array $options = array())
 	{
 		if (array_key_exists('dataProvider', $options)) {
@@ -180,27 +182,7 @@ class Concentrate_Concentrator
 				$info = $data[$packageId];
 
 				// get flat list of file dependencies for each file
-				$fileDependencies = array();
-
-				if (isset($info['Provides']) && is_array($info['Provides'])) {
-					foreach ($info['Provides'] as $file => $fileInfo) {
-						if (!isset($fileDependencies[$file])) {
-							$fileDependencies[$file] = array();
-						}
-						if (isset($fileInfo['Depends'])) {
-							$fileDependencies[$file] = array_merge(
-								$fileDependencies[$file],
-								$fileInfo['Depends']
-							);
-						}
-						if (isset($fileInfo['OptionalDepends'])) {
-							$fileDependencies[$file] = array_merge(
-								$fileDependencies[$file],
-								$fileInfo['OptionalDepends']
-							);
-						}
-					}
-				}
+				$fileDependencies = $this->getDependsInfo();
 
 				// build into a tree (tree will contain redundant info)
 				$tree = array();
@@ -316,11 +298,90 @@ class Concentrate_Concentrator
 				}
 			}
 
+			// Check for dependencies of each set that are not in the set. If
+			// a missing dependency also has a dependency on an file in the
+			// set, add it to the set.
+			$dependsInfo = $this->getDependsInfo();
+			foreach ($this->combinesInfo as $combine => $files) {
+
+				// get depends
+				$depends = array();
+				foreach ($files as $file) {
+					if (isset($dependsInfo[$file])) {
+						$depends = array_merge($depends, $dependsInfo[$file]);
+					}
+				}
+
+				// get depends not in the set
+				$depends = array_diff($depends, $files);
+
+				// check sub-dependencies to see any are in the set
+				$implicitFiles = array();
+				foreach ($depends as $file) {
+					if (isset($dependsInfo[$file])) {
+						$subDepends = array_intersect(
+							$dependsInfo[$file],
+							$files
+						);
+						if (   count($subDepends) > 0
+							&& !isset($implicitFiles[$file])
+						) {
+							$this->combinesInfo[$combine][] = $file;
+							$implicitFiles[$file] = $file;
+						}
+					}
+				}
+			}
+
 			// sort largest sets first
 			uasort($this->combinesInfo, array($this, 'compareCombines'));
 		}
 
 		return $this->combinesInfo;
+	}
+
+	// }}}
+	// {{{ public function getDependsInfo()
+
+	/**
+	 * Gets a flat list of file dependencies for each file
+	 *
+	 * @return array
+	 */
+	public function getDependsInfo()
+	{
+		if ($this->dependsInfo === null) {
+
+			$data = $this->dataProvider->getData();
+
+			$this->dependsInfo = array();
+
+			foreach ($data as $packageId => $info) {
+				if (isset($info['Provides']) && is_array($info['Provides'])) {
+					foreach ($info['Provides'] as $file => $fileInfo) {
+						if (!isset($this->dependsInfo[$file])) {
+							$this->dependsInfo[$file] = array();
+						}
+						if (isset($fileInfo['Depends'])) {
+							$this->dependsInfo[$file] = array_merge(
+								$this->dependsInfo[$file],
+								$fileInfo['Depends']
+							);
+						}
+						// TODO: some day we could treat optional-depends
+						// differently
+						if (isset($fileInfo['OptionalDepends'])) {
+							$this->dependsInfo[$file] = array_merge(
+								$this->dependsInfo[$file],
+								$fileInfo['OptionalDepends']
+							);
+						}
+					}
+				}
+			}
+		}
+
+		return $this->dependsInfo;
 	}
 
 	// }}}
@@ -399,6 +460,7 @@ class Concentrate_Concentrator
 		$this->fileSortOrder    = null;
 		$this->fileInfo         = null;
 		$this->combinesInfo     = null;
+		$this->dependsInfo      = null;
 	}
 
 	// }}}

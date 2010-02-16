@@ -192,17 +192,22 @@ class Concentrate_CLI
 				$this->display('=> writing "' . $filename . '"' . PHP_EOL);
 			}
 
-			$this->checkForConflicts($files);
-			uasort($files, array($this->concentrator, 'compareFiles'));
+			$this->checkForConflicts(array_keys($files));
+			uksort($files, array($this->concentrator, 'compareFiles'));
 
 			if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-				foreach ($files as $file) {
-					$this->display(' * ' . $file . PHP_EOL);
+				foreach ($files as $file => $info) {
+					$string = ' * ' . $file;
+					if (!$info['explicit']) {
+						$string .= ' [IMPLICIT]';
+					}
+					$string .= PHP_EOL;
+					$this->display($string);
 				}
 				$this->display(PHP_EOL);
 			}
 
-			$packer->pack($this->webroot, $files, $combine);
+			$packer->pack($this->webroot, array_keys($files), $combine);
 		}
 	}
 

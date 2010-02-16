@@ -125,6 +125,8 @@ class Concentrate_Concentrator
 		$combinesInfo = $this->getCombinesInfo();
 		foreach ($combinesInfo as $combine => $combinedFiles) {
 
+			$combinedFiles = array_keys($combinedFiles);
+
 			// check if combine does not conflict with existing set and if
 			// combine contains one or more files in the required file list
 			if (   count(array_intersect($combinedFiles, $superset)) === 0
@@ -141,7 +143,7 @@ class Concentrate_Concentrator
 
 		// exclude contents of combined sets from file list
 		foreach ($combines as $combine) {
-			$files = array_diff($files, $combinesInfo[$combine]);
+			$files = array_diff($files, array_keys($combinesInfo[$combine]));
 			$files[] = $combine;
 		}
 
@@ -209,7 +211,7 @@ class Concentrate_Concentrator
 					// get combine dependencies as difference of union of
 					// dependencies of contained files and combined set
 					$depends = array();
-					foreach ($files as $file) {
+					foreach ($files as $file => $info) {
 						if (isset($dependsInfo[$file])) {
 							$depends = array_merge(
 								$dependsInfo[$file],
@@ -217,14 +219,14 @@ class Concentrate_Concentrator
 							);
 						}
 					}
-					$depends = array_diff($depends, $files);
+					$depends = array_diff($depends, array_keys($files));
 					$fileSortOrder[$combine] = array();
 					foreach ($depends as $depend) {
 						$fileSortOrder[$combine][$depend] = array();
 					}
 
 					// add combine as dependency of all contained files
-					foreach ($files as $file) {
+					foreach ($files as $file => $info) {
 						if (   !isset($fileSortOrder[$file])
 							|| !is_array($fileSortOrder[$file])
 						) {
@@ -297,7 +299,9 @@ class Concentrate_Concentrator
 							if (!isset($this->combinesInfo[$combine])) {
 								$this->combinesInfo[$combine] = array();
 							}
-							$this->combinesInfo[$combine][] = $file;
+							$this->combinesInfo[$combine][$file] = array(
+								'explicit' => true,
+							);
 						}
 					}
 				}
@@ -383,14 +387,14 @@ class Concentrate_Concentrator
 
 		// get depends
 		$depends = array();
-		foreach ($filesToCheck as $file) {
+		foreach ($filesToCheck as $file => $info) {
 			if (isset($dependsInfo[$file])) {
 				$depends = array_merge($depends, $dependsInfo[$file]);
 			}
 		}
 
 		// get depends not in the set
-		$depends = array_diff($depends, $files);
+		$depends = array_diff($depends, array_keys($files));
 
 		// check sub-dependencies to see any are in the set
 		$implicitFiles = array();
@@ -398,12 +402,14 @@ class Concentrate_Concentrator
 			if (isset($dependsInfo[$file])) {
 				$subDepends = array_intersect(
 					$dependsInfo[$file],
-					$files
+					array_keys($files)
 				);
 				if (   count($subDepends) > 0
 					&& !isset($implicitFiles[$file])
 				) {
-					$files[] = $file;
+					$files[$file] = array(
+						'explicit' => false,
+					);
 					$implicitFiles[$file] = $file;
 				}
 			}
@@ -412,7 +418,7 @@ class Concentrate_Concentrator
 		// if implicit files were added, check those
 		if (count($implicitFiles) > 0) {
 			$files = $this->getImplicitCombinedFiles(
-				array_keys($implicitFiles),
+				$implicitFiles,
 				$files
 			);
 		}

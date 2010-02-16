@@ -162,7 +162,7 @@ class Concentrate_Concentrator
 		return $info;
 	}
 
-	// {{{ public function getFileSortOrder()
+	// {{{ puoblic function getFileSortOrder()
 
 	public function getFileSortOrder()
 	{
@@ -170,45 +170,33 @@ class Concentrate_Concentrator
 
 			$data = $this->dataProvider->getData();
 
-			$dependsInfo = $this->getDependsInfo();
-
 			$fileSortOrder = array();
 
-			// sort each package in order
-			foreach ($this->getPackageSortOrder() as $packageId => $order) {
+			// get flat list of file dependencies for each file
+			$dependsInfo = $this->getDependsInfo();
 
-				if (!isset($data[$packageId])) {
-					continue;
+			// build into a tree (tree will contain redundant info)
+			$tree = array();
+			foreach ($dependsInfo as $file => $dependencies) {
+				if (!isset($tree[$file])) {
+					$tree[$file] = array();
 				}
-
-				$info = $data[$packageId];
-
-				// get flat list of file dependencies for each file
-				$fileDependencies = $this->getDependsInfo();
-
-				// build into a tree (tree will contain redundant info)
-				$tree = array();
-				foreach ($fileDependencies as $file => $dependencies) {
-					if (!isset($tree[$file])) {
-						$tree[$file] = array();
+				foreach ($dependencies as $dependentFile) {
+					if (!isset($tree[$dependentFile])) {
+						$tree[$dependentFile] = array();
 					}
-					foreach ($dependencies as $dependentFile) {
-						if (!isset($tree[$dependentFile])) {
-							$tree[$dependentFile] = array();
-						}
-						$tree[$file][$dependentFile] =& $tree[$dependentFile];
-					}
+					$tree[$file][$dependentFile] =& $tree[$dependentFile];
 				}
-
-				// traverse tree to filter out redundant info and get order
-				$order = array();
-				$order = $this->filterTree($tree, $order);
-
-				$fileSortOrder = array_merge(
-					$fileSortOrder,
-					$order
-				);
 			}
+
+			// traverse tree to filter out redundant info and get order
+			$order = array();
+			$order = $this->filterTree($tree, $order);
+
+			$fileSortOrder = array_merge(
+				$fileSortOrder,
+				$order
+			);
 
 			// index by file, with values being the relative sort order
 			$fileSortOrder = array_flip($fileSortOrder);
@@ -259,6 +247,7 @@ class Concentrate_Concentrator
 			}
 
 			$this->fileSortOrder = $fileSortOrder;
+			print_r($this->fileSortOrder);
 		}
 
 		return $this->fileSortOrder;
@@ -334,7 +323,58 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ getImplicitCombinedFiles()
+	// {{{ public function getDependsInfo()
+
+	/**
+	 * Gets a flat list of file dependencies for each file
+	 *
+	 * @return array
+	 */
+	public function getDependsInfo()
+	{
+		if ($this->dependsInfo === null) {
+
+			$data = $this->dataProvider->getData();
+
+			$this->dependsInfo = array();
+
+			foreach ($this->getPackageSortOrder() as $packageId => $order) {
+
+				if (!isset($data[$packageId])) {
+					continue;
+				}
+
+				$info = $data[$packageId];
+
+				if (isset($info['Provides']) && is_array($info['Provides'])) {
+					foreach ($info['Provides'] as $file => $fileInfo) {
+						if (!isset($this->dependsInfo[$file])) {
+							$this->dependsInfo[$file] = array();
+						}
+						if (isset($fileInfo['Depends'])) {
+							$this->dependsInfo[$file] = array_merge(
+								$this->dependsInfo[$file],
+								$fileInfo['Depends']
+							);
+						}
+						// TODO: some day we could treat optional-depends
+						// differently
+						if (isset($fileInfo['OptionalDepends'])) {
+							$this->dependsInfo[$file] = array_merge(
+								$this->dependsInfo[$file],
+								$fileInfo['OptionalDepends']
+							);
+						}
+					}
+				}
+			}
+		}
+
+		return $this->dependsInfo;
+	}
+
+	// }}}
+	// {{{ protected function getImplicitCombinedFiles()
 
 	protected function getImplicitCombinedFiles(
 		array $filesToCheck,
@@ -379,50 +419,6 @@ class Concentrate_Concentrator
 		}
 
 		return $files;
-	}
-
-	// }}}
-	// {{{ public function getDependsInfo()
-
-	/**
-	 * Gets a flat list of file dependencies for each file
-	 *
-	 * @return array
-	 */
-	public function getDependsInfo()
-	{
-		if ($this->dependsInfo === null) {
-
-			$data = $this->dataProvider->getData();
-
-			$this->dependsInfo = array();
-
-			foreach ($data as $packageId => $info) {
-				if (isset($info['Provides']) && is_array($info['Provides'])) {
-					foreach ($info['Provides'] as $file => $fileInfo) {
-						if (!isset($this->dependsInfo[$file])) {
-							$this->dependsInfo[$file] = array();
-						}
-						if (isset($fileInfo['Depends'])) {
-							$this->dependsInfo[$file] = array_merge(
-								$this->dependsInfo[$file],
-								$fileInfo['Depends']
-							);
-						}
-						// TODO: some day we could treat optional-depends
-						// differently
-						if (isset($fileInfo['OptionalDepends'])) {
-							$this->dependsInfo[$file] = array_merge(
-								$this->dependsInfo[$file],
-								$fileInfo['OptionalDepends']
-							);
-						}
-					}
-				}
-			}
-		}
-
-		return $this->dependsInfo;
 	}
 
 	// }}}

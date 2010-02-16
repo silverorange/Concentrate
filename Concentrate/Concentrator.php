@@ -164,7 +164,7 @@ class Concentrate_Concentrator
 		return $info;
 	}
 
-	// {{{ puoblic function getFileSortOrder()
+	// {{{ public function getFileSortOrder()
 
 	public function getFileSortOrder()
 	{

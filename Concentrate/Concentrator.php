@@ -170,6 +170,8 @@ class Concentrate_Concentrator
 
 			$data = $this->dataProvider->getData();
 
+			$dependsInfo = $this->getDependsInfo();
+
 			$fileSortOrder = array();
 
 			// sort each package in order
@@ -212,25 +214,40 @@ class Concentrate_Concentrator
 			$fileSortOrder = array_flip($fileSortOrder);
 
 			// add combines as dependencies of all contained files
-			$combines = false;
-			foreach ($data as $package_id => $info) {
-				if (isset($info['Combines']) && is_array($info['Combines'])) {
-					foreach ($info['Combines'] as $combine => $files) {
-						foreach ($files as $file) {
-							if (   !isset($fileSortOrder[$file])
-								|| !is_array($fileSortOrder[$file])
-							) {
-								$fileSortOrder[$file] = array();
-							}
-							$fileSortOrder[$file][$combine] = array();
-							$combines = true;
+			$combinesInfo = $this->getCombinesInfo();
+			if (count($combinesInfo) > 0) {
+				foreach ($combinesInfo as $combine => $files) {
+
+					// get combine dependencies as difference of union of
+					// dependencies of contained files and combined set
+					$depends = array();
+					foreach ($files as $file) {
+						if (isset($dependsInfo[$file])) {
+							$depends = array_merge(
+								$dependsInfo[$file],
+								$depends
+							);
 						}
 					}
-				}
-			}
+					$depends = array_diff($depends, $files);
+					$fileSortOrder[$combine] = array();
+					foreach ($depends as $depend) {
+						$fileSortOrder[$combine][$depend] = array();
+					}
 
-			// re-traverse to get dependency order of combines
-			if ($combines) {
+					// add combine as dependency of all contained files
+					foreach ($files as $file) {
+						if (   !isset($fileSortOrder[$file])
+							|| !is_array($fileSortOrder[$file])
+						) {
+							$fileSortOrder[$file] = array();
+						}
+						$fileSortOrder[$file][$combine] =&
+							$fileSortOrder[$combine];
+					}
+				}
+
+				// re-traverse to get dependency order of combines
 				$temp = array();
 				$fileSortOrder = $this->filterTree(
 					$fileSortOrder,

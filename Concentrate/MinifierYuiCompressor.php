@@ -1,10 +1,9 @@
 <?php
 
-require_once 'Concentrate/MinifierInterface.php';
+require_once 'Concentrate/MinifierAbstract.php';
 require_once 'Concentrate/Exception.php';
 
-class Concentrate_MinifierYuiCompressor
-	implements Concentrate_MinifierInterface
+class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
 {
 	const DEFAULT_JAR_NAME = '/yuicompressor-[0-9]\.[0-9]\.[0-9]\.jar/';
 
@@ -38,23 +37,66 @@ class Concentrate_MinifierYuiCompressor
 		return $this;
 	}
 
-	public function minify($content)
+	public function minify($content, $type)
 	{
-		$filename = $this->writeTempFile($content);
+		return $this->minifyInternal($content, false, null, $type);
+	}
 
-		$command = sprintf(
-			'%s -jar %s --nomunge --preserve-semi %s',
-			$this->javaBin,
-			escapeshellarg($this->getJarFile()),
-			escapeshellarg($filename)
+	public function minifyFile($fromFilename, $toFilename, $type)
+	{
+		return $this->minifyInternal($fromFilename, true, $toFilename, $type);
+	}
+
+	protected function minifyInternal($data, $isFile, $outputFile, $type)
+	{
+		// default args
+		$args = array(
+			'--nomunge',
+			'--preserve-semi',
 		);
 
-		$minifiedContent = shell_exec($command);
+		// type
+		switch ($type) {
+		case 'css':
+			$args[] = '--type css';
+			break;
+		case 'js':
+		default:
+			$args[] = '--type js';
+			break;
+		}
 
-		unlink($filename);
+		// output
+		if ($outputFile !== null) {
+			$args[] = '-o ' . escapeshellarg($outputFile);
+		}
+
+		// filename
+		if ($isFile) {
+			$filename = $data;
+		} else {
+			$filename = $this->writeTempFile($content);
+		}
+		$args[] = escapeshellarg($filename);
+
+		// build command
+		$command = sprintf(
+			'%s -jar %s %s',
+			$this->javaBin,
+			escapeshellarg($this->getJarFile()),
+			implode(' ', $args)
+		);
+
+		// run command
+		$output = shell_exec($command);
+
+		// remove temp file
+		if (!$isFile) {
+			unlink($filename);
+		}
 
 		$errorExpression = '/^Unable to access jarfile/';
-		if (preg_match($errorExpression, $minifiedContent) === 1) {
+		if (preg_match($errorExpression, $output) === 1) {
 			throw new Concentrate_FileException(
 				"The JAR file '{$this->jarFile}' does not exist.",
 				0,
@@ -62,12 +104,12 @@ class Concentrate_MinifierYuiCompressor
 			);
 		}
 
-		return $minifiedContent;
+		return $output;
 	}
 
 	protected function writeTempFile($content)
 	{
-		$filename = tempnam(sys_get_temp_dir(), 'concentrate');
+		$filename = tempnam(sys_get_temp_dir(), 'concentrate-');
 		file_put_contents($filename, $content);
 		return $filename;
 	}
@@ -78,7 +120,7 @@ class Concentrate_MinifierYuiCompressor
 			$this->jarFile = $this->findJarFile();
 		}
 
-		return $this->jarFile();
+		return $this->jarFile;
 	}
 
 	protected function findJarFile()

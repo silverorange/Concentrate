@@ -5,6 +5,7 @@ require_once 'Concentrate/Concentrator.php';
 require_once 'Concentrate/Packer.php';
 require_once 'Concentrate/DataProvider.php';
 require_once 'Concentrate/DataProvider/FileFinderPear.php';
+require_once 'Concentrate/MinifierYuiCompressor.php';
 
 class Concentrate_CLI
 {
@@ -213,7 +214,63 @@ class Concentrate_CLI
 
 	protected function writeMinifiedFiles()
 	{
-		var_dump($this->webroot);
+		if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
+			$this->display(PHP_EOL . 'Writing minified files:' . PHP_EOL);
+		}
+
+		$minifier = new Concentrate_MinifierYuiCompressor();
+
+		$fileInfo = $this->concentrator->getFileInfo();
+		foreach ($fileInfo as $file => $info) {
+			$fromFilename = $this->webroot
+				. DIRECTORY_SEPARATOR . $file;
+
+			if (!file_exists($fromFilename)) {
+				continue;
+			}
+
+			// only minify JavaScript
+			if (substr($fromFilename, -3) !== '.js') {
+				continue;
+			}
+
+			$toFilename = $this->webroot
+				. DIRECTORY_SEPARATOR . 'min'
+				. DIRECTORY_SEPARATOR . $file;
+
+			if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+				$this->display(' * ' . $file . PHP_EOL);
+			}
+
+			$minifier->minifyFile($fromFilename, $toFilename, 'js');
+		}
+
+		if ($this->combine) {
+			$combinesInfo = $this->concentrator->getCombinesInfo();
+			foreach ($combinesInfo as $combine => $files) {
+				$fromFilename = $this->webroot
+					. DIRECTORY_SEPARATOR . $combine;
+
+				if (!file_exists($fromFilename)) {
+					continue;
+				}
+
+				// only minify JavaScript
+				if (substr($fromFilename, -3) !== '.js') {
+					continue;
+				}
+
+				$toFilename = $this->webroot
+					. DIRECTORY_SEPARATOR . 'min'
+					. DIRECTORY_SEPARATOR . $combine;
+
+				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+					$this->display(' * ' . $combine . PHP_EOL);
+				}
+
+				$minifier->minifyFile($fromFilename, $toFilename, 'js');
+			}
+		}
 	}
 
 	protected function getUiXml()

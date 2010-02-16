@@ -303,34 +303,10 @@ class Concentrate_Concentrator
 			// set, add it to the set.
 			$dependsInfo = $this->getDependsInfo();
 			foreach ($this->combinesInfo as $combine => $files) {
-
-				// get depends
-				$depends = array();
-				foreach ($files as $file) {
-					if (isset($dependsInfo[$file])) {
-						$depends = array_merge($depends, $dependsInfo[$file]);
-					}
-				}
-
-				// get depends not in the set
-				$depends = array_diff($depends, $files);
-
-				// check sub-dependencies to see any are in the set
-				$implicitFiles = array();
-				foreach ($depends as $file) {
-					if (isset($dependsInfo[$file])) {
-						$subDepends = array_intersect(
-							$dependsInfo[$file],
-							$files
-						);
-						if (   count($subDepends) > 0
-							&& !isset($implicitFiles[$file])
-						) {
-							$this->combinesInfo[$combine][] = $file;
-							$implicitFiles[$file] = $file;
-						}
-					}
-				}
+				$this->combinesInfo[$combine] = $this->getImplicitCombinedFiles(
+					$files,
+					$files
+				);
 			}
 
 			// sort largest sets first
@@ -338,6 +314,54 @@ class Concentrate_Concentrator
 		}
 
 		return $this->combinesInfo;
+	}
+
+	// }}}
+	// {{{ getImplicitCombinedFiles()
+
+	protected function getImplicitCombinedFiles(
+		array $filesToCheck,
+		array $files
+	) {
+		$dependsInfo = $this->getDependsInfo();
+
+		// get depends
+		$depends = array();
+		foreach ($filesToCheck as $file) {
+			if (isset($dependsInfo[$file])) {
+				$depends = array_merge($depends, $dependsInfo[$file]);
+			}
+		}
+
+		// get depends not in the set
+		$depends = array_diff($depends, $files);
+
+		// check sub-dependencies to see any are in the set
+		$implicitFiles = array();
+		foreach ($depends as $file) {
+			if (isset($dependsInfo[$file])) {
+				$subDepends = array_intersect(
+					$dependsInfo[$file],
+					$files
+				);
+				if (   count($subDepends) > 0
+					&& !isset($implicitFiles[$file])
+				) {
+					$files[] = $file;
+					$implicitFiles[$file] = $file;
+				}
+			}
+		}
+
+		// if implicit files were added, check those
+		if (count($implicitFiles) > 0) {
+			$files = $this->getImplicitCombinedFiles(
+				array_keys($implicitFiles),
+				$files
+			);
+		}
+
+		return $files;
 	}
 
 	// }}}

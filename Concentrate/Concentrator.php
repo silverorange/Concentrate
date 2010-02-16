@@ -247,7 +247,6 @@ class Concentrate_Concentrator
 			}
 
 			$this->fileSortOrder = $fileSortOrder;
-			print_r($this->fileSortOrder);
 		}
 
 		return $this->fileSortOrder;

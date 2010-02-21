@@ -523,7 +523,7 @@ class Concentrate_Concentrator
 			if (is_array($childNodes)) {
 				$this->filterTree($childNodes, $visited);
 			}
-			if (!isset($visites[$node])) {
+			if (!isset($visited[$node])) {
 				$visited[$node] = $node;
 			}
 		}

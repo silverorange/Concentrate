@@ -193,7 +193,8 @@ class Concentrate_Concentrator
 
 			// traverse tree to filter out redundant info and get order
 			$order = array();
-			$order = $this->filterTree($tree, $order);
+			$this->filterTree($tree, $order);
+			$order = array_keys($order);
 
 			$fileSortOrder = array_merge(
 				$fileSortOrder,
@@ -239,10 +240,8 @@ class Concentrate_Concentrator
 
 				// re-traverse to get dependency order of combines
 				$temp = array();
-				$fileSortOrder = $this->filterTree(
-					$fileSortOrder,
-					$temp
-				);
+				$this->filterTree($fileSortOrder, $temp);
+				$fileSortOrder = array_keys($temp);
 
 				// index by file, with values being the relative sort order
 				$fileSortOrder = array_flip($fileSortOrder);
@@ -466,7 +465,8 @@ class Concentrate_Concentrator
 
 			// traverse tree to filter out redundant info and get final order
 			$order = array();
-			$order = $this->filterTree($tree, $order);
+			$this->filterTree($tree, $order);
+			$order = array_keys($order);
 
 			// return indexed by package id, with values being the relative
 			// sort order
@@ -515,7 +515,7 @@ class Concentrate_Concentrator
 	 * @param array $nodes
 	 * @param array &$visited
 	 *
-	 * @return array
+	 * @return void
 	 */
 	protected function filterTree(array $nodes, array &$visited)
 	{
@@ -523,12 +523,10 @@ class Concentrate_Concentrator
 			if (is_array($childNodes)) {
 				$this->filterTree($childNodes, $visited);
 			}
-			if (!in_array($node, $visited)) {
-				$visited[] = $node;
+			if (!isset($visites[$node])) {
+				$visited[$node] = $node;
 			}
 		}
-
-		return $visited;
 	}
 
 	// }}}

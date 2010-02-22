@@ -2,6 +2,13 @@
 
 require_once 'Concentrate/Exception.php';
 
+/**
+ * @category  Tools
+ * @package   Concentrate
+ * @author    Michael Gauthier <mike@silverorange.com>
+ * @copyright 2010 silverorange
+ * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
+ */
 abstract class Concentrate_MinifierAbstract
 {
 	abstract public function minify($content, $type);

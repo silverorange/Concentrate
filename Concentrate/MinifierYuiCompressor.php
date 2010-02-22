@@ -3,6 +3,13 @@
 require_once 'Concentrate/MinifierAbstract.php';
 require_once 'Concentrate/Exception.php';
 
+/**
+ * @category  Tools
+ * @package   Concentrate
+ * @author    Michael Gauthier <mike@silverorange.com>
+ * @copyright 2010 silverorange
+ * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
+ */
 class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
 {
 	const DEFAULT_JAR_NAME = '/yuicompressor-[0-9]\.[0-9]\.[0-9]\.jar/';

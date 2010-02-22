@@ -2,6 +2,13 @@
 
 require_once 'Concentrate/Inliner.php';
 
+/**
+ * @category  Tools
+ * @package   Concentrate
+ * @author    Michael Gauthier <mike@silverorange.com>
+ * @copyright 2010 silverorange
+ * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
+ */
 class Concentrate_InlinerCss extends Concentrate_Inliner
 {
 	public function getInlineContent()

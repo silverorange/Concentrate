@@ -2,8 +2,17 @@
 
 require_once 'Concentrate/DataProvider.php';
 
+/**
+ * @category  Tools
+ * @package   Concentrate
+ * @author    Michael Gauthier <mike@silverorange.com>
+ * @copyright 2010 silverorange
+ * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
+ */
 class Concentrate_Concentrator
 {
+	// {{{ protected properties
+
 	protected $dataProvider = null;
 
 	protected $packageSortOrder = null;
@@ -16,6 +25,9 @@ class Concentrate_Concentrator
 
 	protected $dependsInfo = null;
 
+	// }}}
+	// {{{ __construct()
+
 	public function __construct(array $options = array())
 	{
 		if (array_key_exists('dataProvider', $options)) {
@@ -27,6 +39,9 @@ class Concentrate_Concentrator
 		}
 	}
 
+	// }}}
+	// {{{ setDataProvider()
+
 	public function setDataProvider(Concentrate_DataProvider $dataProvider)
 	{
 		$this->dataProvider = $dataProvider;
@@ -34,12 +49,18 @@ class Concentrate_Concentrator
 		return $this;
 	}
 
+	// }}}
+	// {{{ loadDataFile()
+
 	public function loadDataFile($filename)
 	{
 		$this->dataProvider->loadDataFile($filename);
 		$this->clearCachedValues();
 		return $this;
 	}
+
+	// }}}
+	// {{{ loadDataFiles()
 
 	public function loadDataFiles(array $filenames)
 	{
@@ -49,12 +70,18 @@ class Concentrate_Concentrator
 		return $this;
 	}
 
+	// }}}
+	// {{{ loadDataArray()
+
 	public function loadDataArray(array $data)
 	{
 		$this->dataProvider->loadDataArray($data);
 		$this->clearCachedValues();
 		return $this;
 	}
+
+	// }}}
+	// {{{ compareFiles()
 
 	public function compareFiles($file1, $file2)
 	{
@@ -87,6 +114,9 @@ class Concentrate_Concentrator
 		return 0;
 	}
 
+	// }}}
+	// {{{ getConflicts()
+
 	public function getConflicts(array $files)
 	{
 		$conflicts = array();
@@ -116,6 +146,9 @@ class Concentrate_Concentrator
 
 		return $conflicts;
 	}
+
+	// }}}
+	// {{{ getCombines()
 
 	public function getCombines(array $files)
 	{
@@ -164,7 +197,8 @@ class Concentrate_Concentrator
 		return $info;
 	}
 
-	// {{{ public function getFileSortOrder()
+	// }}}
+	// {{{ getFileSortOrder()
 
 	public function getFileSortOrder()
 	{
@@ -254,7 +288,7 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ public function getFileInfo()
+	// {{{ getFileInfo()
 
 	public function getFileInfo()
 	{
@@ -278,7 +312,7 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ public function getCombinesInfo()
+	// {{{ getCombinesInfo()
 
 	public function getCombinesInfo()
 	{
@@ -325,7 +359,7 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ public function getDependsInfo()
+	// {{{ getDependsInfo()
 
 	/**
 	 * Gets a flat list of file dependencies for each file
@@ -376,7 +410,7 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ protected function getImplicitCombinedFiles()
+	// {{{ getImplicitCombinedFiles()
 
 	protected function getImplicitCombinedFiles(
 		array $filesToCheck,
@@ -426,7 +460,7 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ protected function getPackageSortOrder()
+	// {{{ getPackageSortOrder()
 
 	protected function getPackageSortOrder()
 	{
@@ -478,7 +512,7 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ protected function compareCombine()
+	// {{{ compareCombine()
 
 	protected function compareCombines(array $combine1, array $combine2)
 	{
@@ -494,7 +528,7 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ protected function clearCachedValues()
+	// {{{ clearCachedValues()
 
 	protected function clearCachedValues()
 	{
@@ -506,7 +540,7 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ protected function filterTree()
+	// {{{ filterTree()
 
 	/**
 	 * Performs a depth-first traversal of the given tree and collects an

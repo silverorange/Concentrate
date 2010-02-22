@@ -3,6 +3,13 @@
 require_once 'SymfonyComponents/YAML/sfYamlParser.php';
 require_once 'Concentrate/Exception.php';
 
+/**
+ * @category  Tools
+ * @package   Concentrate
+ * @author    Michael Gauthier <mike@silverorange.com>
+ * @copyright 2010 silverorange
+ * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
+ */
 class Concentrate_DataProvider
 {
 	protected $data = array();

@@ -2,6 +2,8 @@
 
 require_once 'SymfonyComponents/YAML/sfYamlParser.php';
 require_once 'Concentrate/Exception.php';
+require_once 'Concentrate/CacheInterface.php';
+require_once 'Concentrate/CacheArray.php';
 
 /**
  * @category  Tools
@@ -15,24 +17,43 @@ class Concentrate_DataProvider
 	protected $data = array();
 	protected $pendingFiles = array();
 	protected $loadedFiles = array();
+	protected $stat = true;
+	protected $cachePrefix = '';
 
-	public function loadDataFile($filename)
+	public function __construct(array $options = array())
 	{
-		$this->pendingFiles[] = $filename;
+		if (array_key_exists('stat', $options)) {
+			$this->setStat($options['stat']);
+		}
 	}
 
-	public function loadDataArray(array $data)
+	public function setStat($stat)
 	{
-		$this->data = array_merge_recursive($this->data, $data);
+		$stat = ($stat) ? true : false;
+
+		if ($stat !== $this->stat) {
+			$this->stat = $stat;
+
+			// clear cache prefix
+			$this->cachePrefix = '';
+		}
+	}
+
+	public function loadFile($filename)
+	{
+		$this->pendingFiles[] = strval($filename);
+
+		// clear cache prefix
+		$this->cachePrefix = '';
 	}
 
 	public function getData()
 	{
-		$this->loadPendingFiles();
+		$this->loadPendingData();
 		return $this->data;
 	}
 
-	protected function loadPendingFiles()
+	protected function loadPendingData()
 	{
 		while (count($this->pendingFiles) > 0) {
 			$filename = array_shift($this->pendingFiles);
@@ -46,7 +67,7 @@ class Concentrate_DataProvider
 	{
 		if (!is_readable($filename)) {
 			throw new Concentrate_FileException(
-				"Data file '{$filename}' can not be read.",0, $filename);
+				"Data file '{$filename}' can not be read.", 0, $filename);
 		}
 
 		try {
@@ -57,8 +78,30 @@ class Concentrate_DataProvider
 				"Data file '{$filename}' is not valid YAML.",0, $filename);
 		}
 
-		$this->loadDataArray($data);
+		$this->data = array_merge_recursive($this->data, $data);
 	}
+
+	public function getCachePrefix()
+	{
+		if ($this->cachePrefix === '') {
+			$files = array_merge($this->loadedFiles, $this->pendingFiles);
+			if ($this->stat) {
+				$statFiles = array();
+				foreach ($files as $filename) {
+					$mtime       = filemtime($filename);
+					$statFiles[] = $filename . '=' . $mtime;
+				}
+				$key = md5(implode(':', $statFiles));
+			} else {
+				$key = md5(implode(':', $files));
+			}
+
+			$this->cachePrefix = 'concentrate:' . $key;
+		}
+
+		return $this->cachePrefix;
+	}
+
 }
 
 ?>

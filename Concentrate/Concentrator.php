@@ -1,5 +1,6 @@
 <?php
 
+require_once 'Concentrate/CacheArray.php';
 require_once 'Concentrate/DataProvider.php';
 
 /**
@@ -15,21 +16,19 @@ class Concentrate_Concentrator
 
 	protected $dataProvider = null;
 
-	protected $packageSortOrder = null;
-
-	protected $fileSortOrder = null;
-
-	protected $fileInfo = null;
-
-	protected $combinesInfo = null;
-
-	protected $dependsInfo = null;
+	protected $cache = null;
 
 	// }}}
 	// {{{ __construct()
 
 	public function __construct(array $options = array())
 	{
+		if (array_key_exists('cache', $options)) {
+			$this->setCache($options['cache']);
+		} else {
+			$this->setCache(new Concentrate_CacheArray());
+		}
+
 		if (array_key_exists('dataProvider', $options)) {
 			$this->setDataProvider($options['dataProvider']);
 		} elseif (array_key_exists('data_provider', $options)) {
@@ -45,7 +44,15 @@ class Concentrate_Concentrator
 	public function setDataProvider(Concentrate_DataProvider $dataProvider)
 	{
 		$this->dataProvider = $dataProvider;
-		$this->clearCachedValues();
+		return $this;
+	}
+
+	// }}}
+	// {{{ setCache()
+
+	public function setCache(Concentrate_CacheInterface $cache)
+	{
+		$this->cache = $cache;
 		return $this;
 	}
 
@@ -54,8 +61,7 @@ class Concentrate_Concentrator
 
 	public function loadDataFile($filename)
 	{
-		$this->dataProvider->loadDataFile($filename);
-		$this->clearCachedValues();
+		$this->dataProvider->loadFile($filename);
 		return $this;
 	}
 
@@ -67,16 +73,6 @@ class Concentrate_Concentrator
 		foreach ($filenames as $filename) {
 			$this->loadDataFile($filename);
 		}
-		return $this;
-	}
-
-	// }}}
-	// {{{ loadDataArray()
-
-	public function loadDataArray(array $data)
-	{
-		$this->dataProvider->loadDataArray($data);
-		$this->clearCachedValues();
 		return $this;
 	}
 
@@ -202,7 +198,8 @@ class Concentrate_Concentrator
 
 	public function getFileSortOrder()
 	{
-		if ($this->fileSortOrder === null) {
+		$fileSortOrder = $this->getCachedValue('fileSortOrder');
+		if ($fileSortOrder === false) {
 
 			$data = $this->dataProvider->getData();
 
@@ -281,10 +278,10 @@ class Concentrate_Concentrator
 				$fileSortOrder = array_flip($fileSortOrder);
 			}
 
-			$this->fileSortOrder = $fileSortOrder;
+			$this->cache->set('fileSortOrder', $fileSortOrder);
 		}
 
-		return $this->fileSortOrder;
+		return $fileSortOrder;
 	}
 
 	// }}}
@@ -292,23 +289,26 @@ class Concentrate_Concentrator
 
 	public function getFileInfo()
 	{
-		if ($this->fileInfo === null) {
+		$fileInfo = $this->getCachedValue('fileInfo');
+		if ($fileInfo === false) {
 
 			$data = $this->dataProvider->getData();
 
-			$this->fileInfo = array();
+			$fileInfo = array();
 
 			foreach ($data as $packageId => $info) {
 				if (isset($info['Provides']) && is_array($info['Provides'])) {
-					foreach ($info['Provides'] as $file => $fileInfo) {
-						$fileInfo['Package'] = $packageId;
-						$this->fileInfo[$file] = $fileInfo;
+					foreach ($info['Provides'] as $file => $providesInfo) {
+						$providesInfo['Package'] = $packageId;
+						$fileInfo[$file] = $providesInfo;
 					}
 				}
 			}
+
+			$this->cache->set('fileInfo', $fileInfo);
 		}
 
-		return $this->fileInfo;
+		return $fileInfo;
 	}
 
 	// }}}
@@ -316,11 +316,12 @@ class Concentrate_Concentrator
 
 	public function getCombinesInfo()
 	{
-		if ($this->combinesInfo === null) {
+		$combinesInfo = $this->getCachedValue('combinesInfo');
+		if ($combinesInfo === false) {
 
 			$data = $this->dataProvider->getData();
 
-			$this->combinesInfo = array();
+			$combinesInfo = array();
 
 			foreach ($data as $packageId => $info) {
 				if (isset($info['Combines']) && is_array($info['Combines'])) {
@@ -329,10 +330,10 @@ class Concentrate_Concentrator
 						foreach ($files as $file) {
 							// create entry for the combine set if it does not
 							// exist
-							if (!isset($this->combinesInfo[$combine])) {
-								$this->combinesInfo[$combine] = array();
+							if (!isset($combinesInfo[$combine])) {
+								$combinesInfo[$combine] = array();
 							}
-							$this->combinesInfo[$combine][$file] = array(
+							$combinesInfo[$combine][$file] = array(
 								'explicit' => true,
 							);
 						}
@@ -344,18 +345,20 @@ class Concentrate_Concentrator
 			// a missing dependency also has a dependency on an file in the
 			// set, add it to the set.
 			$dependsInfo = $this->getDependsInfo();
-			foreach ($this->combinesInfo as $combine => $files) {
-				$this->combinesInfo[$combine] = $this->getImplicitCombinedFiles(
+			foreach ($combinesInfo as $combine => $files) {
+				$combinesInfo[$combine] = $this->getImplicitCombinedFiles(
 					$files,
 					$files
 				);
 			}
 
 			// sort largest sets first
-			uasort($this->combinesInfo, array($this, 'compareCombines'));
+			uasort($combinesInfo, array($this, 'compareCombines'));
+
+			$this->cache->set('combinesInfo', $combinesInfo);
 		}
 
-		return $this->combinesInfo;
+		return $combinesInfo;
 	}
 
 	// }}}
@@ -368,11 +371,12 @@ class Concentrate_Concentrator
 	 */
 	public function getDependsInfo()
 	{
-		if ($this->dependsInfo === null) {
+		$dependsInfo = $this->getCachedValue('dependsInfo');
+		if ($dependsInfo === false) {
 
 			$data = $this->dataProvider->getData();
 
-			$this->dependsInfo = array();
+			$dependsInfo = array();
 
 			foreach ($this->getPackageSortOrder() as $packageId => $order) {
 
@@ -384,29 +388,31 @@ class Concentrate_Concentrator
 
 				if (isset($info['Provides']) && is_array($info['Provides'])) {
 					foreach ($info['Provides'] as $file => $fileInfo) {
-						if (!isset($this->dependsInfo[$file])) {
-							$this->dependsInfo[$file] = array();
+						if (!isset($dependsInfo[$file])) {
+							$dependsInfo[$file] = array();
 						}
 						if (isset($fileInfo['Depends'])) {
-							$this->dependsInfo[$file] = array_merge(
-								$this->dependsInfo[$file],
+							$dependsInfo[$file] = array_merge(
+								$dependsInfo[$file],
 								$fileInfo['Depends']
 							);
 						}
 						// TODO: some day we could treat optional-depends
 						// differently
 						if (isset($fileInfo['OptionalDepends'])) {
-							$this->dependsInfo[$file] = array_merge(
-								$this->dependsInfo[$file],
+							$dependsInfo[$file] = array_merge(
+								$dependsInfo[$file],
 								$fileInfo['OptionalDepends']
 							);
 						}
 					}
 				}
 			}
+
+			$this->cache->set('dependsInfo', $dependsInfo);
 		}
 
-		return $this->dependsInfo;
+		return $dependsInfo;
 	}
 
 	// }}}
@@ -464,7 +470,8 @@ class Concentrate_Concentrator
 
 	protected function getPackageSortOrder()
 	{
-		if ($this->packageSortOrder === null) {
+		$packageSortOrder = $this->getCachedValue('packageSortOrder');
+		if ($packageSortOrder === false) {
 
 			$data = $this->dataProvider->getData();
 
@@ -504,11 +511,12 @@ class Concentrate_Concentrator
 
 			// return indexed by package id, with values being the relative
 			// sort order
-			$this->packageSortOrder = array_flip($order);
+			$packageSortOrder = array_flip($order);
 
+			$this->cache->set('packageSortOrder', $packageSortOrder);
 		}
 
-		return $this->packageSortOrder;
+		return $packageSortOrder;
 	}
 
 	// }}}
@@ -528,15 +536,12 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ clearCachedValues()
+	// {{{ getCachedValue()
 
-	protected function clearCachedValues()
+	protected function getCachedValue($key)
 	{
-		$this->packageSortOrder = null;
-		$this->fileSortOrder    = null;
-		$this->fileInfo         = null;
-		$this->combinesInfo     = null;
-		$this->dependsInfo      = null;
+		$this->cache->setPrefix($this->dataProvider->getCachePrefix());
+		return $this->cache->get($key);
 	}
 
 	// }}}

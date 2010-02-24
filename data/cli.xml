@@ -26,7 +26,7 @@
 	<option name="minify">
 		<short_name>-m</short_name>
 		<long_name>--minify</long_name>
-		<description>Minify files.</description>
+		<description>Write minified files.</description>
 		<action>StoreTrue</action>
 	</option>
 	<option name="verbose">

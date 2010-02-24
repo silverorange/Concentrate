@@ -509,6 +509,11 @@ class Concentrate_Concentrator
 			$this->filterTree($tree, $order);
 			$order = array_keys($order);
 
+			// special package __site__ is always counted last by default
+			if (!in_array('__site__', $order)) {
+				$order[] = '__site__';
+			}
+
 			// return indexed by package id, with values being the relative
 			// sort order
 			$packageSortOrder = array_flip($order);

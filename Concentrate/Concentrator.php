@@ -2,6 +2,9 @@
 
 require_once 'Concentrate/CacheArray.php';
 require_once 'Concentrate/DataProvider.php';
+require_once 'Concentrate/Graph.php';
+require_once 'Concentrate/Graph/Node.php';
+require_once 'Concentrate/Graph/TopologicalSorter.php';
 
 /**
  * @category  Tools
@@ -489,30 +492,61 @@ class Concentrate_Concentrator
 				}
 			}
 
-			// build into a tree (tree will contain redundant info)
-			$tree = array();
+			// build into a graph
+			$graph = new Concentrate_Graph();
+			$nodes = array();
 			foreach ($packageDependencies as $packageId => $dependencies) {
-				if (!isset($tree[$packageId])) {
-					$tree[$packageId] = array();
+				if ($packageId === '__site__') {
+					// special package '__site__' is not sorted with other
+					// packages. It gets put at the end.
+					continue;
+				}
+				if (!isset($nodes[$packageId])) {
+					$nodes[$packageId] = new Concentrate_Graph_Node(
+						$graph,
+						$packageId
+					);
 				}
 				foreach ($dependencies as $dependentPackageId) {
-					if (!isset($tree[$dependentPackageId])) {
-						$tree[$dependentPackageId] = array();
+					if ($dependentPackageId === '__site__') {
+						// special package '__site__' is not sorted with other
+						// packages. It gets put at the end.
+						continue;
 					}
-					$tree[$packageId][$dependentPackageId] =&
-						$tree[$dependentPackageId];
+					if (!isset($nodes[$dependentPackageId])) {
+						$nodes[$dependentPackageId] =
+							new Concentrate_Graph_Node(
+								$graph,
+								$dependentPackageId
+							);
+					}
+				}
+			}
+			foreach ($packageDependencies as $packageId => $dependencies) {
+				foreach ($dependencies as $dependentPackageId) {
+					$nodes[$packageId]->connectTo($nodes[$dependentPackageId]);
 				}
 			}
 
-			// traverse tree to filter out redundant info and get final order
+			$sorter = new Concentrate_Graph_TopologicalSorter();
+			try {
+				$sortedNodes = $sorter->sort($graph);
+			} catch (Concentrate_CyclicDependencyException $e) {
+				throw new Concentrate_CyclicDependencyException(
+					'Package dependency order can not be determined because '
+					. 'package dependencies contain one more more cycles. '
+					. 'There is likely a typo in the package dependency '
+					. 'section of one or more YAML files.'
+				);
+			}
+
 			$order = array();
-			$this->filterTree($tree, $order);
-			$order = array_keys($order);
+			foreach ($sortedNodes as $node) {
+				$order[] = $node->getData();
+			}
 
 			// special package __site__ is always counted last by default
-			if (!in_array('__site__', $order)) {
-				$order[] = '__site__';
-			}
+			$order[] = '__site__';
 
 			// return indexed by package id, with values being the relative
 			// sort order

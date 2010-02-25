@@ -211,37 +211,42 @@ class Concentrate_Concentrator
 			// get flat list of file dependencies for each file
 			$dependsInfo = $this->getDependsInfo();
 
-			// build into a tree (tree will contain redundant info)
-			$tree = array();
+			// build into graph
+			$graph = new Concentrate_Graph();
+			$nodes = array();
 			foreach ($dependsInfo as $file => $dependencies) {
-				if (!isset($tree[$file])) {
-					$tree[$file] = array();
+				if (!isset($nodes[$file])) {
+					$nodes[$file] = new Concentrate_Graph_Node(
+						$graph,
+						$file
+					);
 				}
 				foreach ($dependencies as $dependentFile) {
-					if (!isset($tree[$dependentFile])) {
-						$tree[$dependentFile] = array();
+					if (!isset($nodes[$dependentFile])) {
+						$nodes[$dependentFile] = new Concentrate_Graph_Node(
+							$graph,
+							$dependentFile
+						);
 					}
-					$tree[$file][$dependentFile] =& $tree[$dependentFile];
+				}
+			}
+			foreach ($dependsInfo as $file => $dependencies) {
+				foreach ($dependencies as $dependentFile) {
+					$nodes[$file]->connectTo($nodes[$dependentFile]);
 				}
 			}
 
-			// traverse tree to filter out redundant info and get order
-			$order = array();
-			$this->filterTree($tree, $order);
-			$order = array_keys($order);
-
-			$fileSortOrder = array_merge(
-				$fileSortOrder,
-				$order
-			);
-
-			// index by file, with values being the relative sort order
-			$fileSortOrder = array_flip($fileSortOrder);
-
-			// add combines as dependencies of all contained files
+			// add combines to graph
 			$combinesInfo = $this->getCombinesInfo();
 			if (count($combinesInfo) > 0) {
 				foreach ($combinesInfo as $combine => $files) {
+
+					if (!isset($nodes[$combine])) {
+						$nodes[$combine] = new Concentrate_Graph_Node(
+							$graph,
+							$combine
+						);
+					}
 
 					// get combine dependencies as difference of union of
 					// dependencies of contained files and combined set
@@ -255,31 +260,42 @@ class Concentrate_Concentrator
 						}
 					}
 					$depends = array_diff($depends, array_keys($files));
-					$fileSortOrder[$combine] = array();
 					foreach ($depends as $depend) {
-						$fileSortOrder[$combine][$depend] = array();
+						$nodes[$combine]->connectTo($nodes[$depend]);
 					}
 
 					// add combine as dependency of all contained files
 					foreach ($files as $file => $info) {
-						if (   !isset($fileSortOrder[$file])
-							|| !is_array($fileSortOrder[$file])
-						) {
-							$fileSortOrder[$file] = array();
+						if (!isset($nodes[$file])) {
+							$nodes[$file] = new Concentrate_Graph_Node(
+								$graph,
+								$file
+							);
 						}
-						$fileSortOrder[$file][$combine] =&
-							$fileSortOrder[$combine];
+						$nodes[$file]->connectTo($nodes[$combine]);
 					}
 				}
-
-				// re-traverse to get dependency order of combines
-				$temp = array();
-				$this->filterTree($fileSortOrder, $temp);
-				$fileSortOrder = array_keys($temp);
-
-				// index by file, with values being the relative sort order
-				$fileSortOrder = array_flip($fileSortOrder);
 			}
+
+			$sorter = new Concentrate_Graph_TopologicalSorter();
+			try {
+				$sortedNodes = $sorter->sort($graph);
+			} catch (Concentrate_CyclicDependencyException $e) {
+				throw new Concentrate_CyclicDependencyException(
+					'File dependency order can not be determined because '
+					. 'file dependencies contain one more more cycles. '
+					. 'There is likely a typo in the provides section of one '
+					. 'or more YAML files.'
+				);
+			}
+
+			$fileSortOrder = array();
+			foreach ($sortedNodes as $node) {
+				$fileSortOrder[] = $node->getData();
+			}
+
+			// index by file, with values being the relative sort order
+			$fileSortOrder = array_flip($fileSortOrder);
 
 			$this->cache->set('fileSortOrder', $fileSortOrder);
 		}

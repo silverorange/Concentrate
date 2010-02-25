@@ -600,30 +600,6 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ filterTree()
-
-	/**
-	 * Performs a depth-first traversal of the given tree and collects an
-	 * array of unique values in the traversal order
-	 *
-	 * @param array $nodes
-	 * @param array &$visited
-	 *
-	 * @return void
-	 */
-	protected function filterTree(array $nodes, array &$visited)
-	{
-		foreach ($nodes as $node => $childNodes) {
-			if (is_array($childNodes)) {
-				$this->filterTree($childNodes, $visited);
-			}
-			if (!isset($visited[$node])) {
-				$visited[$node] = $node;
-			}
-		}
-	}
-
-	// }}}
 }
 
 ?>

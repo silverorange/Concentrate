@@ -44,7 +44,7 @@ class Concentrate_Graph_TopologicalSorter
 
 		$nodes = $this->getZeroInDegreeNodes($graph);
 		while (count($nodes) > 0) {
-			$node = array_shift($nodes);
+			$node = array_pop($nodes);
 			array_unshift($sorted, $node);
 			foreach ($node->getNeighbors() as $neighborNode) {
 				$node->disconnectFrom($neighborNode);

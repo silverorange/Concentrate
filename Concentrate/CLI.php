@@ -83,6 +83,9 @@ class Concentrate_CLI
 
 		} catch (Console_CommandLine_Exception $e) {
 			$this->displayError($e->getMessage() . PHP_EOL);
+		} catch (Exception $e) {
+			$this->displayError($e->getMessage() . PHP_EOL, false);
+			$this->displayError($e->getTraceAsString() . PHP_EOL);
 		}
 	}
 
@@ -298,7 +301,7 @@ class Concentrate_CLI
 		$this->parser->outputter->stdout($string);
 	}
 
-	protected function displayError($string, $code = 1, $exit = true)
+	protected function displayError($string, $exit = true, $code = 1)
 	{
 		$this->parser->outputter->stderr($string);
 		if ($exit) {

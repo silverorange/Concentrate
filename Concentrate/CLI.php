@@ -20,6 +20,9 @@ class Concentrate_CLI
 	const VERBOSITY_MESSAGES = 1;
 	const VERBOSITY_DETAILS  = 2;
 
+	const FILENAME_FLAG_COMBINED = '.concentrate-combined';
+	const FILENAME_FLAG_MINIFIED = '.concentrate-minified';
+
 	/**
 	 * @var Console_CommandLine
 	 */
@@ -75,10 +78,12 @@ class Concentrate_CLI
 
 			if ($this->combine) {
 				$this->writeCombinedFiles();
+				$this->writeCombinedFlagFile();
 			}
 
 			if ($this->minify) {
 				$this->writeMinifiedFiles();
+				$this->writeMinifiedFlagFile();
 			}
 
 		} catch (Console_CommandLine_Exception $e) {
@@ -280,6 +285,41 @@ class Concentrate_CLI
 
 				$minifier->minifyFile($fromFilename, $toFilename, 'js');
 			}
+		}
+	}
+
+	protected function writeCombinedFlagFile()
+	{
+		$this->writeFlagFile(self::FILENAME_FLAG_COMBINED);
+	}
+
+	protected function writeMinifiedFlagFile()
+	{
+		$this->writeFlagFile(self::FILENAME_FLAG_MINIFIED);
+	}
+
+	protected function writeFlagFile($filename)
+	{
+		$filename = $this->webroot
+			. DIRECTORY_SEPARATOR . $filename;
+
+		if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
+			$this->display(PHP_EOL . "Writing flag file '{$filename}':"
+				. PHP_EOL);
+		}
+
+		if (   (!file_exists($filename) && !is_writable($this->webroot))
+			|| (file_exists($filename) && !is_writable($filename))
+		) {
+			throw new Concentrate_FileException(
+				"The flag file '{$filename}' could not be written."
+			);
+		}
+
+		file_put_contents(time(), $filename);
+
+		if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
+			$this->display('=> written' . PHP_EOL);
 		}
 	}
 

@@ -316,7 +316,7 @@ class Concentrate_CLI
 			);
 		}
 
-		file_put_contents(time(), $filename);
+		file_put_contents($filename, time());
 
 		if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
 			$this->display('=> written' . PHP_EOL);

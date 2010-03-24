@@ -23,6 +23,15 @@ abstract class Concentrate_MinifierAbstract
 			);
 		}
 
+		$this->writeDirectory($toFilename);
+
+		$content = file_get_contents($fromFilename);
+		$content = $this->minify($content, $type);
+		file_put_contents($toFilename, $content);
+	}
+
+	protected function writeDirectory($toFilename)
+	{
 		$toDirectory = dirname($toFilename);
 		if (!file_exists($toDirectory)) {
 			mkdir($toDirectory, 0770, true);
@@ -35,10 +44,6 @@ abstract class Concentrate_MinifierAbstract
 				$toDirectory
 			);
 		}
-
-		$content = file_get_contents($fromFilename);
-		$content = $this->minify($content, $type);
-		file_put_contents($toFilename, $content);
 	}
 }
 

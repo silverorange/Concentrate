@@ -51,6 +51,7 @@ class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
 
 	public function minifyFile($fromFilename, $toFilename, $type)
 	{
+		$this->writeDirectory($toFilename);
 		return $this->minifyInternal($fromFilename, true, $toFilename, $type);
 	}
 

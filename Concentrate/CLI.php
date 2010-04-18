@@ -257,7 +257,12 @@ class Concentrate_CLI
 				$this->display(' * ' . $file . PHP_EOL);
 			}
 
-			$minifier->minifyFile($fromFilename, $toFilename, 'js');
+			$this->writeMinifiedFile(
+				$minifier,
+				$fromFilename,
+				$toFilename,
+				'js'
+			);
 		}
 
 		if ($this->combine) {
@@ -283,7 +288,53 @@ class Concentrate_CLI
 					$this->display(' * ' . $combine . PHP_EOL);
 				}
 
-				$minifier->minifyFile($fromFilename, $toFilename, 'js');
+				$this->writeMinifiedFile(
+					$minifier,
+					$fromFilename,
+					$toFilename,
+					'js'
+				);
+			}
+		}
+	}
+
+	protected function writeMinifiedFile(
+		Concentrate_MinifierAbstract $minifier,
+		$fromFilename,
+		$toFilename,
+		$type
+	) {
+		$md5 = md5_file($fromFilename);
+		$dir = $this->getMinifiedCacheDir();
+
+		$cacheFilename = $dir . DIRECTORY_SEPARATOR . $md5;
+
+		if (file_exists($cacheFilename) && is_readable($cacheFilename)) {
+			// use cache file
+			copy($cacheFilename, $toFilename);
+			if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+				$this->display(' * used cached version' . PHP_EOL);
+			}
+		} else {
+			// minify
+			$minifier->minifyFile($fromFilename, $toFilename, $type);
+
+			// write cache file
+			if (!is_dir($dir) && is_writable(dirname($dir))) {
+				mkdir($dir, 0770, true);
+			}
+
+			if (is_dir($dir) && is_writable($dir)) {
+				copy($toFilename, $cacheFilename);
+				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+					$this->display(' * wrote cached version' . PHP_EOL);
+				}
+			} else {
+				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+					$this->display(
+						' * count not write cached version' . PHP_EOL
+					);
+				}
 			}
 		}
 	}
@@ -321,6 +372,19 @@ class Concentrate_CLI
 		if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
 			$this->display('=> written' . PHP_EOL);
 		}
+	}
+
+	protected function getMinifiedCacheDir()
+	{
+		$dir = '@data-dir@' . DIRECTORY_SEPARATOR
+			. '@package-name@' . DIRECTORY_SEPARATOR . 'data';
+
+		if ($dir[0] == '@') {
+			$dir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..'
+				. DIRECTORY_SEPARATOR . 'data';
+		}
+
+		return $dir . DIRECTORY_SEPARATOR . 'minified-cache';
 	}
 
 	protected function getUiXml()

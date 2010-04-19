@@ -33,10 +33,10 @@
 require_once 'PEAR/PackageFileManager2.php';
 PEAR::setErrorHandling(PEAR_ERROR_DIE);
 
-$api_version     = '0.0.5';
+$api_version     = '0.0.6';
 $api_state       = 'alpha';
 
-$release_version = '0.0.5';
+$release_version = '0.0.6';
 $release_state   = 'alpha';
 $release_notes   =
 	" * Improved speed of repeated minifications of the \n" .

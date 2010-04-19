@@ -376,12 +376,10 @@ class Concentrate_CLI
 
 	protected function getMinifiedCacheDir()
 	{
-		$dir = '@data-dir@' . DIRECTORY_SEPARATOR
-			. '@package-name@' . DIRECTORY_SEPARATOR . 'data';
+		$dir = '@data-dir@' . DIRECTORY_SEPARATOR . '@package-name@';
 
 		if ($dir[0] == '@') {
-			$dir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..'
-				. DIRECTORY_SEPARATOR . 'data';
+			$dir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..';
 		}
 
 		return $dir . DIRECTORY_SEPARATOR . 'minified-cache';

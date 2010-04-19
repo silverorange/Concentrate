@@ -34,8 +34,12 @@ $pinhole->connectTo($blorg);
 
 $sorter = new Concentrate_Graph_TopologicalSorter();
 $sorted = $sorter->sort($graph);
+
+echo PHP_EOL;
+echo $graph;
+echo PHP_EOL;
 echo 'Sorted: ', PHP_EOL;
-foreach ($sorted as $node) {
-	echo ' - ', $node, PHP_EOL;
+foreach ($sorted as $k => $nodes) {
+	echo ' - ', $k , ' => ', implode(', ', $nodes), PHP_EOL;
 }
 echo PHP_EOL;

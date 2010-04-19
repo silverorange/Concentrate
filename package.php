@@ -38,7 +38,9 @@ $api_state       = 'alpha';
 
 $release_version = '0.0.5';
 $release_state   = 'alpha';
-$release_notes   = 'No release notes for you!';
+$release_notes   =
+	" * Improved speed of repeated minifications of the \n" .
+	"   same file.\n";
 
 $description =
 	"This package provides a command-line tool to glob and minify static ".

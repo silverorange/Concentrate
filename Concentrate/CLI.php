@@ -311,6 +311,9 @@ class Concentrate_CLI
 
 		if (file_exists($cacheFilename) && is_readable($cacheFilename)) {
 			// use cache file
+			if (!file_exists(dirname($toFilename))) {
+				mkdir(dirname($toFilename), 0770, true);
+			}
 			copy($cacheFilename, $toFilename);
 			if ($this->verbosity >= self::VERBOSITY_DETAILS) {
 				$this->display(' * used cached version' . PHP_EOL);

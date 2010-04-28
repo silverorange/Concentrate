@@ -240,7 +240,13 @@ class Concentrate_CLI
 			$fromFilename = $this->webroot
 				. DIRECTORY_SEPARATOR . $file;
 
+			// if source file doesn not exist, skip it
 			if (!file_exists($fromFilename)) {
+				continue;
+			}
+
+			// if file specifices that is should not be minified, skip it
+			if (!$info['Minify']) {
 				continue;
 			}
 
@@ -271,7 +277,13 @@ class Concentrate_CLI
 				$fromFilename = $this->webroot
 					. DIRECTORY_SEPARATOR . $combine;
 
+				// if source file doesn not exist, skip it
 				if (!file_exists($fromFilename)) {
+					continue;
+				}
+
+				// if file specifices that is should not be minified, skip it
+				if (!$info['Minify']) {
 					continue;
 				}
 

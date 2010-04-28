@@ -318,6 +318,9 @@ class Concentrate_Concentrator
 			foreach ($data as $packageId => $info) {
 				if (isset($info['Provides']) && is_array($info['Provides'])) {
 					foreach ($info['Provides'] as $file => $providesInfo) {
+						if (!isset($providesInfo['Minify'])) {
+							$providesInfo['Minify'] = true;
+						}
 						$providesInfo['Package'] = $packageId;
 						$fileInfo[$file] = $providesInfo;
 					}

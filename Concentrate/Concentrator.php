@@ -155,9 +155,9 @@ class Concentrate_Concentrator
 		$combines = array();
 
 		$combinesInfo = $this->getCombinesInfo();
-		foreach ($combinesInfo as $combine => $combinedFiles) {
+		foreach ($combinesInfo as $combine => $combineInfo) {
 
-			$combinedFiles = array_keys($combinedFiles);
+			$combinedFiles = array_keys($combineInfo['Includes']);
 
 			// check if combine does not conflict with existing set and if
 			// combine contains one or more files in the required file list
@@ -175,7 +175,11 @@ class Concentrate_Concentrator
 
 		// exclude contents of combined sets from file list
 		foreach ($combines as $combine) {
-			$files = array_diff($files, array_keys($combinesInfo[$combine]));
+			$files = array_diff(
+				$files,
+				array_keys($combinesInfo[$combine]['Includes'])
+			);
+
 			$files[] = $combine;
 		}
 
@@ -238,42 +242,42 @@ class Concentrate_Concentrator
 
 			// add combines to graph
 			$combinesInfo = $this->getCombinesInfo();
-			if (count($combinesInfo) > 0) {
-				foreach ($combinesInfo as $combine => $files) {
+			foreach ($combinesInfo as $combine => $combineInfo) {
 
-					if (!isset($nodes[$combine])) {
-						$nodes[$combine] = new Concentrate_Graph_Node(
-							$graph,
-							$combine
+				$files = $combineInfo['Includes'];
+
+				if (!isset($nodes[$combine])) {
+					$nodes[$combine] = new Concentrate_Graph_Node(
+						$graph,
+						$combine
+					);
+				}
+
+				// get combine dependencies as difference of union of
+				// dependencies of contained files and combined set
+				$depends = array();
+				foreach ($files as $file => $info) {
+					if (isset($dependsInfo[$file])) {
+						$depends = array_merge(
+							$dependsInfo[$file],
+							$depends
 						);
 					}
+				}
+				$depends = array_diff($depends, array_keys($files));
+				foreach ($depends as $depend) {
+					$nodes[$combine]->connectTo($nodes[$depend]);
+				}
 
-					// get combine dependencies as difference of union of
-					// dependencies of contained files and combined set
-					$depends = array();
-					foreach ($files as $file => $info) {
-						if (isset($dependsInfo[$file])) {
-							$depends = array_merge(
-								$dependsInfo[$file],
-								$depends
-							);
-						}
+				// add combine as dependency of all contained files
+				foreach ($files as $file => $info) {
+					if (!isset($nodes[$file])) {
+						$nodes[$file] = new Concentrate_Graph_Node(
+							$graph,
+							$file
+						);
 					}
-					$depends = array_diff($depends, array_keys($files));
-					foreach ($depends as $depend) {
-						$nodes[$combine]->connectTo($nodes[$depend]);
-					}
-
-					// add combine as dependency of all contained files
-					foreach ($files as $file => $info) {
-						if (!isset($nodes[$file])) {
-							$nodes[$file] = new Concentrate_Graph_Node(
-								$graph,
-								$file
-							);
-						}
-						$nodes[$file]->connectTo($nodes[$combine]);
-					}
+					$nodes[$file]->connectTo($nodes[$combine]);
 				}
 			}
 
@@ -342,36 +346,63 @@ class Concentrate_Concentrator
 		if ($combinesInfo === false) {
 
 			$data = $this->dataProvider->getData();
+			$fileInfo = $this->getFileInfo();
 
 			$combinesInfo = array();
 
 			foreach ($data as $packageId => $info) {
 				if (isset($info['Combines']) && is_array($info['Combines'])) {
-					foreach ($info['Combines'] as $combine => $files) {
-						// add entries to the set
-						foreach ($files as $file) {
-							// create entry for the combine set if it does not
-							// exist
-							if (!isset($combinesInfo[$combine])) {
-								$combinesInfo[$combine] = array();
-							}
-							$combinesInfo[$combine][$file] = array(
-								'explicit' => true,
+					foreach ($info['Combines'] as $combine => $combineInfo) {
+
+						// create entry for the combine set if it does
+						// not exist
+						if (!isset($combinesInfo[$combine])) {
+							$combinesInfo[$combine] = array(
+								'Includes' => array(),
+								'Minify'   => true,
 							);
+						}
+
+						// set additional attributes
+						if (   isset($combineInfo['Minify'])
+							&& !$combineInfo['Minify']
+						) {
+							$combinesInfo[$combine]['Minify'] = false;
+						}
+
+						// add entries to the set
+						if (   isset($combineInfo['Includes'])
+							&& is_array($combineInfo['Includes'])
+						) {
+							foreach ($combineInfo['Includes'] as $file) {
+								$combinesInfo[$combine]['Includes'][$file] =
+									array('explicit' => true);
+							}
 						}
 					}
 				}
 			}
 
-			// Check for dependencies of each set that are not in the set. If
-			// a missing dependency also has a dependency on an file in the
-			// set, add it to the set.
-			$dependsInfo = $this->getDependsInfo();
-			foreach ($combinesInfo as $combine => $files) {
-				$combinesInfo[$combine] = $this->getImplicitCombinedFiles(
-					$files,
-					$files
-				);
+			foreach ($combinesInfo as $combine => $info) {
+				// Check for dependencies of each set that are not in the set.
+				// If a missing dependency also has a dependency on an file in
+				// the set, add it to the set.
+				$combinesInfo[$combine]['Includes'] =
+					$this->getImplicitCombinedFiles(
+						$info['Includes'],
+						$info['Includes']
+					);
+
+				// minification of combine depends on minification of included
+				// files
+				foreach ($combinesInfo[$combine]['Includes'] as $file) {
+					if (   isset($fileInfo[$file])
+						&& !$fileInfo[$file]['Minify']
+					) {
+						$combinesInfo[$combine]['Minify'] = false;
+						break;
+					}
+				}
 			}
 
 			// sort largest sets first
@@ -578,15 +609,15 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
-	// {{{ compareCombine()
+	// {{{ compareCombines()
 
 	protected function compareCombines(array $combine1, array $combine2)
 	{
-		if (count($combine1) < count($combine2)) {
+		if (count($combine1['Includes']) < count($combine2['Includes'])) {
 			return 1;
 		}
 
-		if (count($combine1) > count($combine2)) {
+		if (count($combine1['Includes']) > count($combine2['Includes'])) {
 			return -1;
 		}
 

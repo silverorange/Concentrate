@@ -202,11 +202,13 @@ class Concentrate_CLI
 			$this->display('=> no combined files to write.' . PHP_EOL);
 		}
 
-		foreach ($combinesInfo as $combine => $files) {
+		foreach ($combinesInfo as $combine => $info) {
 			if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
 				$filename = $this->webroot . DIRECTORY_SEPARATOR . $combine;
 				$this->display('=> writing "' . $filename . '"' . PHP_EOL);
 			}
+
+			$files = $info['Includes'];
 
 			$this->checkForConflicts(array_keys($files));
 			uksort($files, array($this->concentrator, 'compareFiles'));
@@ -240,12 +242,12 @@ class Concentrate_CLI
 			$fromFilename = $this->webroot
 				. DIRECTORY_SEPARATOR . $file;
 
-			// if source file doesn not exist, skip it
+			// if source file does not exist, skip it
 			if (!file_exists($fromFilename)) {
 				continue;
 			}
 
-			// if file specifices that is should not be minified, skip it
+			// if file specifies that is should not be minified, skip it
 			if (!$info['Minify']) {
 				continue;
 			}
@@ -273,16 +275,16 @@ class Concentrate_CLI
 
 		if ($this->combine) {
 			$combinesInfo = $this->concentrator->getCombinesInfo();
-			foreach ($combinesInfo as $combine => $files) {
+			foreach ($combinesInfo as $combine => $info) {
 				$fromFilename = $this->webroot
 					. DIRECTORY_SEPARATOR . $combine;
 
-				// if source file doesn not exist, skip it
+				// if source file does not exist, skip it
 				if (!file_exists($fromFilename)) {
 					continue;
 				}
 
-				// if file specifices that is should not be minified, skip it
+				// if file specifies that is should not be minified, skip it
 				if (!$info['Minify']) {
 					continue;
 				}

@@ -322,7 +322,11 @@ class Concentrate_Concentrator
 			foreach ($data as $packageId => $info) {
 				if (isset($info['Provides']) && is_array($info['Provides'])) {
 					foreach ($info['Provides'] as $file => $providesInfo) {
-						if (!isset($providesInfo['Minify'])) {
+						if (isset($providesInfo['Minify'])) {
+							$providesInfo['Minify'] = $this->parseBoolean(
+								$providesInfo['Minify']
+							);
+						} else {
 							$providesInfo['Minify'] = true;
 						}
 						$providesInfo['Package'] = $packageId;
@@ -364,10 +368,11 @@ class Concentrate_Concentrator
 						}
 
 						// set additional attributes
-						if (   isset($combineInfo['Minify'])
-							&& !$combineInfo['Minify']
-						) {
-							$combinesInfo[$combine]['Minify'] = false;
+						if (isset($combineInfo['Minify'])) {
+							$combinesInfo[$combine]['Minify'] =
+								$this->parseBoolean(
+									$combinesInfo['Minify']
+								);
 						}
 
 						// add entries to the set
@@ -395,7 +400,7 @@ class Concentrate_Concentrator
 
 				// minification of combine depends on minification of included
 				// files
-				foreach ($combinesInfo[$combine]['Includes'] as $file) {
+				foreach (array_keys($info['Includes']) as $file) {
 					if (   isset($fileInfo[$file])
 						&& !$fileInfo[$file]['Minify']
 					) {
@@ -631,6 +636,25 @@ class Concentrate_Concentrator
 	{
 		$this->cache->setPrefix($this->dataProvider->getCachePrefix());
 		return $this->cache->get($key);
+	}
+
+	// }}}
+	// {{{ parseBoolean()
+
+	protected function parseBoolean($string)
+	{
+		switch (strtolower($string)) {
+		case 'no':
+		case 'false':
+		case 'off':
+		case '0':
+			$value = false;
+			break;
+		default:
+			$value = true;
+		}
+
+		return $value;
 	}
 
 	// }}}

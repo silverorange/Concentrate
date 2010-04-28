@@ -114,6 +114,30 @@ class Concentrate_Concentrator
 	}
 
 	// }}}
+	// {{{ isMinified()
+
+	public function isMinified($file)
+	{
+		$minified = false;
+
+		if (!$minified) {
+			$fileInfo = $this->getFileInfo();
+			if (isset($fileInfo[$file])) {
+				$minified = $fileInfo[$file]['Minify'];
+			}
+		}
+
+		if (!$minified) {
+			$combinesInfo = $this->getCombinesInfo();
+			if (isset($combinesInfo[$file])) {
+				$minified = $combinesInfo[$file]['Minify'];
+			}
+		}
+
+		return $minified;
+	}
+
+	// }}}
 	// {{{ getConflicts()
 
 	public function getConflicts(array $files)

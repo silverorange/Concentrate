@@ -52,7 +52,7 @@ class Concentrate_CacheMemcache implements Concentrate_CacheInterface
 		return $this->memcache->delete($this->getMemcacheKey(key));
 	}
 
-	protected function getMemCacheKey($key)
+	protected function getMemcacheKey($key)
 	{
 		if ($this->prefix != '') {
 			$key = $this->prefix . ':' . $key;

@@ -175,27 +175,35 @@ class Concentrate_Concentrator
 
 	public function getCombines(array $files)
 	{
-		$superset = array();
-		$combines = array();
+		$superset    = $files;
+		$combinedSet = array();
+		$combines    = array();
 
 		$combinesInfo = $this->getCombinesInfo();
 		foreach ($combinesInfo as $combine => $combineInfo) {
 
 			$combinedFiles = array_keys($combineInfo['Includes']);
 
-			// check if combine does not conflict with existing set and if
-			// combine contains one or more files in the required file list
-			if (   count(array_intersect($combinedFiles, $superset)) === 0
+			// check if combine does not conflict with already added combines
+			// and if combine contains one or more files in the required file
+			// list
+			if (   count(array_intersect($combinedFiles, $combinedSet)) === 0
 				&& count(array_intersect($combinedFiles, $files)) > 0
 			) {
-				$superset   = array_merge($superset, $combinedFiles);
-				$combines[] = $combine;
+				$potentialSuperset = array_merge($superset, $combinedFiles);
+
+				// make sure combining will not introduce conflicts
+				if (count($this->getConflicts($potentialSuperset)) === 0) {
+					$combinedSet = array_merge($combinedSet, $combinedFiles);
+					$superset    = $potentialSuperset;
+					$combines[]   = $combine;
+				}
 			}
 
 		}
 
-		// add files not included in the combines to the superset
-		$superset = array_unique(array_merge($files, $superset));
+		// remove dupes from superset caused by combines
+		$superset = array_unique($superset);
 
 		// exclude contents of combined sets from file list
 		foreach ($combines as $combine) {

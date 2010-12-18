@@ -10,16 +10,16 @@ require_once 'Concentrate/CacheArray.php';
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_CacheMemcache extends Concentrate_CacheHierarchyAbstract
+class Concentrate_CacheAPC extends Concentrate_CacheHierarchyAbstract
 {
 	protected $extraPrefix = '';
 	protected $prefix = '';
-	protected $memcache = null;
+	protected $hasAPC = false;
 
-	public function __construct(Memcached $memcache, $extraPrefix = '')
+	public function __construct($extraPrefix = '')
 	{
+		$this->hasAPC      = extension_loaded('apc');
 		$this->extraPrefix = strval($extraPrefix);
-		$this->memcache    = $memcache;
 	}
 
 	public function setPrefix($prefix)
@@ -29,20 +29,38 @@ class Concentrate_CacheMemcache extends Concentrate_CacheHierarchyAbstract
 
 	protected function setSelf($key, $value)
 	{
-		return $this->memcache->set($this->getMemcacheKey($key), $value);
+		$result = false;
+
+		if ($this->hasAPC) {
+			$result = apc_store($this->getAPCKey($key), $value);
+		}
+
+		return $result;
 	}
 
 	protected function getSelf($key)
 	{
-		return $this->memcache->get($this->getMemcacheKey($key));
+		$value = false;
+
+		if ($this->hasAPC) {
+			$value = apc_fetch($this->getAPCKey($key));
+		}
+
+		return $value;
 	}
 
 	protected function deleteSelf($key)
 	{
-		return $this->memcache->delete($this->getMemcacheKey(key));
+		$response = false;
+
+		if ($this->hasAPC) {
+			$response = apc_delete($this->getAPCKey(key));
+		}
+
+		return $response;
 	}
 
-	protected function getMemcacheKey($key)
+	protected function getAPCKey($key)
 	{
 		if ($this->prefix != '') {
 			$key = $this->prefix . ':' . $key;

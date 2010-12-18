@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Concentrate/CacheInterface.php';
+require_once 'Concentrate/CacheHierarchyAbstract.php';
 
 /**
  * @category  Tools
@@ -9,7 +9,7 @@ require_once 'Concentrate/CacheInterface.php';
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_CacheArray implements Concentrate_CacheInterface
+class Concentrate_CacheArray extends Concentrate_CacheHierarchyAbstract
 {
 	protected $data = array();
 
@@ -18,13 +18,13 @@ class Concentrate_CacheArray implements Concentrate_CacheInterface
 		// do nothing since array is not saved between requests
 	}
 
-	public function set($key, $value)
+	protected function setSelf($key, $value)
 	{
 		$this->data[$key] = $value;
 		return true;
 	}
 
-	public function get($key)
+	protected function getSelf($key)
 	{
 		$value = false;
 
@@ -35,7 +35,7 @@ class Concentrate_CacheArray implements Concentrate_CacheInterface
 		return $value;
 	}
 
-	public function delete($key)
+	protected function deleteSelf($key)
 	{
 		unset($this->data[$key]);
 		return true;

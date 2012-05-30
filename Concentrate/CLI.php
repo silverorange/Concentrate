@@ -11,7 +11,7 @@ require_once 'Concentrate/MinifierYuiCompressor.php';
  * @category  Tools
  * @package   Concentrate
  * @author    Michael Gauthier <mike@silverorange.com>
- * @copyright 2010 silverorange
+ * @copyright 2010-2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_CLI
@@ -252,10 +252,14 @@ class Concentrate_CLI
 				continue;
 			}
 
-			// only minify JavaScript
-			if (substr($fromFilename, -3) !== '.js') {
+			// only minify JavaScript and CSS
+			if (   substr($fromFilename, -3) !== '.js'
+				&& substr($fromFilename, -4) !== '.css'
+			) {
 				continue;
 			}
+
+			$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
 
 			$toFilename = $this->webroot
 				. DIRECTORY_SEPARATOR . 'min'
@@ -269,7 +273,7 @@ class Concentrate_CLI
 				$minifier,
 				$fromFilename,
 				$toFilename,
-				'js'
+				$type
 			);
 		}
 
@@ -289,10 +293,14 @@ class Concentrate_CLI
 					continue;
 				}
 
-				// only minify JavaScript
-				if (substr($fromFilename, -3) !== '.js') {
+				// only minify JavaScript and CSS
+				if (   substr($fromFilename, -3) !== '.js'
+					&& substr($fromFilename, -4) !== '.css'
+				) {
 					continue;
 				}
+
+				$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
 
 				$toFilename = $this->webroot
 					. DIRECTORY_SEPARATOR . 'min'
@@ -306,7 +314,7 @@ class Concentrate_CLI
 					$minifier,
 					$fromFilename,
 					$toFilename,
-					'js'
+					$type
 				);
 			}
 		}

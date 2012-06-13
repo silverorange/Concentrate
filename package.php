@@ -36,7 +36,7 @@ PEAR::setErrorHandling(PEAR_ERROR_DIE);
 $api_version     = '0.0.12';
 $api_state       = 'alpha';
 
-$release_version = '0.0.11';
+$release_version = '0.0.12';
 $release_state   = 'alpha';
 $release_notes   =
 	" * Minify CSS.\n";

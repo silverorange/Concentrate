@@ -7,7 +7,7 @@ require_once 'Concentrate/FileList.php';
  * @category  Tools
  * @package   Concentrate
  * @author    Michael Gauthier <mike@silverorange.com>
- * @copyright 2010 silverorange
+ * @copyright 2010-2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_Inliner
@@ -49,8 +49,8 @@ class Concentrate_Inliner
 
 		switch (strtolower($extension)) {
 		case 'css':
-			include_once 'Concentrate/InlinerCss.php';
-			$class = 'Concentrate_InlinerCss';
+			include_once 'Concentrate/InlinerCSS.php';
+			$class = 'Concentrate_InlinerCSS';
 			break;
 		default:
 			$class = __CLASS__;

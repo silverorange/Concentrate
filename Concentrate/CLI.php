@@ -6,6 +6,7 @@ require_once 'Concentrate/Packer.php';
 require_once 'Concentrate/DataProvider.php';
 require_once 'Concentrate/DataProvider/FileFinderPear.php';
 require_once 'Concentrate/MinifierYuiCompressor.php';
+require_once 'Concentrate/CompilerLess.php';
 
 /**
  * @category  Tools
@@ -22,6 +23,7 @@ class Concentrate_CLI
 
 	const FILENAME_FLAG_COMBINED = '.concentrate-combined';
 	const FILENAME_FLAG_MINIFIED = '.concentrate-minified';
+	const FILENAME_FLAG_COMPILED = '.concentrate-compiled';
 
 	/**
 	 * @var Console_CommandLine
@@ -47,6 +49,11 @@ class Concentrate_CLI
 	 * @var boolean
 	 */
 	protected $combine = false;
+
+	/**
+	 * @var boolean
+	 */
+	protected $compile = false;
 
 	/**
 	 * @var string
@@ -75,6 +82,11 @@ class Concentrate_CLI
 			$this->setOptions($result->options);
 			$this->setWebRoot($result->args['webroot']);
 			$this->loadDataFiles();
+
+			if ($this->compile) {
+				$this->writeCompiledFiles();
+				$this->writeCompiledFlagFile();
+			}
 
 			if ($this->combine) {
 				$this->writeCombinedFiles();
@@ -136,6 +148,12 @@ class Concentrate_CLI
 			$this->minify = ($options['minify']) ? true : false;
 		}
 
+		if (   array_key_exists('compile', $options)
+			&& $options['compile'] !== null
+		) {
+			$this->compile = ($options['compile']) ? true : false;
+		}
+
 		if (   array_key_exists('directory', $options)
 			&& $options['directory'] !== null
 		) {
@@ -157,6 +175,12 @@ class Concentrate_CLI
 				sprintf(
 					'=> minify    : %s' . PHP_EOL,
 					($this->minify) ? 'yes' : 'no'
+				)
+			);
+			$this->display(
+				sprintf(
+					'=> compile   : %s' . PHP_EOL,
+					($this->compile) ? 'yes' : 'no'
 				)
 			);
 		}
@@ -357,7 +381,93 @@ class Concentrate_CLI
 			} else {
 				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
 					$this->display(
-						' * count not write cached version' . PHP_EOL
+						' * could not write cached version' . PHP_EOL
+					);
+				}
+			}
+		}
+	}
+
+	protected function writeCompiledFiles()
+	{
+		if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
+			$this->display(PHP_EOL . 'Writing compiled files:' . PHP_EOL);
+		}
+
+		$compiler = new Concentrate_CompilerLess();
+
+		$fileInfo = $this->concentrator->getFileInfo();
+		foreach ($fileInfo as $file => $info) {
+			$fromFilename = $this->webroot
+				. DIRECTORY_SEPARATOR . $file;
+
+			// if source file does not exist, skip it
+			if (!file_exists($fromFilename)) {
+				continue;
+			}
+
+			// only compile LESS
+			if (substr($fromFilename, -5) !== '.less') {
+				continue;
+			}
+
+			$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
+
+			$toFilename = $this->webroot
+				. DIRECTORY_SEPARATOR . 'compiled'
+				. DIRECTORY_SEPARATOR . $file;
+
+			if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+				$this->display(' * ' . $file . PHP_EOL);
+			}
+
+			$this->writeCompiledFile(
+				$compiler,
+				$fromFilename,
+				$toFilename,
+				$type
+			);
+		}
+	}
+
+	protected function writeCompiledFile(
+		Concentrate_CompilerAbstract $compiler,
+		$fromFilename,
+		$toFilename,
+		$type
+	) {
+		$md5 = md5_file($fromFilename);
+		$dir = $this->getCompiledCacheDir();
+
+		$cacheFilename = $dir . DIRECTORY_SEPARATOR . $md5;
+
+		if (file_exists($cacheFilename) && is_readable($cacheFilename)) {
+			// use cache file
+			if (!file_exists(dirname($toFilename))) {
+				mkdir(dirname($toFilename), 0770, true);
+			}
+			copy($cacheFilename, $toFilename);
+			if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+				$this->display(' * used cached version' . PHP_EOL);
+			}
+		} else {
+			// compile
+			$compiler->compileFile($fromFilename, $toFilename, $type);
+
+			// write cache file
+			if (!is_dir($dir) && is_writable(dirname($dir))) {
+				mkdir($dir, 0770, true);
+			}
+
+			if (is_dir($dir) && is_writable($dir)) {
+				copy($toFilename, $cacheFilename);
+				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+					$this->display(' * wrote cached version' . PHP_EOL);
+				}
+			} else {
+				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+					$this->display(
+						' * could not write cached version' . PHP_EOL
 					);
 				}
 			}
@@ -372,6 +482,11 @@ class Concentrate_CLI
 	protected function writeMinifiedFlagFile()
 	{
 		$this->writeFlagFile(self::FILENAME_FLAG_MINIFIED);
+	}
+
+	protected function writeCompiledFlagFile()
+	{
+		$this->writeFlagFile(self::FILENAME_FLAG_COMPILED);
 	}
 
 	protected function writeFlagFile($filename)
@@ -408,6 +523,17 @@ class Concentrate_CLI
 		}
 
 		return $dir . DIRECTORY_SEPARATOR . 'minified-cache';
+	}
+
+	protected function getCompiledCacheDir()
+	{
+		$dir = '@data-dir@' . DIRECTORY_SEPARATOR . '@package-name@';
+
+		if ($dir[0] == '@') {
+			$dir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..';
+		}
+
+		return $dir . DIRECTORY_SEPARATOR . 'compiled-cache';
 	}
 
 	protected function getUiXml()

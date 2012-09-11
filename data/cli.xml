@@ -29,6 +29,12 @@
 		<description>Write minified files.</description>
 		<action>StoreTrue</action>
 	</option>
+	<option name="compile">
+		<short_name>-l</short_name>
+		<long_name>--compile</long_name>
+		<description>Write compiled LESS files. See http://www.lesscss.org/.</description>
+		<action>StoreTrue</action>
+	</option>
 	<option name="verbose">
 		<short_name>-v</short_name>
 		<long_name>--verbose</long_name>

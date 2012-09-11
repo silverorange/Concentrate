@@ -7,7 +7,7 @@ require_once 'Concentrate/Exception.php';
  * @category  Tools
  * @package   Concentrate
  * @author    Michael Gauthier <mike@silverorange.com>
- * @copyright 2010 silverorange
+ * @copyright 2010-2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
@@ -83,7 +83,7 @@ class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
 		if ($isFile) {
 			$filename = $data;
 		} else {
-			$filename = $this->writeTempFile($content);
+			$filename = $this->writeTempFile($data);
 		}
 		$args[] = escapeshellarg($filename);
 

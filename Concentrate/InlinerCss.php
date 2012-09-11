@@ -75,7 +75,7 @@ class Concentrate_InlinerCss extends Concentrate_Inliner
 	protected function inlineImports($content)
 	{
 		$content = preg_replace_callback(
-			'/@import\s+url\((.*?)\);/ui',
+			'/@import\s+(?:url\((.+?)\)|(.+?));/ui',
 			array($this, 'inlineImportCallback'),
 			$content
 		);
@@ -85,7 +85,12 @@ class Concentrate_InlinerCss extends Concentrate_Inliner
 	protected function inlineImportCallback($matches)
 	{
 		$replacement = '';
-		$uri         = trim($matches[1], '\'"');
+
+		if (isset($matches[2])) {
+			$uri = trim($matches[2], '\'"');
+		} else {
+			$uri = trim($matches[1], '\'"');
+		}
 
 		// modify relative path to be relative to root, rather than
 		// directory of CSS file

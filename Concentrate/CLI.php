@@ -345,8 +345,22 @@ class Concentrate_CLI
 				$this->display(' * ' . $directory . '/' . $file . PHP_EOL);
 			}
 
+			if ($type === 'css') {
+				$toFilterFile = ($directory =='')
+					? 'min/' . $file
+					: 'min/' . $directory . '/' . $file;
+
+				$filter = new Concentrate_FilterCSSMover(
+					$file,
+					$toFilterFile
+				);
+			} else {
+				$filter = null;
+			}
+
 			$this->writeMinifiedFile(
 				$minifier,
+				$filter,
 				$fromFilename,
 				$toFilename,
 				$type
@@ -401,8 +415,22 @@ class Concentrate_CLI
 					$this->display(' * ' . $directory . '/' . $combine . PHP_EOL);
 				}
 
+				if ($type === 'css') {
+					$toFilterFile = ($directory =='')
+						? 'min/' . $file
+						: 'min/' . $directory . '/' . $file;
+
+					$filter = new Concentrate_FilterCSSMover(
+						$file,
+						$toFilterFile
+					);
+				} else {
+					$filter = null;
+				}
+
 				$this->writeMinifiedFile(
 					$minifier,
+					$filter,
 					$fromFilename,
 					$toFilename,
 					$type
@@ -413,6 +441,7 @@ class Concentrate_CLI
 
 	protected function writeMinifiedFile(
 		Concentrate_MinifierAbstract $minifier,
+		Concentrate_FilterAbstract $filter = null,
 		$fromFilename,
 		$toFilename,
 		$type
@@ -473,12 +502,12 @@ class Concentrate_CLI
 				continue;
 			}
 
+
 			// only compile LESS
-			if (substr($fromFilename, -5) !== '.less') {
+			$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
+			if ($type !== 'less') {
 				continue;
 			}
-
-			$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
 
 			$toFilename = $this->webroot
 				. DIRECTORY_SEPARATOR . 'compiled'
@@ -505,7 +534,7 @@ class Concentrate_CLI
 
 	protected function writeCompiledFile(
 		Concentrate_CompilerAbstract $compiler,
-		Concentrate_FilterAbstract $filter,
+		Concentrate_FilterAbstract $filter = null,
 		$fromFilename,
 		$toFilename,
 		$type

@@ -5,8 +5,10 @@ require_once 'Concentrate/Concentrator.php';
 require_once 'Concentrate/Packer.php';
 require_once 'Concentrate/DataProvider.php';
 require_once 'Concentrate/DataProvider/FileFinderPear.php';
+require_once 'Concentrate/MinifierAbstract.php';
 require_once 'Concentrate/MinifierYuiCompressor.php';
 require_once 'Concentrate/CompilerLess.php';
+require_once 'Concentrate/FilterCSSMover.php';
 
 /**
  * @category  Tools
@@ -261,10 +263,51 @@ class Concentrate_CLI
 
 		$minifier = new Concentrate_MinifierYuiCompressor();
 
+		$this->writeMinifiedFilesFromDirectory($minifier);
+
+		if ($this->compile) {
+			$this->writeMinifiedFilesFromDirectory(
+				$minifier,
+				'compiled',
+				array(
+					'css',
+					'js',
+					'less'
+				)
+			);
+		}
+	}
+
+	protected function writeMinifiedFilesFromDirectory(
+		Concentrate_MinifierAbstract $minifier,
+		$directory = '',
+		array $types = array('css', 'js')
+	) {
+		if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
+			if ($directory != '') {
+				$this->display(
+					sprintf(
+						PHP_EOL . 'Writing minified files from %s:' . PHP_EOL,
+						$directory
+					)
+				);
+			} else {
+				$this->display(
+					PHP_EOL . 'Writing minified files:' . PHP_EOL
+				);
+			}
+		}
+
 		$fileInfo = $this->concentrator->getFileInfo();
 		foreach ($fileInfo as $file => $info) {
-			$fromFilename = $this->webroot
-				. DIRECTORY_SEPARATOR . $file;
+			if ($directory == '') {
+				$fromFilename = $this->webroot
+					. DIRECTORY_SEPARATOR . $file;
+			} else {
+				$fromFilename = $this->webroot
+					. DIRECTORY_SEPARATOR . $directory
+					. DIRECTORY_SEPARATOR . $file;
+			}
 
 			// if source file does not exist, skip it
 			if (!file_exists($fromFilename)) {
@@ -276,21 +319,30 @@ class Concentrate_CLI
 				continue;
 			}
 
-			// only minify JavaScript and CSS
-			if (   substr($fromFilename, -3) !== '.js'
-				&& substr($fromFilename, -4) !== '.css'
-			) {
+			// only minify valid types
+			$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
+			if (!in_array($type, $types)) {
 				continue;
 			}
 
-			$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
+			// Compiled lsss files are actually CSS. Set type appropriately.
+			if ($type === 'less') {
+				$type = 'css';
+			}
 
-			$toFilename = $this->webroot
-				. DIRECTORY_SEPARATOR . 'min'
-				. DIRECTORY_SEPARATOR . $file;
+			if ($directory == '') {
+				$toFilename = $this->webroot
+					. DIRECTORY_SEPARATOR . 'min'
+					. DIRECTORY_SEPARATOR . $file;
+			} else {
+				$toFilename = $this->webroot
+					. DIRECTORY_SEPARATOR . 'min'
+					. DIRECTORY_SEPARATOR . $directory
+					. DIRECTORY_SEPARATOR . $file;
+			}
 
 			if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-				$this->display(' * ' . $file . PHP_EOL);
+				$this->display(' * ' . $directory . '/' . $file . PHP_EOL);
 			}
 
 			$this->writeMinifiedFile(
@@ -304,8 +356,14 @@ class Concentrate_CLI
 		if ($this->combine) {
 			$combinesInfo = $this->concentrator->getCombinesInfo();
 			foreach ($combinesInfo as $combine => $info) {
-				$fromFilename = $this->webroot
-					. DIRECTORY_SEPARATOR . $combine;
+				if ($directory == '') {
+					$fromFilename = $this->webroot
+						. DIRECTORY_SEPARATOR . $combine;
+				} else {
+					$fromFilename = $this->webroot
+						. DIRECTORY_SEPARATOR . $directory
+						. DIRECTORY_SEPARATOR . $combine;
+				}
 
 				// if source file does not exist, skip it
 				if (!file_exists($fromFilename)) {
@@ -317,21 +375,30 @@ class Concentrate_CLI
 					continue;
 				}
 
-				// only minify JavaScript and CSS
-				if (   substr($fromFilename, -3) !== '.js'
-					&& substr($fromFilename, -4) !== '.css'
-				) {
+				// only minify valid types
+				$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
+				if (!in_array($type, $types)) {
 					continue;
 				}
 
-				$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
+				// Compiled lsss files are actually CSS. Set type appropriately.
+				if ($type === 'less') {
+					$type = 'css';
+				}
 
-				$toFilename = $this->webroot
-					. DIRECTORY_SEPARATOR . 'min'
-					. DIRECTORY_SEPARATOR . $combine;
+				if ($directory == '') {
+					$toFilename = $this->webroot
+						. DIRECTORY_SEPARATOR . 'min'
+						. DIRECTORY_SEPARATOR . $combine;
+				} else {
+					$toFilename = $this->webroot
+						. DIRECTORY_SEPARATOR . 'min'
+						. DIRECTORY_SEPARATOR . $directory
+						. DIRECTORY_SEPARATOR . $combine;
+				}
 
 				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-					$this->display(' * ' . $combine . PHP_EOL);
+					$this->display(' * ' . $directory . '/' . $combine . PHP_EOL);
 				}
 
 				$this->writeMinifiedFile(
@@ -421,8 +488,14 @@ class Concentrate_CLI
 				$this->display(' * ' . $file . PHP_EOL);
 			}
 
+			$filter = new Concentrate_FilterCSSMover(
+				$file,
+				'compiled/' . $file
+			);
+
 			$this->writeCompiledFile(
 				$compiler,
+				$filter,
 				$fromFilename,
 				$toFilename,
 				$type
@@ -432,6 +505,7 @@ class Concentrate_CLI
 
 	protected function writeCompiledFile(
 		Concentrate_CompilerAbstract $compiler,
+		Concentrate_FilterAbstract $filter,
 		$fromFilename,
 		$toFilename,
 		$type
@@ -453,6 +527,7 @@ class Concentrate_CLI
 		} else {
 			// compile
 			$compiler->compileFile($fromFilename, $toFilename, $type);
+			$filter->filterFile($toFilename, $toFilename);
 
 			// write cache file
 			if (!is_dir($dir) && is_writable(dirname($dir))) {

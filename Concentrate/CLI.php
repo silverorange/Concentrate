@@ -464,6 +464,11 @@ class Concentrate_CLI
 			// minify
 			$minifier->minifyFile($fromFilename, $toFilename, $type);
 
+			if ($filter instanceof Concentrate_FilterAbstract) {
+				// TODO: perform this on the file before writing
+				$filter->filterFile($toFilename, $toFilename);
+			}
+
 			// write cache file
 			if (!is_dir($dir) && is_writable(dirname($dir))) {
 				mkdir($dir, 0770, true);

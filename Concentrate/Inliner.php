@@ -89,37 +89,6 @@ class Concentrate_Inliner
 		return $content;
 	}
 
-	protected function evaluatePath($path)
-	{
-		$postPath = array();
-		$prePath = array();
-
-		$path = rtrim($path, '/');
-		$pathSegments = explode('/', $path);
-		foreach ($pathSegments as $segment) {
-			if ($segment == '..') {
-				if (count($postPath) > 0) {
-					array_pop($postPath);
-				} else {
-					// we've gone past the start of the relative path
-					array_push($prePath, '..');
-				}
-			} else if ($segment == '.') {
-				// no-op
-			} else {
-				array_push($postPath, $segment);
-			}
-		}
-
-		return implode(
-			'/',
-			array_merge(
-				$prePath,
-				$postPath
-			)
-		);
-	}
-
 	protected function isAbsolute($uri)
 	{
 		return (preg_match('!^(https?:|ftp:)//!', $uri) === 1);

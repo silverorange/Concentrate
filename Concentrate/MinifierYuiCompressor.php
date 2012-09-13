@@ -1,7 +1,7 @@
 <?php
 
-require_once 'Concentrate/MinifierAbstract.php';
 require_once 'Concentrate/Exception.php';
+require_once 'Concentrate/MinifierAbstract.php';
 
 /**
  * @category  Tools
@@ -51,7 +51,9 @@ class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
 
 	public function minifyFile($fromFilename, $toFilename, $type)
 	{
-		$this->writeDirectory($toFilename);
+		$path = new Concentrate_Path($toFilename);
+		$path->writeDirectory();
+
 		return $this->minifyInternal($fromFilename, true, $toFilename, $type);
 	}
 

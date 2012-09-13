@@ -36,8 +36,11 @@ class Concentrate_CompilerLess extends Concentrate_CompilerAbstract
 
 	public function compileFile($fromFilename, $toFilename, $type)
 	{
-		$this->writeDirectory($toFilename);
+		$path = new Concentrate_Path($toFilename);
+		$path->writeDirectory();
+
 		$this->compileInternal($fromFilename, true, $toFilename, $type);
+
 		return $this;
 	}
 

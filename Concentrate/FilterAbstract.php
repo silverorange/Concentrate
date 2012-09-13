@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Concentrate/Path.php';
+
 /**
  * @category  Tools
  * @package   Concentrate
@@ -35,7 +37,8 @@ abstract class Concentrate_FilterAbstract
 			);
 		}
 
-		$this->writeDirectory($toFilename);
+		$path = new Concentrate_Path($toFilename);
+		$path->writeDirectory();
 
 		$content = file_get_contents($fromFilename);
 		$content = $this->filter($content);
@@ -50,22 +53,6 @@ abstract class Concentrate_FilterAbstract
 	}
 
 	abstract protected function filterImplementation($input);
-
-	protected function writeDirectory($toFilename)
-	{
-		$toDirectory = dirname($toFilename);
-		if (!file_exists($toDirectory)) {
-			mkdir($toDirectory, 0770, true);
-		}
-		if (!is_dir($toDirectory)) {
-			throw new Concentrate_FileException(
-				"Could not write to directory {$toDirectory} because it " .
-				"is not a directory.",
-				0,
-				$toDirectory
-			);
-		}
-	}
 }
 
 ?>

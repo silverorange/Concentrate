@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Concentrate/Exception.php';
+require_once 'Concentrate/Path.php';
 
 /**
  * @category  Tools
@@ -23,27 +24,12 @@ abstract class Concentrate_MinifierAbstract
 			);
 		}
 
-		$this->writeDirectory($toFilename);
+		$path = new Concentrate_Path($toFilename);
+		$path->writeDirectory();
 
 		$content = file_get_contents($fromFilename);
 		$content = $this->minify($content, $type);
 		file_put_contents($toFilename, $content);
-	}
-
-	protected function writeDirectory($toFilename)
-	{
-		$toDirectory = dirname($toFilename);
-		if (!file_exists($toDirectory)) {
-			mkdir($toDirectory, 0770, true);
-		}
-		if (!is_dir($toDirectory)) {
-			throw new Concentrate_FileException(
-				"Could not write to directory {$toDirectory} because it " .
-				"is not a directory.",
-				0,
-				$toDirectory
-			);
-		}
 	}
 }
 

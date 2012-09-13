@@ -1,5 +1,6 @@
 <?php
 
+require_once 'Concentrate/Path.php';
 require_once 'Concentrate/FilterAbstract.php';
 
 /**
@@ -73,8 +74,11 @@ class Concentrate_FilterCSSMover extends Concentrate_FilterAbstract
 		if (!$this->isAbsolute($uri)) {
 
 			// evaluate to and from paths
-			$fromPath = $this->evaluatePath(dirname($this->fromPath));
-			$toPath   = $this->evaluatePath(dirname($this->toPath));
+			$fromPath = new Concentrate_Path(dirname($this->fromPath));
+			$toPath   = new Concentrate_Path(dirname($this->toPath));
+
+			$fromPath = (string)$fromPath->evaluate();
+			$toPath   = (string)$toPath->evaluate();
 
 			// strip common basedir
 			$fromPathParts = explode('/', $fromPath);
@@ -96,7 +100,8 @@ class Concentrate_FilterCSSMover extends Concentrate_FilterAbstract
 			$toPath   = implode('/', $toPathParts);
 
 			// get normalized relative URI
-			$uri = $this->evaluatePath($fromPath . '/'. $uri);
+			$uri = new Concentrate_Path($fromPath . '/' . $uri);
+			$uri = (string)$uri->evaluate();
 
 			// add relative paths back to the root from the destination
 			foreach (explode('/', $toPath) as $segment) {
@@ -116,37 +121,6 @@ class Concentrate_FilterCSSMover extends Concentrate_FilterAbstract
 	protected function isAbsolute($uri)
 	{
 		return (preg_match('!^(https?:|ftp:)//!', $uri) === 1);
-	}
-
-	protected function evaluatePath($path)
-	{
-		$postPath = array();
-		$prePath = array();
-
-		$path = rtrim($path, '/');
-		$pathSegments = explode('/', $path);
-		foreach ($pathSegments as $segment) {
-			if ($segment == '..') {
-				if (count($postPath) > 0) {
-					array_pop($postPath);
-				} else {
-					// we've gone past the start of the relative path
-					array_push($prePath, '..');
-				}
-			} else if ($segment == '.') {
-				// no-op
-			} else {
-				array_push($postPath, $segment);
-			}
-		}
-
-		return implode(
-			'/',
-			array_merge(
-				$prePath,
-				$postPath
-			)
-		);
 	}
 }
 

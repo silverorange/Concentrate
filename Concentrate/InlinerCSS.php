@@ -58,7 +58,8 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
 			}
 
 			// evaluate relative paths
-			$directory = $this->evaluatePath($directory);
+			$directory = new Concentrate_Path($directory);
+			$directory = (string)$directory->evaluate();
 
 			$uri = $directory . '/' . basename($uri);
 		}
@@ -96,7 +97,8 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
 		// directory of CSS file
 		if (!$this->isAbsolute($uri)) {
 			$uri = $this->sourceDirectory . '/' . $uri;
-			$uri = $this->evaluatePath($uri);
+			$uri = new Concentrate_Path($uri);
+			$uri = (string)$uri->evaluate();
 		}
 
 		if (!$this->inlinedFiles->contains($uri)) {

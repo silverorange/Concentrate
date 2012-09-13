@@ -348,12 +348,16 @@ class Concentrate_CLI
 			// If type is CSS, add extra filter to chain to update relative
 			// URIs within the CSS
 			if ($type === 'css') {
+				$fromFilterFile = ($directory == '')
+					? $file
+					: $directory . '/' . $file;
+
 				$toFilterFile = ($directory =='')
 					? 'min/' . $file
 					: 'min/' . $directory . '/' . $file;
 
 				$moveFilter = new Concentrate_Filter_CSSMover(
-					$file,
+					$fromFilterFile,
 					$toFilterFile
 				);
 
@@ -421,12 +425,16 @@ class Concentrate_CLI
 				// If type is CSS, add extra filter to chain to update relative
 				// URIs within the CSS
 				if ($type === 'css') {
+					$fromFilterFile = ($directory == '')
+						? $file
+						: $directory . '/' . $file;
+
 					$toFilterFile = ($directory =='')
 						? 'min/' . $file
 						: 'min/' . $directory . '/' . $file;
 
 					$moveFilter = new Concentrate_Filter_CSSMover(
-						$file,
+						$fromFilterFile,
 						$toFilterFile
 					);
 

@@ -1,7 +1,7 @@
 <?php
 
 require_once 'Concentrate/Path.php';
-require_once 'Concentrate/FilterAbstract.php';
+require_once 'Concentrate/Filter/Abstract.php';
 
 /**
  * Updates CSS content with rebased relative URIs
@@ -12,7 +12,7 @@ require_once 'Concentrate/FilterAbstract.php';
  * @copyright 2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_FilterCSSMover extends Concentrate_FilterAbstract
+class Concentrate_Filter_CSSMover extends Concentrate_Filter_Abstract
 {
 	/**
 	 * @var string
@@ -42,7 +42,7 @@ class Concentrate_FilterCSSMover extends Concentrate_FilterAbstract
 		return $this;
 	}
 
-	protected function filterImplementation($input)
+	protected function filterImplementation($input, $type = '')
 	{
 		return $this->updateURIs($input);
 	}

@@ -1,7 +1,6 @@
 <?php
 
-require_once 'Concentrate/Exception.php';
-require_once 'Concentrate/MinifierAbstract.php';
+require_once 'Concentrate/Filter/Minifier/Abstract.php';
 
 /**
  * @category  Tools
@@ -10,7 +9,8 @@ require_once 'Concentrate/MinifierAbstract.php';
  * @copyright 2010-2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
+class Concentrate_Filter_Minifier_YUICompressor
+	extends Concentrate_Filter_Minifier_Abstract
 {
 	const DEFAULT_JAR_NAME = '/yuicompressor-[0-9]\.[0-9]\.[0-9]\.jar/';
 
@@ -44,20 +44,7 @@ class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
 		return $this;
 	}
 
-	public function minify($content, $type)
-	{
-		return $this->minifyInternal($content, false, null, $type);
-	}
-
-	public function minifyFile($fromFilename, $toFilename, $type)
-	{
-		$path = new Concentrate_Path($toFilename);
-		$path->writeDirectory();
-
-		return $this->minifyInternal($fromFilename, true, $toFilename, $type);
-	}
-
-	protected function minifyInternal($data, $isFile, $outputFile, $type)
+	protected function filterImplementation($input, $type = '' )
 	{
 		// default args
 		$args = array(
@@ -76,17 +63,8 @@ class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
 			break;
 		}
 
-		// output
-		if ($outputFile !== null) {
-			$args[] = '-o ' . escapeshellarg($outputFile);
-		}
-
 		// filename
-		if ($isFile) {
-			$filename = $data;
-		} else {
-			$filename = $this->writeTempFile($data);
-		}
+		$filename = $this->writeTempFile($input);
 		$args[] = escapeshellarg($filename);
 
 		// build command
@@ -101,9 +79,7 @@ class Concentrate_MinifierYuiCompressor extends Concentrate_MinifierAbstract
 		$output = shell_exec($command);
 
 		// remove temp file
-		if (!$isFile) {
-			unlink($filename);
-		}
+		unlink($filename);
 
 		$errorExpression = '/^Unable to access jarfile/';
 		if (preg_match($errorExpression, $output) === 1) {

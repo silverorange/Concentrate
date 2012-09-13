@@ -5,10 +5,11 @@ require_once 'Concentrate/Concentrator.php';
 require_once 'Concentrate/Packer.php';
 require_once 'Concentrate/DataProvider.php';
 require_once 'Concentrate/DataProvider/FileFinderPear.php';
-require_once 'Concentrate/MinifierAbstract.php';
-require_once 'Concentrate/MinifierYuiCompressor.php';
 require_once 'Concentrate/CompilerLess.php';
-require_once 'Concentrate/FilterCSSMover.php';
+require_once 'Concentrate/Filter/Abstract.php';
+require_once 'Concentrate/Filter/CSSMover.php';
+require_once 'Concentrate/Filter/Minifier/Abstract.php';
+require_once 'Concentrate/Filter/Minifier/YUICompressor.php';
 
 /**
  * @category  Tools
@@ -261,13 +262,12 @@ class Concentrate_CLI
 			$this->display(PHP_EOL . 'Writing minified files:' . PHP_EOL);
 		}
 
-		$minifier = new Concentrate_MinifierYuiCompressor();
-
-		$this->writeMinifiedFilesFromDirectory($minifier);
+		$filter = new Concentrate_Filter_Minifier_YUICompressor();
+		$this->writeMinifiedFilesFromDirectory($filter);
 
 		if ($this->compile) {
 			$this->writeMinifiedFilesFromDirectory(
-				$minifier,
+				$filter,
 				'compiled',
 				array(
 					'css',
@@ -279,7 +279,7 @@ class Concentrate_CLI
 	}
 
 	protected function writeMinifiedFilesFromDirectory(
-		Concentrate_MinifierAbstract $minifier,
+		Concentrate_Filter_Abstract $filter,
 		$directory = '',
 		array $types = array('css', 'js')
 	) {
@@ -345,21 +345,24 @@ class Concentrate_CLI
 				$this->display(' * ' . $directory . '/' . $file . PHP_EOL);
 			}
 
+			// If type is CSS, add extra filter to chain to update relative
+			// URIs within the CSS
 			if ($type === 'css') {
 				$toFilterFile = ($directory =='')
 					? 'min/' . $file
 					: 'min/' . $directory . '/' . $file;
 
-				$filter = new Concentrate_FilterCSSMover(
+				$moveFilter = new Concentrate_Filter_CSSMover(
 					$file,
 					$toFilterFile
 				);
+
+				$filter->setNextFilter($moveFilter);
 			} else {
-				$filter = null;
+				$filter->clearNextFilter();
 			}
 
 			$this->writeMinifiedFile(
-				$minifier,
 				$filter,
 				$fromFilename,
 				$toFilename,
@@ -415,21 +418,24 @@ class Concentrate_CLI
 					$this->display(' * ' . $directory . '/' . $combine . PHP_EOL);
 				}
 
+				// If type is CSS, add extra filter to chain to update relative
+				// URIs within the CSS
 				if ($type === 'css') {
 					$toFilterFile = ($directory =='')
 						? 'min/' . $file
 						: 'min/' . $directory . '/' . $file;
 
-					$filter = new Concentrate_FilterCSSMover(
+					$moveFilter = new Concentrate_Filter_CSSMover(
 						$file,
 						$toFilterFile
 					);
+
+					$filter->setNextFilter($moveFilter);
 				} else {
-					$filter = null;
+					$filter->clearNextFilter();
 				}
 
 				$this->writeMinifiedFile(
-					$minifier,
 					$filter,
 					$fromFilename,
 					$toFilename,
@@ -440,8 +446,7 @@ class Concentrate_CLI
 	}
 
 	protected function writeMinifiedFile(
-		Concentrate_MinifierAbstract $minifier,
-		Concentrate_FilterAbstract $filter = null,
+		Concentrate_Filter_Abstract $filter,
 		$fromFilename,
 		$toFilename,
 		$type
@@ -462,12 +467,7 @@ class Concentrate_CLI
 			}
 		} else {
 			// minify
-			$minifier->minifyFile($fromFilename, $toFilename, $type);
-
-			if ($filter instanceof Concentrate_FilterAbstract) {
-				// TODO: perform this on the file before writing
-				$filter->filterFile($toFilename, $toFilename);
-			}
+			$filter->filterFile($fromFilename, $toFilename, $type);
 
 			// write cache file
 			if (!is_dir($dir) && is_writable(dirname($dir))) {
@@ -521,7 +521,7 @@ class Concentrate_CLI
 				$this->display(' * ' . $file . PHP_EOL);
 			}
 
-			$filter = new Concentrate_FilterCSSMover(
+			$filter = new Concentrate_Filter_CSSMover(
 				$file,
 				'compiled/' . $file
 			);
@@ -538,7 +538,7 @@ class Concentrate_CLI
 
 	protected function writeCompiledFile(
 		Concentrate_CompilerAbstract $compiler,
-		Concentrate_FilterAbstract $filter = null,
+		Concentrate_Filter_Abstract $filter = null,
 		$fromFilename,
 		$toFilename,
 		$type
@@ -560,7 +560,11 @@ class Concentrate_CLI
 		} else {
 			// compile
 			$compiler->compileFile($fromFilename, $toFilename, $type);
-			$filter->filterFile($toFilename, $toFilename);
+
+			// TODO: perform filtering before writing file
+			if ($filter instanceof Concentrate_Filter_Abstract) {
+				$filter->filterFile($toFilename, $toFilename);
+			}
 
 			// write cache file
 			if (!is_dir($dir) && is_writable(dirname($dir))) {

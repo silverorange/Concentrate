@@ -9,25 +9,25 @@ require_once 'Concentrate/Path.php';
  * @copyright 2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-abstract class Concentrate_FilterAbstract
+abstract class Concentrate_Filter_Abstract
 {
 	/**
 	 * @var Concentrate_FilterAbstract
 	 */
 	protected $nextFilter = null;
 
-	public function filter($input)
+	public function filter($input, $type = '')
 	{
-		$output = $this->filterImplementation($input);
+		$output = $this->filterImplementation($input, $type);
 
 		if ($this->nextFilter instanceof Concentrate_FilterAbstract) {
-			$output = $this->nextFilter->filter($output);
+			$output = $this->nextFilter->filter($output, $type);
 		}
 
 		return $output;
 	}
 
-	public function filterFile($fromFilename, $toFilename)
+	public function filterFile($fromFilename, $toFilename, $type = '')
 	{
 		if (!is_readable($fromFilename)) {
 			throw new Concentrate_FileException(
@@ -41,18 +41,23 @@ abstract class Concentrate_FilterAbstract
 		$path->writeDirectory();
 
 		$content = file_get_contents($fromFilename);
-		$content = $this->filter($content);
+		$content = $this->filter($content, $type);
 		file_put_contents($toFilename, $content);
 
 		return $this;
 	}
 
-	public function setNextFilter(Concentrate_FilterAbstract $filter)
+	public function setNextFilter(Concentrate_Filter_Abstract $filter)
 	{
 		$this->nextFilter = $filter;
 	}
 
-	abstract protected function filterImplementation($input);
+	public function clearNextFilter()
+	{
+		$this->nextFilter = null;
+	}
+
+	abstract protected function filterImplementation($input, $type = '');
 }
 
 ?>

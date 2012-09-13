@@ -20,7 +20,7 @@ abstract class Concentrate_Filter_Abstract
 	{
 		$output = $this->filterImplementation($input, $type);
 
-		if ($this->nextFilter instanceof Concentrate_FilterAbstract) {
+		if ($this->nextFilter instanceof Concentrate_Filter_Abstract) {
 			$output = $this->nextFilter->filter($output, $type);
 		}
 

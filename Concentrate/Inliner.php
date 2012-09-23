@@ -89,9 +89,9 @@ class Concentrate_Inliner
 		return $content;
 	}
 
-	protected function isAbsolute($uri)
+	protected function isRelative($uri)
 	{
-		return (preg_match('!^(https?:|ftp:)//!', $uri) === 1);
+		return (preg_match('!^(?:https?:|ftp:|data:)!', $uri) === 0);
 	}
 }
 

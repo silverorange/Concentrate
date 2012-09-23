@@ -47,7 +47,7 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
 		}
 
 		// check if it is a relative URI; if so, rewrite it
-		if (!$this->isAbsolute($uri)) {
+		if ($this->isRelative($uri)) {
 
 			// get path relative to root
 			$directory = $this->sourceDirectory . '/' . dirname($uri);
@@ -95,7 +95,7 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
 
 		// modify relative path to be relative to root, rather than
 		// directory of CSS file
-		if (!$this->isAbsolute($uri)) {
+		if ($this->isRelative($uri)) {
 			$uri = $this->sourceDirectory . '/' . $uri;
 			$uri = new Concentrate_Path($uri);
 			$uri = (string)$uri->evaluate();

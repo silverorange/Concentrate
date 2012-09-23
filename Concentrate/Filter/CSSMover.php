@@ -71,7 +71,7 @@ class Concentrate_Filter_CSSMover extends Concentrate_Filter_Abstract
 		}
 
 		// check if it is a relative URI; if so, rewrite it
-		if (!$this->isAbsolute($uri)) {
+		if ($this->isRelative($uri)) {
 
 			// evaluate to and from paths
 			$fromPath = new Concentrate_Path(dirname($this->fromPath));
@@ -118,9 +118,9 @@ class Concentrate_Filter_CSSMover extends Concentrate_Filter_Abstract
 		return 'url(' . $uri . ')';
 	}
 
-	protected function isAbsolute($uri)
+	protected function isRelative($uri)
 	{
-		return (preg_match('!^(https?:|ftp:)//!', $uri) === 1);
+		return (preg_match('!^(?:https?:|ftp:|data:)!', $uri) === 0);
 	}
 }
 

@@ -33,10 +33,10 @@
 require_once 'PEAR/PackageFileManager2.php';
 PEAR::setErrorHandling(PEAR_ERROR_DIE);
 
-$api_version     = '0.0.13';
+$api_version     = '0.0.14';
 $api_state       = 'alpha';
 
-$release_version = '0.0.13';
+$release_version = '0.0.14';
 $release_state   = 'alpha';
 $release_notes   =
 	" * Minify CSS.\n";

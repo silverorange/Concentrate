@@ -4,7 +4,7 @@ This package provides a command-line tool to bundle and minify static resources 
 
 <pre>
 Usage:
-  /usr/bin/concentrate [options] <webroot>
+  /usr/bin/concentrate [options] &lt;webroot&gt;
 
 Options:
   -c pearrc, --pearrc=pearrc           Location of PEAR configuration file.

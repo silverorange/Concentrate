@@ -69,7 +69,7 @@ class Concentrate_CLI
 	protected $directory = '';
 
 	/**
-	 * @var string
+	 * @var integer
 	 */
 	protected $verbosity = self::VERBOSITY_NONE;
 

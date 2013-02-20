@@ -86,14 +86,14 @@ class Concentrate_CLI
 			$this->setWebRoot($result->args['webroot']);
 			$this->loadDataFiles();
 
-			if ($this->compile) {
-				$this->writeCompiledFiles();
-				$this->writeCompiledFlagFile();
-			}
-
 			if ($this->combine) {
 				$this->writeCombinedFiles();
 				$this->writeCombinedFlagFile();
+			}
+
+			if ($this->compile) {
+				$this->writeCompiledFiles();
+				$this->writeCompiledFlagFile();
 			}
 
 			if ($this->minify) {
@@ -325,7 +325,7 @@ class Concentrate_CLI
 				continue;
 			}
 
-			// Compiled lsss files are actually CSS. Set type appropriately.
+			// Compiled less files are actually CSS. Set type appropriately.
 			if ($type === 'less') {
 				$type = 'css';
 			}
@@ -402,7 +402,7 @@ class Concentrate_CLI
 					continue;
 				}
 
-				// Compiled lsss files are actually CSS. Set type appropriately.
+				// Compiled less files are actually CSS. Set type appropriately.
 				if ($type === 'less') {
 					$type = 'css';
 				}
@@ -541,6 +541,46 @@ class Concentrate_CLI
 				$toFilename,
 				$type
 			);
+		}
+
+		if ($this->combine) {
+			$combinesInfo = $this->concentrator->getCombinesInfo();
+			foreach ($combinesInfo as $combine => $info) {
+				$fromFilename = $this->webroot
+					. DIRECTORY_SEPARATOR . $combine;
+
+				// if source file does not exist, skip it
+				if (!file_exists($fromFilename)) {
+					continue;
+				}
+
+				// only compile LESS
+				$type = pathinfo($fromFilename, PATHINFO_EXTENSION);
+				if ($type !== 'less') {
+					continue;
+				}
+
+				$toFilename = $this->webroot
+					. DIRECTORY_SEPARATOR . 'compiled'
+					. DIRECTORY_SEPARATOR . $combine;
+
+				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
+					$this->display(' * ' . $combine . PHP_EOL);
+				}
+
+				$filter = new Concentrate_Filter_CSSMover(
+					$file,
+					'compiled/' . $file
+				);
+
+				$this->writeCompiledFile(
+					$compiler,
+					$filter,
+					$fromFilename,
+					$toFilename,
+					$type
+				);
+			}
 		}
 	}
 

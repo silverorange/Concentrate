@@ -106,13 +106,6 @@ $package->addReplacement(
 );
 
 $package->addReplacement(
-	'scripts/concentrate',
-	'pear-config',
-	'@php-bin@',
-	'php_bin'
-);
-
-$package->addReplacement(
 	'Concentrate/CLI.php',
 	'package-info',
 	'@package-name@',

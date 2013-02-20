@@ -1,4 +1,4 @@
-#!@php-bin@
+#! /usr/bin/env php
 <?php
 
 require_once 'Concentrate/CLI.php';

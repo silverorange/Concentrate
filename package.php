@@ -7,7 +7,7 @@
  *
  * LICENSE:
  *
- * Copyright 2010-2012 silverorange
+ * Copyright 2010-2013 silverorange
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,7 +26,7 @@
  * @category  Tools
  * @package   Concentrate
  * @author    Michael Gauthier <mike@silverorange.com>
- * @copyright 2010-2012 silverorange
+ * @copyright 2010-2013 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 
@@ -36,10 +36,11 @@ PEAR::setErrorHandling(PEAR_ERROR_DIE);
 $api_version     = '0.0.15';
 $api_state       = 'alpha';
 
-$release_version = '0.0.15';
+$release_version = '0.0.16';
 $release_state   = 'alpha';
 $release_notes   =
-	" * Minify CSS.\n";
+	  " * Allow combining of LESS files.\n"
+	. " * Combine files before compilation.\n";
 
 $description =
 	"This package provides a command-line tool to glob and minify static ".

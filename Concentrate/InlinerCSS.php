@@ -104,7 +104,7 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
 		if (!$this->inlinedFiles->contains($uri)) {
 
 			// recursively inline the import
-			$inliner = new self(
+			$inliner = Concentrate_Inliner::factory(
 				$this->root,
 				$uri,
 				$this->destinationFilename,

@@ -36,11 +36,11 @@ PEAR::setErrorHandling(PEAR_ERROR_DIE);
 $api_version     = '0.0.15';
 $api_state       = 'alpha';
 
-$release_version = '0.0.16';
+$release_version = '0.0.17';
 $release_state   = 'alpha';
 $release_notes   =
-	  " * Allow combining of LESS files.\n"
-	. " * Combine files before compilation.\n";
+	  " * Don't try to inline paths with interplorated variables in LESS ".
+	  "   files.\n";
 
 $description =
 	"This package provides a command-line tool to glob and minify static ".

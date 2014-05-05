@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.9.4" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+    http://pear.php.net/dtd/tasks-1.0.xsd
+    http://pear.php.net/dtd/package-2.0
+    http://pear.php.net/dtd/package-2.0.xsd">
+ <name>Concentrate</name>
+ <channel>pear.silverorange.com</channel>
+ <summary>Tool to glob and minify static resources for websites using silverorange&apos;s Site framework.</summary>
+ <description>This package provides a command-line tool to glob and minify static resources for a website using silverorange&apos;s Site package. Files are combined according to a configuration file passed on the command-line.</description>
+ <lead>
+  <name>Mike Gauthier</name>
+  <user>gauthierm</user>
+  <email>mike@silverorange.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2014-05-05</date>
+ <time>10:24:36</time>
+ <version>
+  <release>0.0.17</release>
+  <api>0.0.15</api>
+ </version>
+ <stability>
+  <release>alpha</release>
+  <api>alpha</api>
+ </stability>
+ <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL License 2.1</license>
+ <notes>
+* Don&apos;t try to inline paths with interplorated variables in LESS    files.
+ </notes>
+ <contents>
+  <dir baseinstalldir="/" name="/">
+   <dir name="Concentrate">
+    <dir name="DataProvider">
+     <file baseinstalldir="/" name="FileFinderDevelopment.php" role="php" />
+     <file baseinstalldir="/" name="FileFinderDirectory.php" role="php" />
+     <file baseinstalldir="/" name="FileFinderInterface.php" role="php" />
+     <file baseinstalldir="/" name="FileFinderPear.php" role="php" />
+    </dir> <!-- /Concentrate/DataProvider -->
+    <dir name="Filter">
+     <dir name="Minifier">
+      <file baseinstalldir="/" name="Abstract.php" role="php" />
+      <file baseinstalldir="/" name="YUICompressor.php" role="php" />
+     </dir> <!-- /Concentrate/Filter/Minifier -->
+     <file baseinstalldir="/" name="Abstract.php" role="php" />
+     <file baseinstalldir="/" name="CSSMover.php" role="php" />
+    </dir> <!-- /Concentrate/Filter -->
+    <dir name="Graph">
+     <file baseinstalldir="/" name="Node.php" role="php" />
+     <file baseinstalldir="/" name="TopologicalSorter.php" role="php" />
+    </dir> <!-- /Concentrate/Graph -->
+    <file baseinstalldir="/" name="CacheAPC.php" role="php" />
+    <file baseinstalldir="/" name="CacheArray.php" role="php" />
+    <file baseinstalldir="/" name="CacheHierarchyAbstract.php" role="php" />
+    <file baseinstalldir="/" name="CacheInterface.php" role="php" />
+    <file baseinstalldir="/" name="CacheMemcache.php" role="php" />
+    <file baseinstalldir="/" name="CLI.php" role="php">
+     <tasks:replace from="@package-name@" to="name" type="package-info" />
+     <tasks:replace from="@data-dir@" to="data_dir" type="pear-config" />
+    </file>
+    <file baseinstalldir="/" name="CompilerAbstract.php" role="php" />
+    <file baseinstalldir="/" name="CompilerLess.php" role="php" />
+    <file baseinstalldir="/" name="Concentrator.php" role="php" />
+    <file baseinstalldir="/" name="DataProvider.php" role="php" />
+    <file baseinstalldir="/" name="Exception.php" role="php" />
+    <file baseinstalldir="/" name="FileList.php" role="php" />
+    <file baseinstalldir="/" name="Graph.php" role="php" />
+    <file baseinstalldir="/" name="Inliner.php" role="php" />
+    <file baseinstalldir="/" name="InlinerCSS.php" role="php" />
+    <file baseinstalldir="/" name="InlinerLESS.php" role="php" />
+    <file baseinstalldir="/" name="Packer.php" role="php" />
+    <file baseinstalldir="/" name="Path.php" role="php" />
+   </dir> <!-- /Concentrate -->
+   <dir name="data">
+    <file baseinstalldir="/" name="cli.xml" role="data">
+     <tasks:replace from="@package-version@" to="version" type="package-info" />
+    </file>
+   </dir> <!-- /data -->
+   <dir name="resources">
+    <file baseinstalldir="/" name="concentrate-256.svg" role="data" />
+    <file baseinstalldir="/" name="concentrate.svg" role="data" />
+    <file baseinstalldir="/" name="presentation.odp" role="data" />
+   </dir> <!-- /resources -->
+   <dir name="scripts">
+    <file baseinstalldir="/" name="concentrate" role="script" />
+   </dir> <!-- /scripts -->
+   <dir name="tests">
+    <file baseinstalldir="/" name="graph-test.php" role="test" />
+    <file baseinstalldir="/" name="test.php" role="test" />
+   </dir> <!-- /tests -->
+   <file baseinstalldir="/" name="composer.json" role="data" />
+   <file baseinstalldir="/" name="README.md" role="data" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.2.1</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0</min>
+   </pearinstaller>
+   <package>
+    <name>YAML</name>
+    <channel>pear.symfony-project.com</channel>
+    <min>1.0.2</min>
+   </package>
+   <package>
+    <name>PEAR</name>
+    <channel>pear.php.net</channel>
+    <min>1.4.0</min>
+   </package>
+   <package>
+    <name>Console_CommandLine</name>
+    <channel>pear.php.net</channel>
+    <min>1.1.0</min>
+   </package>
+  </required>
+  <optional>
+   <extension>
+    <name>memcached</name>
+   </extension>
+  </optional>
+ </dependencies>
+ <phprelease>
+  <filelist>
+   <install as="concentrate" name="scripts/concentrate" />
+  </filelist>
+ </phprelease>
+ <changelog>
+  <release>
+   <version>
+    <release>0.0.17</release>
+    <api>0.0.15</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2014-05-05</date>
+   <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL License 2.1</license>
+   <notes>
+* Don&apos;t try to inline paths with interplorated variables in LESS    files.
+   </notes>
+  </release>
+ </changelog>
+</package>

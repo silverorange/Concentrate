@@ -39,7 +39,7 @@ $api_state       = 'alpha';
 $release_version = '0.0.17';
 $release_state   = 'alpha';
 $release_notes   =
-	  " * Don't try to inline paths with interplorated variables in LESS ".
+	  " * Don't try to inline paths with interpolated variables in LESS ".
 	  "   files.\n";
 
 $description =

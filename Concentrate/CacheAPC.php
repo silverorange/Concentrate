@@ -22,7 +22,7 @@ class Concentrate_CacheAPC extends Concentrate_CacheHierarchyAbstract
 		$this->extraPrefix = strval($extraPrefix);
 	}
 
-	public function setPrefix($prefix)
+	public function setPrefixSelf($prefix)
 	{
 		$this->prefix = strval($prefix);
 	}

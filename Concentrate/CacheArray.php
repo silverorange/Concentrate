@@ -13,7 +13,7 @@ class Concentrate_CacheArray extends Concentrate_CacheHierarchyAbstract
 {
 	protected $data = array();
 
-	public function setPrefix($prefix)
+	public function setPrefixSelf($prefix)
 	{
 		// do nothing since array is not saved between requests
 	}

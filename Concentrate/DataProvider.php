@@ -96,7 +96,7 @@ class Concentrate_DataProvider
 				$key = md5(implode(':', $files));
 			}
 
-			$this->cachePrefix = 'concentrate:' . $key;
+			$this->cachePrefix = $key;
 		}
 
 		return $this->cachePrefix;

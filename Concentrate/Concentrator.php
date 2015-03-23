@@ -333,7 +333,7 @@ class Concentrate_Concentrator
 			// index by file, with values being the relative sort order
 			$fileSortOrder = array_flip($fileSortOrder);
 
-			$this->cache->set('fileSortOrder', $fileSortOrder);
+			$this->setCachedValue('fileSortOrder', $fileSortOrder);
 		}
 
 		return $fileSortOrder;
@@ -367,7 +367,7 @@ class Concentrate_Concentrator
 				}
 			}
 
-			$this->cache->set('fileInfo', $fileInfo);
+			$this->setCachedValue('fileInfo', $fileInfo);
 		}
 
 		return $fileInfo;
@@ -445,7 +445,7 @@ class Concentrate_Concentrator
 			// sort largest sets first
 			uasort($combinesInfo, array($this, 'compareCombines'));
 
-			$this->cache->set('combinesInfo', $combinesInfo);
+			$this->setCachedValue('combinesInfo', $combinesInfo);
 		}
 
 		return $combinesInfo;
@@ -499,7 +499,7 @@ class Concentrate_Concentrator
 				}
 			}
 
-			$this->cache->set('dependsInfo', $dependsInfo);
+			$this->setCachedValue('dependsInfo', $dependsInfo);
 		}
 
 		return $dependsInfo;
@@ -639,7 +639,7 @@ class Concentrate_Concentrator
 			// sort order
 			$packageSortOrder = array_flip($order);
 
-			$this->cache->set('packageSortOrder', $packageSortOrder);
+			$this->setCachedValue('packageSortOrder', $packageSortOrder);
 		}
 
 		return $packageSortOrder;
@@ -668,6 +668,15 @@ class Concentrate_Concentrator
 	{
 		$this->cache->setPrefix($this->dataProvider->getCachePrefix());
 		return $this->cache->get($key);
+	}
+
+	// }}}
+	// {{{ setCachedValue()
+
+	protected function setCachedValue($key, $value)
+	{
+		$this->cache->setPrefix($this->dataProvider->getCachePrefix());
+		return $this->cache->set($key, $value);
 	}
 
 	// }}}

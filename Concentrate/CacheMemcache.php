@@ -22,7 +22,7 @@ class Concentrate_CacheMemcache extends Concentrate_CacheHierarchyAbstract
 		$this->memcache    = $memcache;
 	}
 
-	public function setPrefix($prefix)
+	public function setPrefixSelf($prefix)
 	{
 		$this->prefix = strval($prefix);
 	}

@@ -56,9 +56,19 @@ abstract class Concentrate_CacheHierarchyAbstract
 		return $response;
 	}
 
+	public function setPrefix($prefix)
+	{
+		$this->setPrefixSelf($prefix);
+
+		if ($this->subcache !== null) {
+			$this->subcache->setPrefix($prefix);
+		}
+	}
+
 	abstract protected function setSelf($key, $value);
 	abstract protected function getSelf($key);
 	abstract protected function deleteSelf($key);
+	abstract protected function setPrefixSelf($prefix);
 }
 
 ?>

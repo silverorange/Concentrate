@@ -426,12 +426,12 @@ class Concentrate_CLI
 				// URIs within the CSS
 				if ($type === 'css') {
 					$fromFilterFile = ($directory == '')
-						? $file
-						: $directory . '/' . $file;
+						? $combine
+						: $directory . '/' . $combine;
 
 					$toFilterFile = ($directory =='')
-						? 'min/' . $file
-						: 'min/' . $directory . '/' . $file;
+						? 'min/' . $combine
+						: 'min/' . $directory . '/' . $combine;
 
 					$moveFilter = new Concentrate_Filter_CSSMover(
 						$fromFilterFile,
@@ -569,8 +569,8 @@ class Concentrate_CLI
 				}
 
 				$filter = new Concentrate_Filter_CSSMover(
-					$file,
-					'compiled/' . $file
+					$combine,
+					'compiled/' . $combine
 				);
 
 				$this->writeCompiledFile(

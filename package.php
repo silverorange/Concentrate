@@ -36,7 +36,7 @@ PEAR::setErrorHandling(PEAR_ERROR_DIE);
 $api_version     = '0.0.15';
 $api_state       = 'alpha';
 
-$release_version = '0.0.17';
+$release_version = '0.0.18';
 $release_state   = 'alpha';
 $release_notes   =
 	  " * Don't try to inline paths with interpolated variables in LESS ".

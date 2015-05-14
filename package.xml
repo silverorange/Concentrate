@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.9.4" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+<package packagerversion="1.9.5" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
     http://pear.php.net/dtd/tasks-1.0.xsd
     http://pear.php.net/dtd/package-2.0
     http://pear.php.net/dtd/package-2.0.xsd">
@@ -13,10 +13,10 @@
   <email>mike@silverorange.com</email>
   <active>yes</active>
  </lead>
- <date>2014-05-05</date>
- <time>10:24:36</time>
+ <date>2015-05-14</date>
+ <time>15:39:52</time>
  <version>
-  <release>0.0.17</release>
+  <release>0.0.18</release>
   <api>0.0.15</api>
  </version>
  <stability>
@@ -25,7 +25,7 @@
  </stability>
  <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL License 2.1</license>
  <notes>
-* Don&apos;t try to inline paths with interplorated variables in LESS    files.
+* Don&apos;t try to inline paths with interpolated variables in LESS    files.
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
@@ -129,17 +129,17 @@
  <changelog>
   <release>
    <version>
-    <release>0.0.17</release>
+    <release>0.0.18</release>
     <api>0.0.15</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2014-05-05</date>
+   <date>2015-05-14</date>
    <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL License 2.1</license>
    <notes>
-* Don&apos;t try to inline paths with interplorated variables in LESS    files.
+* Don&apos;t try to inline paths with interpolated variables in LESS    files.
    </notes>
   </release>
  </changelog>

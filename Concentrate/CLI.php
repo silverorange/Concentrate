@@ -459,7 +459,8 @@ class Concentrate_CLI
 		$toFilename,
 		$type
 	) {
-		$md5 = md5_file($fromFilename);
+		// cache key is unique on file path and file content
+		$md5 = md5($fromFilename . md5_file($fromFilename));
 		$dir = $this->getMinifiedCacheDir();
 
 		$cacheFilename = $dir . DIRECTORY_SEPARATOR . $md5;
@@ -591,7 +592,8 @@ class Concentrate_CLI
 		$toFilename,
 		$type
 	) {
-		$md5 = md5_file($fromFilename);
+		// cache key is unique on file path and file content
+		$md5 = md5($fromFilename . md5_file($fromFilename));
 		$dir = $this->getCompiledCacheDir();
 
 		$cacheFilename = $dir . DIRECTORY_SEPARATOR . $md5;

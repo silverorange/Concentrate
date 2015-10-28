@@ -10,7 +10,7 @@ require_once 'Concentrate/Graph/TopologicalSorter.php';
  * @category  Tools
  * @package   Concentrate
  * @author    Michael Gauthier <mike@silverorange.com>
- * @copyright 2010 silverorange
+ * @copyright 2010-2015 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_Concentrator
@@ -181,7 +181,6 @@ class Concentrate_Concentrator
 
 		$combinesInfo = $this->getCombinesInfo();
 		foreach ($combinesInfo as $combine => $combineInfo) {
-
 			$combinedFiles = array_keys($combineInfo['Includes']);
 
 			// check if combine does not conflict with already added combines
@@ -330,7 +329,8 @@ class Concentrate_Concentrator
 				$fileSortOrder[] = $node->getData();
 			}
 
-			// index by file, with values being the relative sort order
+			// Flip the sorted array so it is indexed by file with values
+			// being the relative sort order.
 			$fileSortOrder = array_flip($fileSortOrder);
 
 			$this->setCachedValue('fileSortOrder', $fileSortOrder);
@@ -352,18 +352,17 @@ class Concentrate_Concentrator
 			$fileInfo = array();
 
 			foreach ($data as $packageId => $info) {
-				if (isset($info['Provides']) && is_array($info['Provides'])) {
-					foreach ($info['Provides'] as $file => $providesInfo) {
-						if (isset($providesInfo['Minify'])) {
-							$providesInfo['Minify'] = $this->parseBoolean(
-								$providesInfo['Minify']
-							);
-						} else {
-							$providesInfo['Minify'] = true;
-						}
-						$providesInfo['Package'] = $packageId;
-						$fileInfo[$file] = $providesInfo;
+				$provides = $this->getProvidesForPackage($packageId);
+				foreach ($provides as $file => $providesInfo) {
+					if (isset($providesInfo['Minify'])) {
+						$providesInfo['Minify'] = $this->parseBoolean(
+							$providesInfo['Minify']
+						);
+					} else {
+						$providesInfo['Minify'] = true;
 					}
+					$providesInfo['Package'] = $packageId;
+					$fileInfo[$file] = $providesInfo;
 				}
 			}
 
@@ -387,34 +386,33 @@ class Concentrate_Concentrator
 			$combinesInfo = array();
 
 			foreach ($data as $packageId => $info) {
-				if (isset($info['Combines']) && is_array($info['Combines'])) {
-					foreach ($info['Combines'] as $combine => $combineInfo) {
+				$combines = $this->getCombinesForPackage($packageId);
+				foreach ($combines as $combine => $combineInfo) {
 
-						// create entry for the combine set if it does
-						// not exist
-						if (!isset($combinesInfo[$combine])) {
-							$combinesInfo[$combine] = array(
-								'Includes' => array(),
-								'Minify'   => true,
+					// create entry for the combine set if it does
+					// not exist
+					if (!isset($combinesInfo[$combine])) {
+						$combinesInfo[$combine] = array(
+							'Includes' => array(),
+							'Minify'   => true,
+						);
+					}
+
+					// set additional attributes
+					if (isset($combineInfo['Minify'])) {
+						$combinesInfo[$combine]['Minify'] =
+							$this->parseBoolean(
+								$combinesInfo['Minify']
 							);
-						}
+					}
 
-						// set additional attributes
-						if (isset($combineInfo['Minify'])) {
-							$combinesInfo[$combine]['Minify'] =
-								$this->parseBoolean(
-									$combinesInfo['Minify']
-								);
-						}
-
-						// add entries to the set
-						if (   isset($combineInfo['Includes'])
-							&& is_array($combineInfo['Includes'])
-						) {
-							foreach ($combineInfo['Includes'] as $file) {
-								$combinesInfo[$combine]['Includes'][$file] =
-									array('explicit' => true);
-							}
+					// add entries to the set
+					if (   isset($combineInfo['Includes'])
+						&& is_array($combineInfo['Includes'])
+					) {
+						foreach ($combineInfo['Includes'] as $file) {
+							$combinesInfo[$combine]['Includes'][$file] =
+								array('explicit' => true);
 						}
 					}
 				}
@@ -469,32 +467,28 @@ class Concentrate_Concentrator
 			$dependsInfo = array();
 
 			foreach ($this->getPackageSortOrder() as $packageId => $order) {
-
 				if (!isset($data[$packageId])) {
 					continue;
 				}
 
-				$info = $data[$packageId];
-
-				if (isset($info['Provides']) && is_array($info['Provides'])) {
-					foreach ($info['Provides'] as $file => $fileInfo) {
-						if (!isset($dependsInfo[$file])) {
-							$dependsInfo[$file] = array();
-						}
-						if (isset($fileInfo['Depends'])) {
-							$dependsInfo[$file] = array_merge(
-								$dependsInfo[$file],
-								$fileInfo['Depends']
-							);
-						}
-						// TODO: some day we could treat optional-depends
-						// differently
-						if (isset($fileInfo['OptionalDepends'])) {
-							$dependsInfo[$file] = array_merge(
-								$dependsInfo[$file],
-								$fileInfo['OptionalDepends']
-							);
-						}
+				$provides = $this->getProvidesForPackage($packageId);
+				foreach ($provides as $file => $fileInfo) {
+					if (!isset($dependsInfo[$file])) {
+						$dependsInfo[$file] = array();
+					}
+					if (isset($fileInfo['Depends'])) {
+						$dependsInfo[$file] = array_merge(
+							$dependsInfo[$file],
+							$fileInfo['Depends']
+						);
+					}
+					// TODO: some day we could treat optional-depends
+					// differently
+					if (isset($fileInfo['OptionalDepends'])) {
+						$dependsInfo[$file] = array_merge(
+							$dependsInfo[$file],
+							$fileInfo['OptionalDepends']
+						);
 					}
 				}
 			}
@@ -571,12 +565,11 @@ class Concentrate_Concentrator
 				if (!isset($packageDependencies[$packageId])) {
 					$packageDependencies[$packageId] = array();
 				}
-				if (isset($info['Depends'])) {
-					$packageDependencies[$packageId] = array_merge(
-						$packageDependencies[$packageId],
-						$info['Depends']
-					);
-				}
+				$depends = $this->getDependsForPackage($packageId);
+				$packageDependencies[$packageId] = array_merge(
+					$packageDependencies[$packageId],
+					$depends
+				);
 			}
 
 			// build into a graph
@@ -643,6 +636,78 @@ class Concentrate_Concentrator
 		}
 
 		return $packageSortOrder;
+	}
+
+	// }}}
+	// {{{ getProvidesForPackage()
+
+	protected function getProvidesForPackage($packageId)
+	{
+		$cacheKey = 'packageProvides.'.$packageId;
+		$packageProvides = $this->getCachedValue($cacheKey);
+		if ($packageProvides === false) {
+			$packageProvides = array();
+
+			$data = $this->dataProvider->getData();
+			if (isset($data[$packageId])) {
+				$info = $data[$packageId];
+				if (isset($info['Provides']) && is_array($info['Provides'])) {
+					$packageProvides = $info['Provides'];
+				}
+			}
+
+			$this->setCachedValue($cacheKey, $packageProvides);
+		}
+
+		return $packageProvides;
+	}
+
+	// }}}
+	// {{{ getDependsForPackage()
+
+	protected function getDependsForPackage($packageId)
+	{
+		$cacheKey = 'packageDepends.'.$packageId;
+		$packageDepends = $this->getCachedValue($cacheKey);
+		if ($packageDepends === false) {
+			$packageDepends = array();
+
+			$data = $this->dataProvider->getData();
+			if (isset($data[$packageId])) {
+				$info = $data[$packageId];
+				if (isset($info['Depends']) && is_array($info['Depends'])) {
+					$packageDepends = $info['Depends'];
+				}
+			}
+
+			$this->setCachedValue($cacheKey, $packageDepends);
+		}
+
+		return $packageDepends;
+	}
+
+	// }}}
+	// {{{ getCombinesForPackage()
+
+	protected function getCombinesForPackage($packageId)
+	{
+		$cacheKey = 'packageCombines.'.$packageId;
+		$packageCombines = $this->getCachedValue($cacheKey);
+		if ($packageCombines === false) {
+			$packageCombines = array();
+
+			$data = $this->dataProvider->getData();
+			if (isset($data[$packageId])) {
+				$info = $data[$packageId];
+				if (isset($info['Combines']) && is_array($info['Combines'])) {
+					$packageCombines = $info['Combines'];
+				}
+			}
+
+			$this->setCachedValue($cacheKey, $packageCombines);
+		}
+
+		return $packageCombines;
 	}
 
 	// }}}

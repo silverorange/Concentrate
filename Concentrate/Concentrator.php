@@ -395,7 +395,6 @@ class Concentrate_Concentrator
 						$combinesInfo[$combine] = array(
 							'Includes' => array(),
 							'Minify'   => true,
-							'Package'  => $packageId
 						);
 					}
 

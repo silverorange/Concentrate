@@ -13,10 +13,10 @@
   <email>mike@silverorange.com</email>
   <active>yes</active>
  </lead>
- <date>2015-05-14</date>
- <time>15:39:52</time>
+ <date>2015-11-02</date>
+ <time>10:55:40</time>
  <version>
-  <release>0.0.18</release>
+  <release>0.0.19</release>
   <api>0.0.15</api>
  </version>
  <stability>
@@ -129,14 +129,14 @@
  <changelog>
   <release>
    <version>
-    <release>0.0.18</release>
+    <release>0.0.19</release>
     <api>0.0.15</api>
    </version>
    <stability>
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2015-05-14</date>
+   <date>2015-11-02</date>
    <license uri="http://www.gnu.org/copyleft/lesser.html">LGPL License 2.1</license>
    <notes>
 * Don&apos;t try to inline paths with interpolated variables in LESS    files.

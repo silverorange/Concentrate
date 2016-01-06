@@ -1,26 +1,26 @@
 {
-	"name"        : "silverorange/concentrate",
+	"name": "silverorange/concentrate",
 	"description" : "This package provides a command-line tool to glob and minify static resources for a website using silverorange's Site package. Files are combined according to a configuration file passed on the command-line.",
-	"type"        : "library",
-	"keywords"    : [ "bundle", "minification", "css", "javascript", "less" ],
-	"homepage"    : "https://github.com/silverorange/Concentrate",
-	"license"     : "LGPL-2.1",
-	"authors"     : [
+	"type": "library",
+	"keywords": [ "bundle", "minification", "css", "javascript", "less" ],
+	"homepage": "https://github.com/silverorange/Concentrate",
+	"license": "LGPL-2.1",
+	"authors": [
 		{
 			"name"  : "Michael Gauthier",
 			"email" : "mike@silverorange.com"
 		}
 	],
-	"require"     : {
-		"php"                      : ">=5.2.1",
-		"pear/pear"                : ">=1.4.0",
-		"pear/console_commandline" : ">=1.1.10",
-		"symfony/yaml"             : ">=1.0.2"
+	"require": {
+		"php": ">=5.5.9",
+		"pear/pear": "^1.4.0",
+		"pear/console_commandline": "^1.1.10",
+		"symfony/yaml": "^3.0.0"
 	},
-	"suggest"     : {
-		"ext-memcached"           : "Allows caching resource definition YAML files between requests."
+	"suggest": {
+		"ext-memcached": "Allows caching resource definition YAML files between requests."
 	},
-	"bin"         : [
+	"bin": [
 		"scripts/concentrate"
 	],
 	"autoload": {

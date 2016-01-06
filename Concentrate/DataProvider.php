@@ -1,6 +1,7 @@
 <?php
 
-require_once 'SymfonyComponents/YAML/sfYamlParser.php';
+use Symfony\Component\Yaml\Yaml;
+
 require_once 'Concentrate/Exception.php';
 require_once 'Concentrate/CacheInterface.php';
 require_once 'Concentrate/CacheArray.php';
@@ -71,7 +72,7 @@ class Concentrate_DataProvider
 		}
 
 		try {
-			$data = sfYaml::load($filename);
+			$data = Yaml::parse(file_get_contents($filename));
 			$this->loadedFiles[] = $filename;
 		} catch (InvalidArgumentException $e) {
 			throw new Concentrate_FileFormatException(

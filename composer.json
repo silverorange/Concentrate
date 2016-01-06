@@ -27,5 +27,8 @@
 		"psr-0": {
 			"Concentrate" : ""
 		}
-	}
+	},
+	"include-path": [
+		"./"
+	]
 }

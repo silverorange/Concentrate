@@ -10,6 +10,7 @@ require_once 'Concentrate/Filter/Abstract.php';
 require_once 'Concentrate/Filter/CSSMover.php';
 require_once 'Concentrate/Filter/Minifier/Abstract.php';
 require_once 'Concentrate/Filter/Minifier/YUICompressor.php';
+require_once 'Concentrate/FlagFile.php';
 
 /**
  * @category  Tools
@@ -23,10 +24,6 @@ class Concentrate_CLI
 	const VERBOSITY_NONE     = 0;
 	const VERBOSITY_MESSAGES = 1;
 	const VERBOSITY_DETAILS  = 2;
-
-	const FILENAME_FLAG_COMBINED = '.concentrate-combined';
-	const FILENAME_FLAG_MINIFIED = '.concentrate-minified';
-	const FILENAME_FLAG_COMPILED = '.concentrate-compiled';
 
 	/**
 	 * @var Console_CommandLine
@@ -194,12 +191,14 @@ class Concentrate_CLI
 	protected function loadDataFiles()
 	{
 		// load data files from pear
-		$fileFinder = new Concentrate_DataProvider_FileFinderPear(
-			$this->pearrc
-		);
-		$this->concentrator->loadDataFiles(
-			$fileFinder->getDataFiles()
-		);
+		if ($this->pearrc !== null) {
+			$fileFinder = new Concentrate_DataProvider_FileFinderPear(
+				$this->pearrc
+			);
+			$this->concentrator->loadDataFiles(
+				$fileFinder->getDataFiles()
+			);
+		}
 
 		// load data files from optional directory
 		if ($this->directory != '') {
@@ -638,17 +637,17 @@ class Concentrate_CLI
 
 	protected function writeCombinedFlagFile()
 	{
-		$this->writeFlagFile(self::FILENAME_FLAG_COMBINED);
+		$this->writeFlagFile(Concentrate_FlagFile::COMBINED);
 	}
 
 	protected function writeMinifiedFlagFile()
 	{
-		$this->writeFlagFile(self::FILENAME_FLAG_MINIFIED);
+		$this->writeFlagFile(Concentrate_FlagFile::MINIFIED);
 	}
 
 	protected function writeCompiledFlagFile()
 	{
-		$this->writeFlagFile(self::FILENAME_FLAG_COMPILED);
+		$this->writeFlagFile(Concentrate_FlagFile::COMPILED);
 	}
 
 	protected function writeFlagFile($filename)

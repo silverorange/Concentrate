@@ -4,6 +4,7 @@ require_once 'Console/CommandLine.php';
 require_once 'Concentrate/Concentrator.php';
 require_once 'Concentrate/Packer.php';
 require_once 'Concentrate/DataProvider.php';
+require_once 'Concentrate/DataProvider/FileFinderComposer.php';
 require_once 'Concentrate/DataProvider/FileFinderPear.php';
 require_once 'Concentrate/CompilerLess.php';
 require_once 'Concentrate/Filter/Abstract.php';
@@ -190,8 +191,16 @@ class Concentrate_CLI
 
 	protected function loadDataFiles()
 	{
-		// load data files from pear
-		if ($this->pearrc !== null) {
+		// load data files from composer vendor dir
+		$fileFinder = new Concentrate_DataProvider_FileFinderComposer(
+			$this->webroot
+		);
+		$this->concentrator->loadDataFiles(
+			$fileFinder->getDataFiles()
+		);
+
+		// load data files from PEAR
+		if ($this->pearrc != '') {
 			$fileFinder = new Concentrate_DataProvider_FileFinderPear(
 				$this->pearrc
 			);

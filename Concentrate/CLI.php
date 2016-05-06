@@ -164,7 +164,9 @@ class Concentrate_CLI
 
 		if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
 			$this->display(PHP_EOL . 'Options:' . PHP_EOL);
-			$this->display('=> pearrc    : ' . $this->pearrc . PHP_EOL);
+			if ($this->pearrc != '') {
+				$this->display('=> pearrc    : ' . $this->pearrc . PHP_EOL);
+			}
 			$this->display('=> directory : ' . $this->directory . PHP_EOL);
 			$this->display(
 				sprintf(

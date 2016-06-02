@@ -79,7 +79,7 @@ class Concentrate_DataProvider
 				"Data file '{$filename}' is not valid YAML.",0, $filename);
 		}
 
-		$this->data = array_merge_recursive($this->data, $data);
+		$this->data = array_replace_recursive($this->data, $data);
 	}
 
 	public function getCachePrefix()

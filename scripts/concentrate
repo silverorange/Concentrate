@@ -1,9 +1,20 @@
 #! /usr/bin/env php
 <?php
 
-$autoload = __DIR__ . '/../vendor/autoload.php';
-if (file_exists($autoload)) {
-	require_once $autoload;
+$autoloadPaths = array(
+	// Try to load autoloader if Concentrate is the root project.
+	__DIR__ . '/../vendor/autoload.php',
+
+	// Try to load an autoloader if Concentrate is installed as a library for
+	// another root project.
+	__DIR__ . '/../../../autoload.php',
+);
+
+foreach ($autoloadPaths as $path) {
+	if (file_exists($path)) {
+		require_once $path;
+		break;
+	}
 }
 
 require_once 'Concentrate/CLI.php';

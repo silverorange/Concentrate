@@ -22,3 +22,10 @@ Options:
 Arguments:
   webroot  The directory to which files will be written.
 </pre>
+
+Installation
+------------
+
+```sh
+composer require silverorange/concentrate
+```

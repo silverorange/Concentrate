@@ -1,11 +1,8 @@
 <?php
 
-error_reporting(E_ALL);
-set_include_path(dirname(dirname(__FILE__)) . ':' . get_include_path());
+require_once __DIR__ . '/vendor/autoload.php';
 
-require_once 'Concentrate/Graph.php';
-require_once 'Concentrate/Graph/Node.php';
-require_once 'Concentrate/Graph/TopologicalSorter.php';
+error_reporting(E_ALL);
 
 $graph = new Concentrate_Graph();
 

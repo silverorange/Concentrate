@@ -2,10 +2,6 @@
 
 use Symfony\Component\Yaml\Yaml;
 
-require_once 'Concentrate/Exception.php';
-require_once 'Concentrate/CacheInterface.php';
-require_once 'Concentrate/CacheArray.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

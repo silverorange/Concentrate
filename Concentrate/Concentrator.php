@@ -1,11 +1,5 @@
 <?php
 
-require_once 'Concentrate/CacheArray.php';
-require_once 'Concentrate/DataProvider.php';
-require_once 'Concentrate/Graph.php';
-require_once 'Concentrate/Graph/Node.php';
-require_once 'Concentrate/Graph/TopologicalSorter.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

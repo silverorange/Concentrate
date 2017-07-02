@@ -1,9 +1,5 @@
 <?php
 
-require_once 'Concentrate/Exception.php';
-require_once 'Concentrate/FileList.php';
-require_once 'Concentrate/Inliner.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

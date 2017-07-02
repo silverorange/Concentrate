@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Concentrate/Exception.php';
-require_once 'Concentrate/Graph.php';
-
 /**
  * Topological sorting algorithm used is the Kahn Algorithm taken from
  * {@link http://en.wikipedia.org/wiki/Topological_sorting}.

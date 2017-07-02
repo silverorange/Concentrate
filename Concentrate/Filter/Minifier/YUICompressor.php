@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Concentrate/Filter/Minifier/Abstract.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

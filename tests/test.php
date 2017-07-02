@@ -1,10 +1,8 @@
 <?php
 
-error_reporting(E_ALL);
-set_include_path(get_include_path() . ':' . dirname(dirname(__FILE__)));
+require_once __DIR__ . '/vendor/autoload.php';
 
-require_once 'Concentrate/Concentrator.php';
-require_once 'Concentrate/DataProvider/FileFinderPear.php';
+error_reporting(E_ALL);
 
 $pearrc = '/so/sites/dutch-bulbs/work-gauthierm' .
 	DIRECTORY_SEPARATOR . 'pear' .

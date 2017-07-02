@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Concentrate/Exception.php';
-require_once 'Concentrate/FileList.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

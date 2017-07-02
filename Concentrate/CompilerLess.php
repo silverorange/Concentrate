@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Concentrate/CompilerAbstract.php';
-require_once 'Concentrate/Exception.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

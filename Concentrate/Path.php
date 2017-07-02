@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Concentrate/Exception.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

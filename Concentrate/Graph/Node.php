@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Concentrate/Graph.php';
-
 /**
  * Portions of this code are based on PEAR's Structures_Graph package, which is
  * licensed under the GNU Lesser General Public License version 2.1 or later.

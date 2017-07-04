@@ -16,6 +16,13 @@
 		"pear/console_commandline": "^1.1.10",
 		"symfony/yaml": "^3.0.0"
 	},
+	"require-dev": {
+		"silverorange/coding-standard": "^0.1.0"
+	},
+  "scripts": {
+    "post-install-cmd": "./vendor/bin/phpcs --config-set installed_paths vendor/silverorange/coding-standard/src",
+    "post-update-cmd": "./vendor/bin/phpcs --config-set installed_paths vendor/silverorange/coding-standard/src"
+  },
 	"suggest": {
 		"ext-memcached": "Allows caching resource definition YAML files between requests."
 	},
@@ -25,6 +32,6 @@
 	"autoload": {
 		"psr-0": {
 			"Concentrate" : ""
-		}
-	}
+	  }
+	},
 }

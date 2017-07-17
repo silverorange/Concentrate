@@ -13,7 +13,6 @@
 	],
 	"require": {
 		"php": ">=5.5.9",
-		"pear/pear-core-minimal": "^1.9.0",
 		"pear/console_commandline": "^1.1.10",
 		"symfony/yaml": "^3.0.0"
 	},

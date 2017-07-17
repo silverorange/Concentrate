@@ -24,11 +24,6 @@ class Concentrate_CLI
 	protected $concentrator = null;
 
 	/**
-	 * @var string
-	 */
-	protected $pearrc = null;
-
-	/**
 	 * @var boolean
 	 */
 	protected $minify = false;
@@ -118,12 +113,6 @@ class Concentrate_CLI
 			$this->verbosity = intval($options['verbose']);
 		}
 
-		if (   array_key_exists('pearrc', $options)
-			&& $options['pearrc'] !== null
-		) {
-			$this->pearrc = strval($options['pearrc']);
-		}
-
 		if (   array_key_exists('combine', $options)
 			&& $options['combine'] !== null
 		) {
@@ -151,9 +140,6 @@ class Concentrate_CLI
 
 		if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
 			$this->display(PHP_EOL . 'Options:' . PHP_EOL);
-			if ($this->pearrc != '') {
-				$this->display('=> pearrc    : ' . $this->pearrc . PHP_EOL);
-			}
 			$this->display('=> directory : ' . $this->directory . PHP_EOL);
 			$this->display(
 				sprintf(
@@ -187,16 +173,6 @@ class Concentrate_CLI
 		$this->concentrator->loadDataFiles(
 			$fileFinder->getDataFiles()
 		);
-
-		// load data files from PEAR
-		if ($this->pearrc != '') {
-			$fileFinder = new Concentrate_DataProvider_FileFinderPear(
-				$this->pearrc
-			);
-			$this->concentrator->loadDataFiles(
-				$fileFinder->getDataFiles()
-			);
-		}
 
 		// load data files from optional directory
 		if ($this->directory != '') {

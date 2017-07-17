@@ -7,7 +7,6 @@ Usage:
   /usr/bin/concentrate [options] &lt;webroot&gt;
 
 Options:
-  -c pearrc, --pearrc=pearrc           Location of PEAR configuration file.
   -d directory, --directory=directory  Optional additional directory to
                                        search for dependency data files.
   -C, --combine                        Write combined files.

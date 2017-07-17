@@ -5,12 +5,6 @@
 	<messages>
 		<message name="ARGUMENT_REQUIRED">No web root specified. Try &quot;concentrate --help&quot;.</message>
 	</messages>
-	<option name="pearrc">
-		<short_name>-c</short_name>
-		<long_name>--pearrc</long_name>
-		<description>Location of PEAR configuration file.</description>
-		<action>StoreString</action>
-	</option>
 	<option name="directory">
 		<short_name>-d</short_name>
 		<long_name>--directory</long_name>

@@ -1,18 +1,5 @@
 <?php
 
-require_once 'Console/CommandLine.php';
-require_once 'Concentrate/Concentrator.php';
-require_once 'Concentrate/Packer.php';
-require_once 'Concentrate/DataProvider.php';
-require_once 'Concentrate/DataProvider/FileFinderComposer.php';
-require_once 'Concentrate/DataProvider/FileFinderPear.php';
-require_once 'Concentrate/CompilerLess.php';
-require_once 'Concentrate/Filter/Abstract.php';
-require_once 'Concentrate/Filter/CSSMover.php';
-require_once 'Concentrate/Filter/Minifier/Abstract.php';
-require_once 'Concentrate/Filter/Minifier/YUICompressor.php';
-require_once 'Concentrate/FlagFile.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

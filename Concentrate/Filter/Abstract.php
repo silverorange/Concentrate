@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Concentrate/Path.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

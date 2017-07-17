@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Concentrate/CacheHierarchyAbstract.php';
-require_once 'Concentrate/CacheArray.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

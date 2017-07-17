@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Concentrate/CacheInterface.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

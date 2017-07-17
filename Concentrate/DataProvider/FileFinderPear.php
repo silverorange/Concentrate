@@ -1,9 +1,5 @@
 <?php
 
-require_once 'Concentrate/DataProvider/FileFinderInterface.php';
-require_once 'Concentrate/DataProvider/FileFinderDirectory.php';
-require_once 'PEAR/Config.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

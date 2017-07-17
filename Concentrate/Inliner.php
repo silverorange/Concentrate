@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Concentrate/Exception.php';
-require_once 'Concentrate/FileList.php';
-
 /**
  * @category  Tools
  * @package   Concentrate
@@ -49,11 +46,9 @@ class Concentrate_Inliner
 
 		switch (strtolower($extension)) {
 		case 'css':
-			include_once 'Concentrate/InlinerCSS.php';
 			$class = 'Concentrate_InlinerCSS';
 			break;
 		case 'less':
-			include_once 'Concentrate/InlinerLESS.php';
 			$class = 'Concentrate_InlinerLESS';
 			break;
 		default:

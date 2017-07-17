@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Concentrate/InlinerCSS.php';
-
 /**
  * @category  Tools
  * @package   Concentrate

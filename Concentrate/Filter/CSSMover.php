@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Concentrate/Path.php';
-require_once 'Concentrate/Filter/Abstract.php';
-
 /**
  * Updates CSS content with rebased relative URIs
  *

@@ -1,5 +1,7 @@
 <?php
 
+use Chalk\Chalk;
+
 /**
  * @category  Tools
  * @package   Concentrate
@@ -53,6 +55,16 @@ class Concentrate_CLI
 	 */
 	protected $verbosity = self::VERBOSITY_NONE;
 
+	/**
+	 * @var Concentrate_FileCache
+	 */
+	protected $compiledCache = null;
+
+	/**
+	 * @var Concentrate_FileCache
+	 */
+	protected $minifiedCache = null;
+
 	public function run()
 	{
 		$this->concentrator = new Concentrate_Concentrator();
@@ -87,6 +99,18 @@ class Concentrate_CLI
 			$this->displayError($e->getMessage() . PHP_EOL, false);
 			$this->displayError($e->getTraceAsString() . PHP_EOL);
 		}
+	}
+
+	public function setCompiledCache(Concentrate_FileCache $cache)
+	{
+		$this->compiledCache = $cache;
+		return $this;
+	}
+
+	public function setMinifiedCache(Concentrate_FileCache $cache)
+	{
+		$this->minifiedCache = $cache;
+		return $this;
 	}
 
 	protected function setWebRoot($webroot)
@@ -433,38 +457,36 @@ class Concentrate_CLI
 		$type
 	) {
 		// cache key is unique on file path and file content
-		$md5 = md5($fromFilename . md5_file($fromFilename));
-		$dir = $this->getMinifiedCacheDir();
+		$key = md5($fromFilename . md5_file($fromFilename));
 
-		$cacheFilename = $dir . DIRECTORY_SEPARATOR . $md5;
+		$cache = $this->minifiedCache;
 
-		if (file_exists($cacheFilename) && is_readable($cacheFilename)) {
-			// use cache file
-			if (!file_exists(dirname($toFilename))) {
-				mkdir(dirname($toFilename), 0770, true);
-			}
-			copy($cacheFilename, $toFilename);
+		if ($cache instanceof Concentrate_FileCache &&
+			$cache->copyTo($key, $toFilename)
+		) {
 			if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-				$this->display(' * used cached version' . PHP_EOL);
+				$this->display(
+					Chalk::light_gray('   used cached version' . PHP_EOL)
+				);
 			}
 		} else {
 			// minify
 			$filter->filterFile($fromFilename, $toFilename, $type);
 
-			// write cache file
-			if (!is_dir($dir) && is_writable(dirname($dir))) {
-				mkdir($dir, 0770, true);
-			}
-
-			if (is_dir($dir) && is_writable($dir)) {
-				copy($toFilename, $cacheFilename);
+			if ($cache instanceof Concentrate_FileCache &&
+				$cache->write($key, $toFilename)
+			) {
 				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-					$this->display(' * wrote cached version' . PHP_EOL);
+					$this->display(
+						Chalk::light_gray('   wrote cached version' . PHP_EOL)
+					);
 				}
 			} else {
 				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
 					$this->display(
-						' * could not write cached version' . PHP_EOL
+						Chalk::light_gray(
+							'   could not write cached version' . PHP_EOL
+						)
 					);
 				}
 			}
@@ -566,19 +588,17 @@ class Concentrate_CLI
 		$type
 	) {
 		// cache key is unique on file path and file content
-		$md5 = md5($fromFilename . md5_file($fromFilename));
-		$dir = $this->getCompiledCacheDir();
+		$key = md5($fromFilename . md5_file($fromFilename));
 
-		$cacheFilename = $dir . DIRECTORY_SEPARATOR . $md5;
+		$cache = $this->compiledCache;
 
-		if (file_exists($cacheFilename) && is_readable($cacheFilename)) {
-			// use cache file
-			if (!file_exists(dirname($toFilename))) {
-				mkdir(dirname($toFilename), 0770, true);
-			}
-			copy($cacheFilename, $toFilename);
+		if ($cache instanceof Concentrate_FileCache &&
+			$cache->copyTo($key, $toFilename)
+		) {
 			if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-				$this->display(' * used cached version' . PHP_EOL);
+				$this->display(
+					Chalk::light_gray('   used cached version' . PHP_EOL)
+				);
 			}
 		} else {
 			// compile
@@ -589,20 +609,20 @@ class Concentrate_CLI
 				$filter->filterFile($toFilename, $toFilename);
 			}
 
-			// write cache file
-			if (!is_dir($dir) && is_writable(dirname($dir))) {
-				mkdir($dir, 0770, true);
-			}
-
-			if (is_dir($dir) && is_writable($dir)) {
-				copy($toFilename, $cacheFilename);
+			if ($cache instanceof Concentrate_FileCache &&
+				$cache->write($key, $toFilename)
+			) {
 				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-					$this->display(' * wrote cached version' . PHP_EOL);
+					$this->display(
+						Chalk::light_gray('   wrote cached version' . PHP_EOL)
+					);
 				}
 			} else {
 				if ($this->verbosity >= self::VERBOSITY_DETAILS) {
 					$this->display(
-						' * could not write cached version' . PHP_EOL
+						Chalk::light_gray(
+							'   could not write cached version' . PHP_EOL
+						)
 					);
 				}
 			}
@@ -649,39 +669,11 @@ class Concentrate_CLI
 		}
 	}
 
-	protected function getMinifiedCacheDir()
-	{
-		$dir = '@data-dir@' . DIRECTORY_SEPARATOR . '@package-name@';
-
-		if ($dir[0] == '@') {
-			$dir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..';
-		}
-
-		return $dir . DIRECTORY_SEPARATOR . 'minified-cache';
-	}
-
-	protected function getCompiledCacheDir()
-	{
-		$dir = '@data-dir@' . DIRECTORY_SEPARATOR . '@package-name@';
-
-		if ($dir[0] == '@') {
-			$dir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..';
-		}
-
-		return $dir . DIRECTORY_SEPARATOR . 'compiled-cache';
-	}
-
 	protected function getUiXml()
 	{
-		$dir = '@data-dir@' . DIRECTORY_SEPARATOR
-			. '@package-name@' . DIRECTORY_SEPARATOR . 'data';
-
-		if ($dir[0] == '@') {
-			$dir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..'
-				. DIRECTORY_SEPARATOR . 'data';
-		}
-
-		return $dir . DIRECTORY_SEPARATOR . 'cli.xml';
+		return __DIR__ . DIRECTORY_SEPARATOR . '..'
+			. DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR
+			. 'cli.xml';
 	}
 
 	protected function display($string)

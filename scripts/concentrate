@@ -17,7 +17,19 @@ foreach ($autoloadPaths as $path) {
 	}
 }
 
+$compiledCache = new Concentrate_FileCache(
+  '/var/cache/concentrate/compiled-cache',
+  __DIR__ . '/../compiled-cache'
+);
+
+$minifiedCache = new Concentrate_FileCache(
+  '/var/cache/concentrate/minified-cache',
+  __DIR__ . '/../minified-cache'
+);
+
 $cli = new Concentrate_CLI();
+$cli->setCompiledCache($compiledCache);
+$cli->setMinifiedCache($minifiedCache);
 $cli->run();
 
 ?>

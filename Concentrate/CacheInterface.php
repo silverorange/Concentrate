@@ -9,10 +9,10 @@
  */
 interface Concentrate_CacheInterface
 {
-	public function setPrefix($prefix);
-	public function set($key, $value);
-	public function get($key);
-	public function delete($key);
+    public function setPrefix($prefix);
+    public function set($key, $value);
+    public function get($key);
+    public function delete($key);
 }
 
 ?>

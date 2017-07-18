@@ -8,31 +8,31 @@
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_DataProvider_FileFinderDevelopment
-	implements Concentrate_DataProvider_FileFinderInterface
+    implements Concentrate_DataProvider_FileFinderInterface
 {
-	public function getDataFiles()
-	{
-		$files = array();
+    public function getDataFiles()
+    {
+        $files = array();
 
-		foreach ($this->getIncludeDirs() as $includeDir) {
-			$dependencyDir = $includeDir . DIRECTORY_SEPARATOR . 'dependencies';
+        foreach ($this->getIncludeDirs() as $includeDir) {
+            $dependencyDir = $includeDir . DIRECTORY_SEPARATOR . 'dependencies';
 
-			$finder = new Concentrate_DataProvider_FileFinderDirectory(
-				$dependencyDir
-			);
+            $finder = new Concentrate_DataProvider_FileFinderDirectory(
+                $dependencyDir
+            );
 
-			$files = array_merge($files, $finder->getDataFiles());
-		}
+            $files = array_merge($files, $finder->getDataFiles());
+        }
 
-		return $files;
-	}
+        return $files;
+    }
 
-	protected function getIncludeDirs()
-	{
-		$dirs = explode(PATH_SEPARATOR, get_include_path());
-		$dirs[] = '..';
-		return $dirs;
-	}
+    protected function getIncludeDirs()
+    {
+        $dirs = explode(PATH_SEPARATOR, get_include_path());
+        $dirs[] = '..';
+        return $dirs;
+    }
 }
 
 ?>

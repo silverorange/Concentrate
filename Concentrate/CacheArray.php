@@ -9,35 +9,35 @@
  */
 class Concentrate_CacheArray extends Concentrate_CacheHierarchyAbstract
 {
-	protected $data = array();
+    protected $data = array();
 
-	public function setPrefixSelf($prefix)
-	{
-		// do nothing since array is not saved between requests
-	}
+    public function setPrefixSelf($prefix)
+    {
+        // do nothing since array is not saved between requests
+    }
 
-	protected function setSelf($key, $value)
-	{
-		$this->data[$key] = $value;
-		return true;
-	}
+    protected function setSelf($key, $value)
+    {
+        $this->data[$key] = $value;
+        return true;
+    }
 
-	protected function getSelf($key)
-	{
-		$value = false;
+    protected function getSelf($key)
+    {
+        $value = false;
 
-		if (isset($this->data[$key])) {
-			$value = $this->data[$key];
-		}
+        if (isset($this->data[$key])) {
+            $value = $this->data[$key];
+        }
 
-		return $value;
-	}
+        return $value;
+    }
 
-	protected function deleteSelf($key)
-	{
-		unset($this->data[$key]);
-		return true;
-	}
+    protected function deleteSelf($key)
+    {
+        unset($this->data[$key]);
+        return true;
+    }
 }
 
 ?>

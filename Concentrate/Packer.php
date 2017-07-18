@@ -9,36 +9,36 @@
  */
 class Concentrate_Packer
 {
-	public function pack($root, array $sourceFiles, $destinationFile)
-	{
-		$packedFiles = new Concentrate_FileList();
+    public function pack($root, array $sourceFiles, $destinationFile)
+    {
+        $packedFiles = new Concentrate_FileList();
 
-		$content = '';
-		foreach ($sourceFiles as $sourceFile) {
-			$inliner = Concentrate_Inliner::factory(
-				$root,
-				$sourceFile,
-				$destinationFile,
-				$packedFiles
-			);
+        $content = '';
+        foreach ($sourceFiles as $sourceFile) {
+            $inliner = Concentrate_Inliner::factory(
+                $root,
+                $sourceFile,
+                $destinationFile,
+                $packedFiles
+            );
 
-			$content .= $inliner->getInlineContent();
-		}
+            $content .= $inliner->getInlineContent();
+        }
 
-		$filename = $root . DIRECTORY_SEPARATOR . $destinationFile;
+        $filename = $root . DIRECTORY_SEPARATOR . $destinationFile;
 
-		if (   (!file_exists($filename) && !is_writable($root))
-			|| (file_exists($filename) && !is_writable($filename))
-		) {
-			throw new Concentrate_FileException(
-				"The file '{$filename}' could not be written."
-			);
-		}
+        if (   (!file_exists($filename) && !is_writable($root))
+            || (file_exists($filename) && !is_writable($filename))
+        ) {
+            throw new Concentrate_FileException(
+                "The file '{$filename}' could not be written."
+            );
+        }
 
-		file_put_contents($filename, $content);
+        file_put_contents($filename, $content);
 
-		return $this;
-	}
+        return $this;
+    }
 }
 
 ?>

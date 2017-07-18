@@ -9,26 +9,26 @@
  */
 class Concentrate_InlinerLESS extends Concentrate_InlinerCSS
 {
-	protected function inlineImportCallback($matches)
-	{
-		$replacement = '';
+    protected function inlineImportCallback($matches)
+    {
+        $replacement = '';
 
-		if (isset($matches[2])) {
-			$uri = trim($matches[2], '\'"');
-		} else {
-			$uri = trim($matches[1], '\'"');
-		}
+        if (isset($matches[2])) {
+            $uri = trim($matches[2], '\'"');
+        } else {
+            $uri = trim($matches[1], '\'"');
+        }
 
-		// check if it contains an interpolated LESS variable
-		$uriMatches = array();
-		if (preg_match('/@{[\w-]+}/', $uri, $uriMatches) === 1) {
-			$replacement = $matches[0];
-		} else {
-			$replacement = parent::inlineImportCallback($matches);
-		}
+        // check if it contains an interpolated LESS variable
+        $uriMatches = array();
+        if (preg_match('/@{[\w-]+}/', $uri, $uriMatches) === 1) {
+            $replacement = $matches[0];
+        } else {
+            $replacement = parent::inlineImportCallback($matches);
+        }
 
-		return $replacement;
-	}
+        return $replacement;
+    }
 }
 
 ?>

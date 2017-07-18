@@ -30,82 +30,82 @@
  */
 class Concentrate_Graph
 {
-	protected $directed = true;
+    protected $directed = true;
 
-	protected $nodes = array();
+    protected $nodes = array();
 
-	public function __construct($directed = true)
-	{
-		$this->directed = $directed;
-	}
+    public function __construct($directed = true)
+    {
+        $this->directed = $directed;
+    }
 
-	public function isDirected()
-	{
-		return $this->directed;
-	}
+    public function isDirected()
+    {
+        return $this->directed;
+    }
 
-	public function addNode(Concentrate_Graph_Node $node)
-	{
-		$key = $node->getKey();
-		if (!isset($this->nodes[$key])) {
-			$this->nodes[$key] = $node;
-			$node->setGraph($this);
-		}
-		return $this;
-	}
+    public function addNode(Concentrate_Graph_Node $node)
+    {
+        $key = $node->getKey();
+        if (!isset($this->nodes[$key])) {
+            $this->nodes[$key] = $node;
+            $node->setGraph($this);
+        }
+        return $this;
+    }
 
-	public function getNodes()
-	{
-		return array_values($this->nodes);
-	}
+    public function getNodes()
+    {
+        return array_values($this->nodes);
+    }
 
-	public function __clone()
-	{
-		$map = array();
+    public function __clone()
+    {
+        $map = array();
 
-		$newNodes = array();
-		$oldNodes = $this->nodes;
+        $newNodes = array();
+        $oldNodes = $this->nodes;
 
-		foreach ($oldNodes as $oldNode) {
-			$newNode           = clone $oldNode;
-			$newKey            = $newNode->getKey();
-			$newNodes[$newKey] = $newNode;
-			$oldKey            = $oldNode->getKey();
-			$map[$oldKey]      = $newKey;
-			$newNode->setGraph($this);
-		}
+        foreach ($oldNodes as $oldNode) {
+            $newNode           = clone $oldNode;
+            $newKey            = $newNode->getKey();
+            $newNodes[$newKey] = $newNode;
+            $oldKey            = $oldNode->getKey();
+            $map[$oldKey]      = $newKey;
+            $newNode->setGraph($this);
+        }
 
-		foreach ($oldNodes as $oldNode) {
-			$oldKey  = $oldNode->getKey();
-			$newKey  = $map[$oldKey];
-			$newNode = $newNodes[$map[$oldKey]];
-			foreach ($oldNode->getNeighbors() as $oldNeighbor) {
-				$newNeighbor = $newNodes[$map[$oldNeighbor->getKey()]];
-				$newNode->connectTo($newNeighbor);
-			}
-		}
+        foreach ($oldNodes as $oldNode) {
+            $oldKey  = $oldNode->getKey();
+            $newKey  = $map[$oldKey];
+            $newNode = $newNodes[$map[$oldKey]];
+            foreach ($oldNode->getNeighbors() as $oldNeighbor) {
+                $newNeighbor = $newNodes[$map[$oldNeighbor->getKey()]];
+                $newNode->connectTo($newNeighbor);
+            }
+        }
 
-		$this->nodes = $newNodes;
-	}
+        $this->nodes = $newNodes;
+    }
 
-	public function __toString()
-	{
-		$string = '';
+    public function __toString()
+    {
+        $string = '';
 
-		$len = 0;
-		foreach ($this->nodes as $node) {
-			$len = max(strlen($node), $len);
-		}
+        $len = 0;
+        foreach ($this->nodes as $node) {
+            $len = max(strlen($node), $len);
+        }
 
-		foreach ($this->nodes as $node) {
-			$string .= str_pad($node, $len, ' ', STR_PAD_RIGHT);
-			$string .= ' -> ';
-			$string .= implode(', ', $node->getNeighbors());
-			$string .= PHP_EOL;
-		}
+        foreach ($this->nodes as $node) {
+            $string .= str_pad($node, $len, ' ', STR_PAD_RIGHT);
+            $string .= ' -> ';
+            $string .= implode(', ', $node->getNeighbors());
+            $string .= PHP_EOL;
+        }
 
-		return $string;
-	}
+        return $string;
+    }
 }
 
 ?>

@@ -33,59 +33,59 @@
  */
 class Concentrate_Graph_TopologicalSorter
 {
-	public function sort(Concentrate_Graph $graph)
-	{
-		$graph = clone $graph;
+    public function sort(Concentrate_Graph $graph)
+    {
+        $graph = clone $graph;
 
-		$sorted = array();
+        $sorted = array();
 
-		$nodes = $this->getZeroInDegreeNodes($graph);
-		while (count($nodes) > 0) {
-			$node = array_pop($nodes);
-			array_unshift($sorted, $node);
-			foreach ($node->getNeighbors() as $neighborNode) {
-				$node->disconnectFrom($neighborNode);
-				if ($neighborNode->getInDegree() === 0) {
-					$nodes[] = $neighborNode;
-				}
-			}
-		}
+        $nodes = $this->getZeroInDegreeNodes($graph);
+        while (count($nodes) > 0) {
+            $node = array_pop($nodes);
+            array_unshift($sorted, $node);
+            foreach ($node->getNeighbors() as $neighborNode) {
+                $node->disconnectFrom($neighborNode);
+                if ($neighborNode->getInDegree() === 0) {
+                    $nodes[] = $neighborNode;
+                }
+            }
+        }
 
-		if (count($this->getOutDegreeNodes($graph)) > 0) {
-			throw new Concentrate_CyclicDependencyException(
-				'Could not get topological order of graph because one or '
-				. 'more cycles were detected.'
-			);
-		}
+        if (count($this->getOutDegreeNodes($graph)) > 0) {
+            throw new Concentrate_CyclicDependencyException(
+                'Could not get topological order of graph because one or '
+                . 'more cycles were detected.'
+            );
+        }
 
-		return $sorted;
-	}
+        return $sorted;
+    }
 
-	protected function getZeroInDegreeNodes(Concentrate_Graph $graph)
-	{
-		$nodes = array();
+    protected function getZeroInDegreeNodes(Concentrate_Graph $graph)
+    {
+        $nodes = array();
 
-		foreach ($graph->getNodes() as $node) {
-			if ($node->getInDegree() === 0) {
-				$nodes[] = $node;
-			}
-		}
+        foreach ($graph->getNodes() as $node) {
+            if ($node->getInDegree() === 0) {
+                $nodes[] = $node;
+            }
+        }
 
-		return $nodes;
-	}
+        return $nodes;
+    }
 
-	protected function getOutDegreeNodes(Concentrate_Graph $graph)
-	{
-		$nodes = array();
+    protected function getOutDegreeNodes(Concentrate_Graph $graph)
+    {
+        $nodes = array();
 
-		foreach ($graph->getNodes() as $node) {
-			if ($node->getOutDegree() > 0) {
-				$nodes[] = $node;
-			}
-		}
+        foreach ($graph->getNodes() as $node) {
+            if ($node->getOutDegree() > 0) {
+                $nodes[] = $node;
+            }
+        }
 
-		return $nodes;
-	}
+        return $nodes;
+    }
 }
 
 ?>

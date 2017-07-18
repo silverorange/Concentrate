@@ -30,96 +30,96 @@
  */
 class Concentrate_Graph_Node
 {
-	protected $data = null;
+    protected $data = null;
 
-	protected $inArcs = array();
+    protected $inArcs = array();
 
-	protected $outArcs = array();
+    protected $outArcs = array();
 
-	protected $graph = null;
+    protected $graph = null;
 
-	public function __construct(Concentrate_Graph $graph, $data = null)
-	{
-		$this->setGraph($graph);
-		$this->setData($data);
-	}
+    public function __construct(Concentrate_Graph $graph, $data = null)
+    {
+        $this->setGraph($graph);
+        $this->setData($data);
+    }
 
-	public function setGraph(Concentrate_Graph $graph)
-	{
-		if ($this->graph !== $graph) {
-			$this->inArcs  = array();
-			$this->outArcs = array();
-			$this->graph   = $graph;
-			$this->graph->addNode($this);
-		}
-	}
+    public function setGraph(Concentrate_Graph $graph)
+    {
+        if ($this->graph !== $graph) {
+            $this->inArcs  = array();
+            $this->outArcs = array();
+            $this->graph   = $graph;
+            $this->graph->addNode($this);
+        }
+    }
 
-	public function setData($data)
-	{
-		$this->data = $data;
-		return $this;
-	}
+    public function setData($data)
+    {
+        $this->data = $data;
+        return $this;
+    }
 
-	public function getData()
-	{
-		return $this->data;
-	}
+    public function getData()
+    {
+        return $this->data;
+    }
 
-	public function connectTo(Concentrate_Graph_Node $node)
-	{
-		$key = $node->getKey();
+    public function connectTo(Concentrate_Graph_Node $node)
+    {
+        $key = $node->getKey();
 
-		if (!isset($this->outArcs[$key])) {
-			$this->outArcs[$key]           = $node;
-			$node->inArcs[$this->getKey()] = $this;
-			if (!$this->graph->isDirected()) {
-				$node->connectTo($this);
-			}
-		}
-	}
+        if (!isset($this->outArcs[$key])) {
+            $this->outArcs[$key]           = $node;
+            $node->inArcs[$this->getKey()] = $this;
+            if (!$this->graph->isDirected()) {
+                $node->connectTo($this);
+            }
+        }
+    }
 
-	public function disconnectFrom(Concentrate_Graph_Node $node)
-	{
-		$key = $node->getKey();
-		if (isset($this->outArcs[$key])) {
-			unset($this->outArcs[$key]);
-			unset($node->inArcs[$this->getKey()]);
-			if (!$this->graph->isDirected()) {
-				$node->disconnectFrom($this);
-			}
-		}
-	}
+    public function disconnectFrom(Concentrate_Graph_Node $node)
+    {
+        $key = $node->getKey();
+        if (isset($this->outArcs[$key])) {
+            unset($this->outArcs[$key]);
+            unset($node->inArcs[$this->getKey()]);
+            if (!$this->graph->isDirected()) {
+                $node->disconnectFrom($this);
+            }
+        }
+    }
 
-	public function getNeighbors()
-	{
-		return array_values($this->outArcs);
-	}
+    public function getNeighbors()
+    {
+        return array_values($this->outArcs);
+    }
 
-	public function isConnectedTo(Concentrate_Graph_Node $node)
-	{
-		$key = $node->getKey();
-		return ($node->graph === $this->graph && isset($this->outArcs[$key]));
-	}
+    public function isConnectedTo(Concentrate_Graph_Node $node)
+    {
+        $key = $node->getKey();
+        return ($node->graph === $this->graph && isset($this->outArcs[$key]));
+    }
 
-	public function getOutDegree()
-	{
-		return count($this->outArcs);
-	}
+    public function getOutDegree()
+    {
+        return count($this->outArcs);
+    }
 
-	public function getInDegree()
-	{
-		return count($this->inArcs);
-	}
+    public function getInDegree()
+    {
+        return count($this->inArcs);
+    }
 
-	public function getKey()
-	{
-		return spl_object_hash($this);
-	}
+    public function getKey()
+    {
+        return spl_object_hash($this);
+    }
 
-	public function __toString()
-	{
-		return strval($this->getData());
-	}
+    public function __toString()
+    {
+        return strval($this->getData());
+    }
 }
 
 ?>

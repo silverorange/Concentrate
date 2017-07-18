@@ -52,8 +52,7 @@ class Concentrate_FileCache
 	public function write($key, $fromFilename)
 	{
 		if (is_dir($this->directory)) {
-			$filePath = $this->getFilePath($key);
-			copy($fromFilename, $filePath);
+			copy($fromFilename, $this->getFilePath($key));
 			return true;
 		}
 

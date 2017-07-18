@@ -63,11 +63,13 @@ class Concentrate_FileCache
 	{
 		if ($this->exists($key)) {
 			$directory = dirname($toFilename);
-			if (!file_exists($directory)) {
+			if (!file_exists($directory) && is_writeable(dirname($directory))) {
 				mkdir($directory, 0770, true);
 			}
-			copy($this->getFilePath($key), $toFilename);
-			return true;
+			if (is_writeable($directory)) {
+				copy($this->getFilePath($key), $toFilename);
+				return true;
+			}
 		}
 
 		return false;

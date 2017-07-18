@@ -25,6 +25,7 @@
     "ext-memcached": "Allows caching resource definition YAML files between requests."
   },
   "scripts": {
+    "lint": "./vendor/bin/phpcs",
     "post-install-cmd": "./vendor/bin/phpcs --config-set installed_paths vendor/silverorange/coding-standard/src",
     "post-update-cmd": "./vendor/bin/phpcs --config-set installed_paths vendor/silverorange/coding-standard/src"
   },

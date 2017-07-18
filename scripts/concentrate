@@ -18,11 +18,13 @@ foreach ($autoloadPaths as $path) {
 }
 
 $compiledCache = new Concentrate_FileCache(
-  __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'compiled-cache'
+  '/var/cache/concentrate/compiled-cache',
+  __DIR__ . '/../compiled-cache'
 );
 
 $minifiedCache = new Concentrate_FileCache(
-  __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'minified-cache'
+  '/var/cache/concentrate/minified-cache',
+  __DIR__ . '/../minified-cache'
 );
 
 $cli = new Concentrate_CLI();

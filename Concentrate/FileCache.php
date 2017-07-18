@@ -14,30 +14,44 @@ class Concentrate_FileCache
 	 */
 	protected $directory;
 
-	public function __construct($directory)
+	public function __construct(...$directories)
 	{
-		$this->setDirectory($directory);
+		$this->setDirectory(...$directories);
 	}
 
-	public function setDirectory($directory)
+	public function setDirectory(...$directories)
 	{
-		$this->directory = $directory;
+		$this->directory = null;
+
+		foreach ($directories as $directory) {
+			// Try to create it in parent dir if it does not exist.
+			if (!is_dir($directory) && is_writeable(dirname($directory))) {
+				mkdir($directory, 0770, true);
+			}
+
+			// Check if dir exists and is writeable. If so, use it.
+			if (is_dir($directory) && is_writeable($directory)) {
+				$this->directory = $directory;
+				break;
+			}
+		}
+
 		return $this;
 	}
 
 	public function exists($key)
 	{
+		if ($this->directory === null) {
+			return false;
+		}
+
 		$filePath = $this->getFilePath($key);
 		return (file_exists($filePath) && is_readable($filePath));
 	}
 
 	public function write($key, $fromFilename)
 	{
-		if (!is_dir($this->directory) && is_writeable(dirname($this->directory))) {
-			mkdir($this->directory, 0770, true);
-		}
-
-		if (is_dir($this->directory) && is_writeable($this->directory)) {
+		if (is_dir($this->directory)) {
 			$filePath = $this->getFilePath($key);
 			copy($fromFilename, $filePath);
 			return true;

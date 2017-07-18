@@ -8,7 +8,7 @@
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 abstract class Concentrate_Filter_Minifier_Abstract
-	extends Concentrate_Filter_Abstract
+    extends Concentrate_Filter_Abstract
 {
 }
 

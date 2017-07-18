@@ -11,93 +11,93 @@ use Symfony\Component\Yaml\Yaml;
  */
 class Concentrate_DataProvider
 {
-	protected $data = array();
-	protected $pendingFiles = array();
-	protected $loadedFiles = array();
-	protected $stat = true;
-	protected $cachePrefix = '';
+    protected $data = array();
+    protected $pendingFiles = array();
+    protected $loadedFiles = array();
+    protected $stat = true;
+    protected $cachePrefix = '';
 
-	public function __construct(array $options = array())
-	{
-		if (array_key_exists('stat', $options)) {
-			$this->setStat($options['stat']);
-		}
-	}
+    public function __construct(array $options = array())
+    {
+        if (array_key_exists('stat', $options)) {
+            $this->setStat($options['stat']);
+        }
+    }
 
-	public function setStat($stat)
-	{
-		$stat = ($stat) ? true : false;
+    public function setStat($stat)
+    {
+        $stat = ($stat) ? true : false;
 
-		if ($stat !== $this->stat) {
-			$this->stat = $stat;
+        if ($stat !== $this->stat) {
+            $this->stat = $stat;
 
-			// clear cache prefix
-			$this->cachePrefix = '';
-		}
-	}
+            // clear cache prefix
+            $this->cachePrefix = '';
+        }
+    }
 
-	public function loadFile($filename)
-	{
-		$this->pendingFiles[] = strval($filename);
+    public function loadFile($filename)
+    {
+        $this->pendingFiles[] = strval($filename);
 
-		// clear cache prefix
-		$this->cachePrefix = '';
-	}
+        // clear cache prefix
+        $this->cachePrefix = '';
+    }
 
-	public function getData()
-	{
-		$this->loadPendingData();
-		return $this->data;
-	}
+    public function getData()
+    {
+        $this->loadPendingData();
+        return $this->data;
+    }
 
-	protected function loadPendingData()
-	{
-		while (count($this->pendingFiles) > 0) {
-			$filename = array_shift($this->pendingFiles);
-			if (!in_array($filename, $this->loadedFiles)) {
-				$this->loadPendingFile($filename);
-			}
-		}
-	}
+    protected function loadPendingData()
+    {
+        while (count($this->pendingFiles) > 0) {
+            $filename = array_shift($this->pendingFiles);
+            if (!in_array($filename, $this->loadedFiles)) {
+                $this->loadPendingFile($filename);
+            }
+        }
+    }
 
-	protected function loadPendingFile($filename)
-	{
-		if (!is_readable($filename)) {
-			throw new Concentrate_FileException(
-				"Data file '{$filename}' can not be read.", 0, $filename);
-		}
+    protected function loadPendingFile($filename)
+    {
+        if (!is_readable($filename)) {
+            throw new Concentrate_FileException(
+                "Data file '{$filename}' can not be read.", 0, $filename);
+        }
 
-		try {
-			$data = Yaml::parse(file_get_contents($filename));
-			$this->loadedFiles[] = $filename;
-		} catch (InvalidArgumentException $e) {
-			throw new Concentrate_FileFormatException(
-				"Data file '{$filename}' is not valid YAML.",0, $filename);
-		}
+        try {
+            $data = Yaml::parse(file_get_contents($filename));
+            $this->loadedFiles[] = $filename;
+        } catch (InvalidArgumentException $e) {
+            throw new Concentrate_FileFormatException(
+                "Data file '{$filename}' is not valid YAML.",0, $filename);
+        }
 
-		$this->data = array_replace_recursive($this->data, $data);
-	}
+        $this->data = array_replace_recursive($this->data, $data);
+    }
 
-	public function getCachePrefix()
-	{
-		if ($this->cachePrefix === '') {
-			$files = array_merge($this->loadedFiles, $this->pendingFiles);
-			if ($this->stat) {
-				$statFiles = array();
-				foreach ($files as $filename) {
-					$mtime       = filemtime($filename);
-					$statFiles[] = $filename . '=' . $mtime;
-				}
-				$key = md5(implode(':', $statFiles));
-			} else {
-				$key = md5(implode(':', $files));
-			}
+    public function getCachePrefix()
+    {
+        if ($this->cachePrefix === '') {
+            $files = array_merge($this->loadedFiles, $this->pendingFiles);
+            if ($this->stat) {
+                $statFiles = array();
+                foreach ($files as $filename) {
+                    $mtime       = filemtime($filename);
+                    $statFiles[] = $filename . '=' . $mtime;
+                }
+                $key = md5(implode(':', $statFiles));
+            } else {
+                $key = md5(implode(':', $files));
+            }
 
-			$this->cachePrefix = $key;
-		}
+            $this->cachePrefix = $key;
+        }
 
-		return $this->cachePrefix;
-	}
+        return $this->cachePrefix;
+    }
 
 }
 

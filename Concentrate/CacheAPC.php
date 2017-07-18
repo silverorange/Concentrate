@@ -9,66 +9,66 @@
  */
 class Concentrate_CacheAPC extends Concentrate_CacheHierarchyAbstract
 {
-	protected $extraPrefix = '';
-	protected $prefix = '';
-	protected $hasAPC = false;
+    protected $extraPrefix = '';
+    protected $prefix = '';
+    protected $hasAPC = false;
 
-	public function __construct($extraPrefix = '')
-	{
-		$this->hasAPC      = extension_loaded('apc');
-		$this->extraPrefix = strval($extraPrefix);
-	}
+    public function __construct($extraPrefix = '')
+    {
+        $this->hasAPC      = extension_loaded('apc');
+        $this->extraPrefix = strval($extraPrefix);
+    }
 
-	public function setPrefixSelf($prefix)
-	{
-		$this->prefix = strval($prefix);
-	}
+    public function setPrefixSelf($prefix)
+    {
+        $this->prefix = strval($prefix);
+    }
 
-	protected function setSelf($key, $value)
-	{
-		$result = false;
+    protected function setSelf($key, $value)
+    {
+        $result = false;
 
-		if ($this->hasAPC) {
-			$result = apc_store($this->getAPCKey($key), $value);
-		}
+        if ($this->hasAPC) {
+            $result = apc_store($this->getAPCKey($key), $value);
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
-	protected function getSelf($key)
-	{
-		$value = false;
+    protected function getSelf($key)
+    {
+        $value = false;
 
-		if ($this->hasAPC) {
-			$value = apc_fetch($this->getAPCKey($key));
-		}
+        if ($this->hasAPC) {
+            $value = apc_fetch($this->getAPCKey($key));
+        }
 
-		return $value;
-	}
+        return $value;
+    }
 
-	protected function deleteSelf($key)
-	{
-		$response = false;
+    protected function deleteSelf($key)
+    {
+        $response = false;
 
-		if ($this->hasAPC) {
-			$response = apc_delete($this->getAPCKey(key));
-		}
+        if ($this->hasAPC) {
+            $response = apc_delete($this->getAPCKey(key));
+        }
 
-		return $response;
-	}
+        return $response;
+    }
 
-	protected function getAPCKey($key)
-	{
-		if ($this->prefix != '') {
-			$key = $this->prefix . ':' . $key;
-		}
+    protected function getAPCKey($key)
+    {
+        if ($this->prefix != '') {
+            $key = $this->prefix . ':' . $key;
+        }
 
-		if ($this->extraPrefix != '') {
-			$key = $this->extraPrefix . ':' . $key;
-		}
+        if ($this->extraPrefix != '') {
+            $key = $this->extraPrefix . ':' . $key;
+        }
 
-		return $key;
-	}
+        return $key;
+    }
 }
 
 ?>

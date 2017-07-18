@@ -8,81 +8,81 @@
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_DataProvider_FileFinderComposer
-	implements Concentrate_DataProvider_FileFinderInterface
+    implements Concentrate_DataProvider_FileFinderInterface
 {
-	protected $wwwPath = null;
+    protected $wwwPath = null;
 
-	public function __construct($wwwPath)
-	{
-		$this->setWwwPath($wwwPath);
-	}
+    public function __construct($wwwPath)
+    {
+        $this->setWwwPath($wwwPath);
+    }
 
-	public function setWwwPath($wwwPath)
-	{
-		$this->wwwPath = (string)$wwwPath;
-		return $this;
-	}
+    public function setWwwPath($wwwPath)
+    {
+        $this->wwwPath = (string)$wwwPath;
+        return $this;
+    }
 
-	public function getDataFiles()
-	{
-		$files = array();
+    public function getDataFiles()
+    {
+        $files = array();
 
-		$basePath = dirname($this->wwwPath) . DIRECTORY_SEPARATOR . 'vendor';
-		foreach ($this->getVendorPaths($basePath) as $vendorPath) {
-			foreach ($this->getPackagePaths($vendorPath) as $packagePath) {
-				$finder = new Concentrate_DataProvider_FileFinderDirectory(
-					$packagePath . DIRECTORY_SEPARATOR . 'dependencies'
-				);
-				$files = array_merge(
-					$files,
-					$finder->getDataFiles()
-				);
-			}
-		}
+        $basePath = dirname($this->wwwPath) . DIRECTORY_SEPARATOR . 'vendor';
+        foreach ($this->getVendorPaths($basePath) as $vendorPath) {
+            foreach ($this->getPackagePaths($vendorPath) as $packagePath) {
+                $finder = new Concentrate_DataProvider_FileFinderDirectory(
+                    $packagePath . DIRECTORY_SEPARATOR . 'dependencies'
+                );
+                $files = array_merge(
+                    $files,
+                    $finder->getDataFiles()
+                );
+            }
+        }
 
-		return $files;
-	}
+        return $files;
+    }
 
-	protected function getVendorPaths($basePath)
-	{
-		$paths = array();
+    protected function getVendorPaths($basePath)
+    {
+        $paths = array();
 
-		if (is_dir($basePath)) {
-			$baseDir = dir($basePath);
-			while (false !== ($vendorName = $baseDir->read())) {
-				if ($vendorName === '.' ||
-					$vendorName === '..' ||
-					$vendorName === 'bin' ||
-					$vendorName === 'autoload.php') {
-					continue;
-				}
+        if (is_dir($basePath)) {
+            $baseDir = dir($basePath);
+            while (false !== ($vendorName = $baseDir->read())) {
+                if ($vendorName === '.' ||
+                    $vendorName === '..' ||
+                    $vendorName === 'bin' ||
+                    $vendorName === 'autoload.php') {
+                    continue;
+                }
 
-				$vendorPath = $basePath . DIRECTORY_SEPARATOR . $vendorName;
-				if (is_dir($vendorPath)) {
-					$paths[] = $vendorPath;
-				}
-			}
-		}
+                $vendorPath = $basePath . DIRECTORY_SEPARATOR . $vendorName;
+                if (is_dir($vendorPath)) {
+                    $paths[] = $vendorPath;
+                }
+            }
+        }
 
-		return $paths;
-	}
+        return $paths;
+    }
 
-	protected function getPackagePaths($vendorPath)
-	{
-		$paths = array();
+    protected function getPackagePaths($vendorPath)
+    {
+        $paths = array();
 
-		$vendorDir = dir($vendorPath);
-		while (false !== ($packageName = $vendorDir->read())) {
-			if ($packageName === '.' || $packageName === '..') {
-				continue;
-			}
+        $vendorDir = dir($vendorPath);
+        while (false !== ($packageName = $vendorDir->read())) {
+            if ($packageName === '.' || $packageName === '..') {
+                continue;
+            }
 
-			$packagePath = $vendorPath . DIRECTORY_SEPARATOR . $packageName;
-			$paths[] = $packagePath;
-		}
+            $packagePath = $vendorPath . DIRECTORY_SEPARATOR . $packageName;
+            $paths[] = $packagePath;
+        }
 
-		return $paths;
-	}
+        return $paths;
+    }
 }
 
 ?>

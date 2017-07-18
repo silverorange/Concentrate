@@ -9,9 +9,9 @@
  */
 class Concentrate_FlagFile
 {
-	const COMBINED = '.concentrate-combined';
-	const MINIFIED = '.concentrate-minified';
-	const COMPILED = '.concentrate-compiled';
+    const COMBINED = '.concentrate-combined';
+    const MINIFIED = '.concentrate-minified';
+    const COMPILED = '.concentrate-compiled';
 }
 
 ?>

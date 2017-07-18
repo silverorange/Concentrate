@@ -13,7 +13,7 @@ indent_style = space
 indent_size = 2
 
 [*.php]
-indent_style = tab
+indent_style = space
 indent_size = 4
 
 [*.{diff,md}]

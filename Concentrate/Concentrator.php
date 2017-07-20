@@ -146,7 +146,7 @@ class Concentrate_Concentrator
         foreach ($files as $file => $garbage) {
             if (array_key_exists($file, $fileInfo)) {
                 $fileFileInfo = $fileInfo[$file];
-                if (   isset($fileFileInfo['Conflicts'])
+                if (isset($fileFileInfo['Conflicts'])
                     && is_array($fileFileInfo['Conflicts'])
                 ) {
                     foreach ($fileFileInfo['Conflicts'] as $conflict) {
@@ -180,7 +180,7 @@ class Concentrate_Concentrator
             // check if combine does not conflict with already added combines
             // and if combine contains one or more files in the required file
             // list
-            if (   count(array_intersect($combinedFiles, $combinedSet)) === 0
+            if (count(array_intersect($combinedFiles, $combinedSet)) === 0
                 && count(array_intersect($combinedFiles, $files)) > 0
             ) {
                 $potentialSuperset = array_merge($superset, $combinedFiles);
@@ -401,7 +401,7 @@ class Concentrate_Concentrator
                     }
 
                     // add entries to the set
-                    if (   isset($combineInfo['Includes'])
+                    if (isset($combineInfo['Includes'])
                         && is_array($combineInfo['Includes'])
                     ) {
                         foreach ($combineInfo['Includes'] as $file) {
@@ -425,7 +425,7 @@ class Concentrate_Concentrator
                 // minification of combine depends on minification of included
                 // files
                 foreach (array_keys($info['Includes']) as $file) {
-                    if (   isset($fileInfo[$file])
+                    if (isset($fileInfo[$file])
                         && !$fileInfo[$file]['Minify']
                     ) {
                         $combinesInfo[$combine]['Minify'] = false;
@@ -521,7 +521,7 @@ class Concentrate_Concentrator
                     $dependsInfo[$file],
                     array_keys($files)
                 );
-                if (   count($subDepends) > 0
+                if (count($subDepends) > 0
                     && !isset($implicitFiles[$file])
                 ) {
                     $files[$file] = array(

@@ -64,7 +64,10 @@ class Concentrate_DataProvider
     {
         if (!is_readable($filename)) {
             throw new Concentrate_FileException(
-                "Data file '{$filename}' can not be read.", 0, $filename);
+                "Data file '{$filename}' can not be read.",
+                0,
+                $filename
+            );
         }
 
         try {

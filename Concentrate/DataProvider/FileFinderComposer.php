@@ -50,10 +50,11 @@ class Concentrate_DataProvider_FileFinderComposer
         if (is_dir($basePath)) {
             $baseDir = dir($basePath);
             while (false !== ($vendorName = $baseDir->read())) {
-                if ($vendorName === '.' ||
-                    $vendorName === '..' ||
-                    $vendorName === 'bin' ||
-                    $vendorName === 'autoload.php') {
+                if ($vendorName === '.'
+                    || $vendorName === '..'
+                    || $vendorName === 'bin'
+                    || $vendorName === 'autoload.php'
+                ) {
                     continue;
                 }
 

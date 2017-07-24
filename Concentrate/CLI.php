@@ -131,31 +131,31 @@ class Concentrate_CLI
 
     protected function setOptions(array $options)
     {
-        if (   array_key_exists('verbose', $options)
+        if (array_key_exists('verbose', $options)
             && $options['verbose'] !== null
         ) {
             $this->verbosity = intval($options['verbose']);
         }
 
-        if (   array_key_exists('combine', $options)
+        if (array_key_exists('combine', $options)
             && $options['combine'] !== null
         ) {
             $this->combine = ($options['combine']) ? true : false;
         }
 
-        if (   array_key_exists('minify', $options)
+        if (array_key_exists('minify', $options)
             && $options['minify'] !== null
         ) {
             $this->minify = ($options['minify']) ? true : false;
         }
 
-        if (   array_key_exists('compile', $options)
+        if (array_key_exists('compile', $options)
             && $options['compile'] !== null
         ) {
             $this->compile = ($options['compile']) ? true : false;
         }
 
-        if (   array_key_exists('directory', $options)
+        if (array_key_exists('directory', $options)
             && $options['directory'] !== null
         ) {
             $this->directory = strval($options['directory']);
@@ -220,7 +220,7 @@ class Concentrate_CLI
         $packer       = new Concentrate_Packer();
         $combinesInfo = $this->concentrator->getCombinesInfo();
 
-        if (   count($combinesInfo) === 0
+        if (count($combinesInfo) === 0
             && $this->verbosity >= self::VERBOSITY_MESSAGES
         ) {
             $this->display('=> no combined files to write.' . PHP_EOL);
@@ -461,8 +461,8 @@ class Concentrate_CLI
 
         $cache = $this->minifiedCache;
 
-        if ($cache instanceof Concentrate_FileCache &&
-            $cache->copyTo($key, $toFilename)
+        if ($cache instanceof Concentrate_FileCache
+            && $cache->copyTo($key, $toFilename)
         ) {
             if ($this->verbosity >= self::VERBOSITY_DETAILS) {
                 $this->display(
@@ -473,8 +473,8 @@ class Concentrate_CLI
             // minify
             $filter->filterFile($fromFilename, $toFilename, $type);
 
-            if ($cache instanceof Concentrate_FileCache &&
-                $cache->write($key, $toFilename)
+            if ($cache instanceof Concentrate_FileCache
+                && $cache->write($key, $toFilename)
             ) {
                 if ($this->verbosity >= self::VERBOSITY_DETAILS) {
                     $this->display(
@@ -592,8 +592,8 @@ class Concentrate_CLI
 
         $cache = $this->compiledCache;
 
-        if ($cache instanceof Concentrate_FileCache &&
-            $cache->copyTo($key, $toFilename)
+        if ($cache instanceof Concentrate_FileCache
+            && $cache->copyTo($key, $toFilename)
         ) {
             if ($this->verbosity >= self::VERBOSITY_DETAILS) {
                 $this->display(
@@ -609,8 +609,8 @@ class Concentrate_CLI
                 $filter->filterFile($toFilename, $toFilename);
             }
 
-            if ($cache instanceof Concentrate_FileCache &&
-                $cache->write($key, $toFilename)
+            if ($cache instanceof Concentrate_FileCache
+                && $cache->write($key, $toFilename)
             ) {
                 if ($this->verbosity >= self::VERBOSITY_DETAILS) {
                     $this->display(
@@ -650,11 +650,13 @@ class Concentrate_CLI
             . DIRECTORY_SEPARATOR . $filename;
 
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
-            $this->display(PHP_EOL . "Writing flag file '{$filename}':"
-                . PHP_EOL);
+            $this->display(
+                PHP_EOL . "Writing flag file '{$filename}':"
+                . PHP_EOL
+            );
         }
 
-        if (   (!file_exists($filename) && !is_writable($this->webroot))
+        if ((!file_exists($filename) && !is_writable($this->webroot))
             || (file_exists($filename) && !is_writable($filename))
         ) {
             throw new Concentrate_FileException(

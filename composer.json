@@ -19,7 +19,7 @@
     "martin-pettersson/chalk": "^0.1.3"
   },
   "require-dev": {
-    "silverorange/coding-standard": "^0.1.0"
+    "silverorange/coding-standard": "^0.6.0"
   },
   "suggest": {
     "ext-memcached": "Allows caching resource definition YAML files between requests."

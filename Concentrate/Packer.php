@@ -27,7 +27,7 @@ class Concentrate_Packer
 
         $filename = $root . DIRECTORY_SEPARATOR . $destinationFile;
 
-        if (   (!file_exists($filename) && !is_writable($root))
+        if ((!file_exists($filename) && !is_writable($root))
             || (file_exists($filename) && !is_writable($filename))
         ) {
             throw new Concentrate_FileException(

@@ -155,7 +155,7 @@ class Concentrate_CLI
             $this->compile = ($options['compile']) ? true : false;
         }
 
-        if (   array_key_exists('directory', $options)
+        if (array_key_exists('directory', $options)
             && $options['directory'] !== null
         ) {
             $this->directory = strval($options['directory']);

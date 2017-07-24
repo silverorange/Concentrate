@@ -394,10 +394,9 @@ class Concentrate_Concentrator
 
                     // set additional attributes
                     if (isset($combineInfo['Minify'])) {
-                        $combinesInfo[$combine]['Minify'] =
-                            $this->parseBoolean(
-                                $combinesInfo['Minify']
-                            );
+                        $combinesInfo[$combine]['Minify'] = $this->parseBoolean(
+                            $combinesInfo['Minify']
+                        );
                     }
 
                     // add entries to the set
@@ -405,8 +404,9 @@ class Concentrate_Concentrator
                         && is_array($combineInfo['Includes'])
                     ) {
                         foreach ($combineInfo['Includes'] as $file) {
-                            $combinesInfo[$combine]['Includes'][$file] =
-                                array('explicit' => true);
+                            $combinesInfo[$combine]['Includes'][$file] = array(
+                                'explicit' => true
+                            );
                         }
                     }
                 }
@@ -416,8 +416,8 @@ class Concentrate_Concentrator
                 // Check for dependencies of each set that are not in the set.
                 // If a missing dependency also has a dependency on an file in
                 // the set, add it to the set.
-                $combinesInfo[$combine]['Includes'] =
-                    $this->getImplicitCombinedFiles(
+                $combinesInfo[$combine]['Includes']
+                    = $this->getImplicitCombinedFiles(
                         $info['Includes'],
                         $info['Includes']
                     );
@@ -588,8 +588,8 @@ class Concentrate_Concentrator
                         continue;
                     }
                     if (!isset($nodes[$dependentPackageId])) {
-                        $nodes[$dependentPackageId] =
-                            new Concentrate_Graph_Node(
+                        $nodes[$dependentPackageId]
+                            = new Concentrate_Graph_Node(
                                 $graph,
                                 $dependentPackageId
                             );

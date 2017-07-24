@@ -75,7 +75,10 @@ class Concentrate_DataProvider
             $this->loadedFiles[] = $filename;
         } catch (InvalidArgumentException $e) {
             throw new Concentrate_FileFormatException(
-                "Data file '{$filename}' is not valid YAML.",0, $filename);
+                "Data file '{$filename}' is not valid YAML.",
+                0,
+                $filename
+            );
         }
 
         $this->data = array_replace_recursive($this->data, $data);

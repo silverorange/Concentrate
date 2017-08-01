@@ -111,7 +111,15 @@ class Concentrate_Filter_Minifier_YUICompressor
     {
         $jarFile = '';
 
-        $paths = explode(PATH_SEPARATOR, get_include_path());
+        $paths = array(
+            // Try to load jar if Concentrate is the root project.
+            __DIR__ . '/../vendor/bin',
+
+            // Try to load jar if Concentrate is installed as a library for
+            // another root project.
+            __DIR__ . '/../../../bin',
+        );
+
         foreach ($paths as $path) {
             $dir = dir($path);
             while (false !== ($entry = $dir->read())) {

@@ -79,7 +79,7 @@ class Concentrate_Filter_Minifier_YUICompressor
         // remove temp file
         unlink($filename);
 
-        $errorExpression = '/^Unable to access jarfile/';
+        $errorExpression = '/Unable to access jarfile/';
         if (preg_match($errorExpression, $output) === 1) {
             throw new Concentrate_FileException(
                 "The JAR file '{$this->jarFile}' does not exist.",

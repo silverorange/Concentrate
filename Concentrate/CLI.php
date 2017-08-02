@@ -241,7 +241,7 @@ class Concentrate_CLI
                 foreach ($files as $file => $info) {
                     $string = ' * ' . $file;
                     if (!$info['explicit']) {
-                        $string .= Chalk::cyan(' [IMPLICIT]');
+                        $string .= Chalk::cyan(' (implicit)');
                     }
                     $string .= PHP_EOL;
                     $this->display($string);

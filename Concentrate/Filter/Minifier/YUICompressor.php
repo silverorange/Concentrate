@@ -79,7 +79,7 @@ class Concentrate_Filter_Minifier_YUICompressor
         // remove temp file
         unlink($filename);
 
-        $errorExpression = '/^Unable to access jarfile/';
+        $errorExpression = '/Unable to access jarfile/';
         if (preg_match($errorExpression, $output) === 1) {
             throw new Concentrate_FileException(
                 "The JAR file '{$this->jarFile}' does not exist.",
@@ -113,19 +113,21 @@ class Concentrate_Filter_Minifier_YUICompressor
 
         $paths = array(
             // Try to load jar if Concentrate is the root project.
-            __DIR__ . '/../vendor/bin',
+            __DIR__ . '/../../../vendor/bin',
 
             // Try to load jar if Concentrate is installed as a library for
             // another root project.
-            __DIR__ . '/../../../bin',
+            __DIR__ . '/../../../../../bin',
         );
 
         foreach ($paths as $path) {
-            $dir = dir($path);
-            while (false !== ($entry = $dir->read())) {
-                if (preg_match(self::DEFAULT_JAR_NAME, $entry) === 1) {
-                    $jarFile = $path . DIRECTORY_SEPARATOR . $entry;
-                    break 2;
+            if (is_dir($path)) {
+                $dir = dir($path);
+                while (false !== ($entry = $dir->read())) {
+                    if (preg_match(self::DEFAULT_JAR_NAME, $entry) === 1) {
+                        $jarFile = $path . DIRECTORY_SEPARATOR . $entry;
+                        break 2;
+                    }
                 }
             }
         }

@@ -10,7 +10,7 @@
 class Concentrate_Filter_Minifier_YUICompressor
     extends Concentrate_Filter_Minifier_Abstract
 {
-    const DEFAULT_JAR_NAME = '/yuicompressor-[0-9]\.[0-9]\.[0-9]\.jar/';
+    const DEFAULT_JAR_NAME = '/yuicompressor(?:-[0-9]\.[0-9]\.[0-9])?\.jar/';
 
     protected $javaBin = 'java';
     protected $jarFile = '';

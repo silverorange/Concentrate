@@ -10,7 +10,7 @@
 class Concentrate_Filter_Minifier_YUICompressor
     extends Concentrate_Filter_Minifier_Abstract
 {
-    const DEFAULT_JAR_NAME = '/yuicompressor-[0-9]\.[0-9]\.[0-9]\.jar/';
+    const DEFAULT_JAR_NAME = '/yuicompressor(?:-[0-9]\.[0-9]\.[0-9])?\.jar/';
 
     protected $javaBin = 'java';
     protected $jarFile = '';
@@ -65,9 +65,10 @@ class Concentrate_Filter_Minifier_YUICompressor
         $filename = $this->writeTempFile($input);
         $args[] = escapeshellarg($filename);
 
-        // build command
+        // Build command. Redirect STDERR to STDOUT so we can capture and parse
+        // errors.
         $command = sprintf(
-            '%s -jar %s %s',
+            '%s -jar %s %s 2>&1',
             $this->javaBin,
             escapeshellarg($this->getJarFile()),
             implode(' ', $args)

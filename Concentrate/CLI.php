@@ -241,7 +241,7 @@ class Concentrate_CLI
                 foreach ($files as $file => $info) {
                     $string = ' * ' . $file;
                     if (!$info['explicit']) {
-                        $string .= ' [IMPLICIT]';
+                        $string .= Chalk::cyan(' (implicit)');
                     }
                     $string .= PHP_EOL;
                     $this->display($string);
@@ -255,10 +255,6 @@ class Concentrate_CLI
 
     protected function writeMinifiedFiles()
     {
-        if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
-            $this->display(PHP_EOL . 'Writing minified files:' . PHP_EOL);
-        }
-
         $filter = new Concentrate_Filter_Minifier_YUICompressor();
         $this->writeMinifiedFilesFromDirectory($filter);
 

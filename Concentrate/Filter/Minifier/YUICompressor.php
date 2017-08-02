@@ -113,11 +113,11 @@ class Concentrate_Filter_Minifier_YUICompressor
 
         $paths = array(
             // Try to load jar if Concentrate is the root project.
-            __DIR__ . '/../vendor/bin',
+            __DIR__ . '/../../../vendor/bin',
 
             // Try to load jar if Concentrate is installed as a library for
             // another root project.
-            __DIR__ . '/../../../bin',
+            __DIR__ . '/../../../../../bin',
         );
 
         foreach ($paths as $path) {

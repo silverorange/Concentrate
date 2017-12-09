@@ -44,7 +44,7 @@ class Concentrate_Inliner
     ) {
         $extension = pathinfo($sourceFilename, PATHINFO_EXTENSION);
 
-        switch (strtolower($extension)) {
+        switch (mb_strtolower($extension)) {
         case 'css':
             $class = 'Concentrate_InlinerCSS';
             break;

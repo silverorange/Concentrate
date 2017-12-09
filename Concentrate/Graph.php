@@ -94,7 +94,7 @@ class Concentrate_Graph
 
         $len = 0;
         foreach ($this->nodes as $node) {
-            $len = max(strlen($node), $len);
+            $len = max(mb_strlen($node), $len);
         }
 
         foreach ($this->nodes as $node) {

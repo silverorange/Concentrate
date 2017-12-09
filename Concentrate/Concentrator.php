@@ -743,7 +743,7 @@ class Concentrate_Concentrator
 
     protected function parseBoolean($string)
     {
-        switch (strtolower($string)) {
+        switch (mb_strtolower($string)) {
         case 'no':
         case 'false':
         case 'off':

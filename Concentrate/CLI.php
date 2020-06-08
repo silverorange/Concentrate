@@ -695,7 +695,8 @@ class Concentrate_CLI
         $climate->out($string);
     }
 
-    protected function displayInline($string, $climate = null) {
+    protected function displayInline($string, $climate = null)
+    {
         if (is_null($climate)) {
             $climate = $this->climate;
         }

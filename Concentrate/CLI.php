@@ -75,7 +75,7 @@ class Concentrate_CLI
         $this->concentrator = new Concentrate_Concentrator();
 
         $this->parser = Console_CommandLine::fromXmlFile($this->getUiXml());
-        $this->climate = new CLImate;
+        $this->climate = new CLImate();
         $this->climate->forceAnsiOn();
         try {
             $result = $this->parser->parse();
@@ -98,7 +98,6 @@ class Concentrate_CLI
                 $this->writeMinifiedFiles();
                 $this->writeMinifiedFlagFile();
             }
-
         } catch (Console_CommandLine_Exception $e) {
             $this->displayError($e->getMessage());
         } catch (Exception $e) {
@@ -735,7 +734,4 @@ class Concentrate_CLI
             );
         }
     }
-
 }
-
-?>

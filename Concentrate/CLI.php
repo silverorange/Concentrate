@@ -686,19 +686,21 @@ class Concentrate_CLI
             . 'cli.xml';
     }
 
-    protected function display($string, $climate = null)
+    protected function display($string, CLImate $climate = null)
     {
-        if (is_null($climate)) {
+        if (!$climate instanceof CLImate) {
             $climate = $this->climate;
         }
+
         $climate->out($string);
     }
 
-    protected function displayInline($string, $climate = null)
+    protected function displayInline($string, CLImate $climate = null)
     {
-        if (is_null($climate)) {
+        if (!$climate instanceof CLImate) {
             $climate = $this->climate;
         }
+
         $climate->inline($string);
     }
 

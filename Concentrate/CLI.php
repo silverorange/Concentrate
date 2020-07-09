@@ -76,7 +76,6 @@ class Concentrate_CLI
 
         $this->parser = Console_CommandLine::fromXmlFile($this->getUiXml());
         $this->climate = new CLImate();
-        $this->climate->forceAnsiOn();
         try {
             $result = $this->parser->parse();
 

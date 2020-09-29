@@ -6,7 +6,7 @@ use League\CLImate\CLImate;
  * @category  Tools
  * @package   Concentrate
  * @author    Michael Gauthier <mike@silverorange.com>
- * @copyright 2010-2012 silverorange
+ * @copyright 2010-2020 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_CLI
@@ -75,8 +75,7 @@ class Concentrate_CLI
         $this->concentrator = new Concentrate_Concentrator();
 
         $this->parser = Console_CommandLine::fromXmlFile($this->getUiXml());
-        $this->climate = new CLImate;
-        $this->climate->forceAnsiOn();
+        $this->climate = new CLImate();
         try {
             $result = $this->parser->parse();
 
@@ -98,12 +97,13 @@ class Concentrate_CLI
                 $this->writeMinifiedFiles();
                 $this->writeMinifiedFlagFile();
             }
-
         } catch (Console_CommandLine_Exception $e) {
-            $this->displayError($e->getMessage());
+            $this->climate->to('error')->out($e->getMessage());
+            exit(1);
         } catch (Exception $e) {
-            $this->displayError($e->getMessage(), false);
-            $this->displayError($e->getTraceAsString());
+            $this->climate->to('error')->out($e->getMessage());
+            $this->climate->to('error')->out($e->getTraceAsString());
+            exit(1);
         }
     }
 
@@ -123,14 +123,14 @@ class Concentrate_CLI
     {
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
-            $this->display('Web root:');
+            $this->climate->out('Web root:');
         }
 
         $this->webroot = strval($webroot);
         $this->webroot = rtrim($this->webroot, DIRECTORY_SEPARATOR);
 
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
-            $this->display('=> set to "' . $this->webroot . '"');
+            $this->climate->out('=> set to "' . $this->webroot . '"');
         }
 
         return $this;
@@ -170,23 +170,22 @@ class Concentrate_CLI
         }
 
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
-            // To display a new line before this output
             $this->climate->br();
-            $this->display('Options:');
-            $this->display('=> directory : ' . $this->directory);
-            $this->display(
+            $this->climate->out('Options:');
+            $this->climate->out('=> directory : ' . $this->directory);
+            $this->climate->out(
                 sprintf(
                     '=> combine   : %s',
                     ($this->combine) ? 'yes' : 'no'
                 )
             );
-            $this->display(
+            $this->climate->out(
                 sprintf(
                     '=> minify    : %s',
                     ($this->minify) ? 'yes' : 'no'
                 )
             );
-            $this->display(
+            $this->climate->out(
                 sprintf(
                     '=> compile   : %s',
                     ($this->compile) ? 'yes' : 'no'
@@ -224,7 +223,7 @@ class Concentrate_CLI
     {
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
-            $this->display('Writing combined files:');
+            $this->climate->out('Writing combined files:');
         }
 
         $packer       = new Concentrate_Packer();
@@ -233,13 +232,13 @@ class Concentrate_CLI
         if (count($combinesInfo) === 0
             && $this->verbosity >= self::VERBOSITY_MESSAGES
         ) {
-            $this->display('=> no combined files to write.');
+            $this->climate->out('=> no combined files to write.');
         }
 
         foreach ($combinesInfo as $combine => $info) {
             if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
                 $filename = $this->webroot . DIRECTORY_SEPARATOR . $combine;
-                $this->display('=> writing "' . $filename . '"');
+                $this->climate->out('=> writing "' . $filename . '"');
             }
 
             $files = $info['Includes'];
@@ -249,9 +248,9 @@ class Concentrate_CLI
 
             if ($this->verbosity >= self::VERBOSITY_DETAILS) {
                 foreach ($files as $file => $info) {
-                    $this->displayInline(' * ' . $file);
+                    $this->climate->inline(' * ' . $file);
                     if (!$info['explicit']) {
-                        $this->displayInline(' (implicit)', $this->climate->cyan());
+                        $this->climate->cyan()->inline(' (implicit)');
                     };
                     $this->climate->br();
                 }
@@ -288,14 +287,14 @@ class Concentrate_CLI
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
             if ($directory != '') {
-                $this->display(
+                $this->climate->out(
                     sprintf(
                         'Writing minified files from %s:',
                         $directory
                     )
                 );
             } else {
-                $this->display(
+                $this->climate->out(
                     'Writing minified files:'
                 );
             }
@@ -345,7 +344,7 @@ class Concentrate_CLI
             }
 
             if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                $this->display(' * ' . $directory . '/' . $file);
+                $this->climate->out(' * ' . $directory . '/' . $file);
             }
 
             // If type is CSS, add extra filter to chain to update relative
@@ -422,7 +421,7 @@ class Concentrate_CLI
                 }
 
                 if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                    $this->display(' * ' . $directory . '/' . $combine);
+                    $this->climate->out(' * ' . $directory . '/' . $combine);
                 }
 
                 // If type is CSS, add extra filter to chain to update relative
@@ -471,9 +470,8 @@ class Concentrate_CLI
             && $cache->copyTo($key, $toFilename)
         ) {
             if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                $this->display(
-                    '   used cached version',
-                    $this->climate->lightGray()
+                $this->climate->lightGray()->out(
+                    '   used cached version'
                 );
             }
         } else {
@@ -484,16 +482,14 @@ class Concentrate_CLI
                 && $cache->write($key, $toFilename)
             ) {
                 if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                    $this->display(
-                        '   wrote cached version',
-                        $this->climate->lightGray()
+                    $this->climate->lightGray()->out(
+                        '   wrote cached version'
                     );
                 }
             } else {
                 if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                    $this->display(
-                        '   could not write cached version',
-                        $this->climate->lightGray()
+                    $this->climate->lightGray()->out(
+                        '   could not write cached version'
                     );
                 }
             }
@@ -504,7 +500,7 @@ class Concentrate_CLI
     {
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
-            $this->display('Writing compiled files:');
+            $this->climate->out('Writing compiled files:');
         }
 
         $compiler = new Concentrate_CompilerLess();
@@ -530,7 +526,7 @@ class Concentrate_CLI
                 . DIRECTORY_SEPARATOR . $file;
 
             if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                $this->display(' * ' . $file);
+                $this->climate->out(' * ' . $file);
             }
 
             $filter = new Concentrate_Filter_CSSMover(
@@ -569,7 +565,7 @@ class Concentrate_CLI
                     . DIRECTORY_SEPARATOR . $combine;
 
                 if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                    $this->display(' * ' . $combine);
+                    $this->climate->out(' * ' . $combine);
                 }
 
                 $filter = new Concentrate_Filter_CSSMover(
@@ -604,9 +600,8 @@ class Concentrate_CLI
             && $cache->copyTo($key, $toFilename)
         ) {
             if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                $this->display(
-                    '   used cached version',
-                    $this->climate->lightGray()
+                $this->climate->lightGray()->out(
+                    '   used cached version'
                 );
             }
         } else {
@@ -622,16 +617,14 @@ class Concentrate_CLI
                 && $cache->write($key, $toFilename)
             ) {
                 if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                    $this->display(
-                        '   wrote cached version',
-                        $this->climate->lightGray()
+                    $this->climate->lightGray()->out(
+                        '   wrote cached version'
                     );
                 }
             } else {
                 if ($this->verbosity >= self::VERBOSITY_DETAILS) {
-                    $this->display(
-                        '   could not write cached version',
-                        $this->climate->lightGray()
+                    $this->climate->lightGray()->out(
+                        '   could not write cached version'
                     );
                 }
             }
@@ -660,7 +653,7 @@ class Concentrate_CLI
 
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
-            $this->display(
+            $this->climate->out(
                 "Writing flag file '{$filename}':"
             );
         }
@@ -676,7 +669,7 @@ class Concentrate_CLI
         file_put_contents($filename, time());
 
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
-            $this->display('=> written');
+            $this->climate->out('=> written');
         }
     }
 
@@ -685,30 +678,6 @@ class Concentrate_CLI
         return __DIR__ . DIRECTORY_SEPARATOR . '..'
             . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR
             . 'cli.xml';
-    }
-
-    protected function display($string, $climate = null)
-    {
-        if (is_null($climate)) {
-            $climate = $this->climate;
-        }
-        $climate->out($string);
-    }
-
-    protected function displayInline($string, $climate = null)
-    {
-        if (is_null($climate)) {
-            $climate = $this->climate;
-        }
-        $climate->inline($string);
-    }
-
-    protected function displayError($string, $exit = true, $code = 1)
-    {
-        $this->climate->to('error')->out($string);
-        if ($exit) {
-            exit($code);
-        }
     }
 
     /**
@@ -735,7 +704,4 @@ class Concentrate_CLI
             );
         }
     }
-
 }
-
-?>

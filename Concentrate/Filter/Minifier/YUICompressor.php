@@ -112,16 +112,29 @@ class Concentrate_Filter_Minifier_YUICompressor
     {
         $jarFile = '';
 
-        $paths = array(
+        // Support supported and deprecated YUI Compressor package namespaces.
+        $packages = [
+            'packagelist/yuicompressor-bin',
+            'packagist/yuicompressor-bin',
+        ];
+
+        $paths = [
             // Try to load jar if Concentrate is the root project.
-            __DIR__ . '/../../../vendor/bin',
+            __DIR__ . '/../../../vendor/$1/bin',
 
             // Try to load jar if Concentrate is installed as a library for
             // another root project.
-            __DIR__ . '/../../../../../bin',
-        );
+            __DIR__ . '/../../../../../$1/bin',
+        ];
 
+        $fullPaths = [];
         foreach ($paths as $path) {
+            foreach ($packages as $package) {
+                $fullPaths[] = str_replace('$1', $package, $path);
+            }
+        }
+
+        foreach ($fullPaths as $path) {
             if (is_dir($path)) {
                 $dir = dir($path);
                 while (false !== ($entry = $dir->read())) {

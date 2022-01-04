@@ -115,7 +115,7 @@ class Concentrate_Filter_Minifier_YUICompressor
         // Support supported and deprecated YUI Compressor package namespaces.
         $packages = [
             'packagelist/yuicompressor-bin',
-            'packageist/yuicompressor-bin',
+            'packagist/yuicompressor-bin',
         ];
 
         $paths = [

@@ -4,7 +4,7 @@
  * @category  Tools
  * @package   Concentrate
  * @author    Michael Gauthier <mike@silverorange.com>
- * @copyright 2010-2012 silverorange
+ * @copyright 2010-2022 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_Filter_Minifier_YUICompressor
@@ -14,8 +14,9 @@ class Concentrate_Filter_Minifier_YUICompressor
 
     protected $javaBin = 'java';
     protected $jarFile = '';
+    protected $types = ['css', 'js'];
 
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         if (array_key_exists('javaBin', $options)) {
             $this->setJavaBin($options['javaBin']);
@@ -28,22 +29,49 @@ class Concentrate_Filter_Minifier_YUICompressor
         } elseif (array_key_exists('jar_file', $options)) {
             $this->setJavaBin($options['jar_file']);
         }
+
+        if (array_key_exists('types', $options)) {
+            $this->setTypes($options['types']);
+        }
     }
 
-    public function setJavaBin($javaBin)
+    public function setJavaBin(string $javaBin): self
     {
         $this->javaBin = $javaBin;
         return $this;
     }
 
-    public function setJarFile($jarFile)
+    public function setJarFile(string $jarFile): self
     {
         $this->jarFile = $jarFile;
         return $this;
     }
 
-    protected function filterImplementation($input, $type = '' )
+    public function setTypes(array $types): self
     {
+        $this->types = $types;
+        return $this;
+    }
+
+    public function addType(string $type): self
+    {
+        $this->types[] = $type;
+        return $this;
+    }
+
+    public function isSuitable(string $type = ''): bool
+    {
+        return (in_array($type, $this->types) && $this->getJarFile() !== '');
+    }
+
+    protected function filterImplementation(
+        string $input,
+        string $type = ''
+    ): string {
+        if (!in_array($type, $this->types)) {
+            return $input;
+        }
+
         // default args
         $args = array(
             '--nomunge',
@@ -92,14 +120,14 @@ class Concentrate_Filter_Minifier_YUICompressor
         return $output;
     }
 
-    protected function writeTempFile($content)
+    protected function writeTempFile(string $content): string
     {
         $filename = tempnam(sys_get_temp_dir(), 'concentrate-');
         file_put_contents($filename, $content);
         return $filename;
     }
 
-    protected function getJarFile()
+    protected function getJarFile(): string
     {
         if ($this->jarFile == '') {
             $this->jarFile = $this->findJarFile();
@@ -108,7 +136,7 @@ class Concentrate_Filter_Minifier_YUICompressor
         return $this->jarFile;
     }
 
-    protected function findJarFile()
+    protected function findJarFile(): string
     {
         $jarFile = '';
 

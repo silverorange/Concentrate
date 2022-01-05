@@ -263,7 +263,24 @@ class Concentrate_CLI
 
     protected function writeMinifiedFiles()
     {
-        $filter = new Concentrate_Filter_Minifier_YUICompressor();
+        $filter = new Concentrate_Filter_Minifier_YUICompressor(['types' => []]);
+        $filter->chain(new Concentrate_Filter_Minifier_Terser());
+        $filter->chain(new Concentrate_Filter_Minifier_CleanCSS());
+        $filter->chain(new Concentrate_Filter_CSSMover('', ''));
+
+        $yuiFallbacks = [
+            'js' => Concentrate_Filter_Minifier_Terser::class,
+            'css' => Concentrate_Filter_Minifier_CleanCSS::class,
+        ];
+
+        // If YUI Compressor is available and Terser or Clean-CSS are not
+        // available, fall back to using YUI Compressor by enabling its types.
+        foreach ($yuiFallbacks as $type => $class) {
+            if (!$filter->get($class)->isSuitable($type)) {
+                $filter->addType($type);
+            }
+        }
+
         $this->writeMinifiedFilesFromDirectory($filter);
 
         if ($this->compile) {
@@ -358,14 +375,9 @@ class Concentrate_CLI
                     ? 'min/' . $file
                     : 'min/' . $directory . '/' . $file;
 
-                $moveFilter = new Concentrate_Filter_CSSMover(
-                    $fromFilterFile,
-                    $toFilterFile
-                );
-
-                $filter->setNextFilter($moveFilter);
-            } else {
-                $filter->clearNextFilter();
+                $filter->get(Concentrate_Filter_CSSMover::class)
+                    ->setFromPath($fromFilterFile)
+                    ->setToPath($toFilterFile);
             }
 
             $this->writeMinifiedFile(
@@ -431,18 +443,13 @@ class Concentrate_CLI
                         ? $combine
                         : $directory . '/' . $combine;
 
-                    $toFilterFile = ($directory =='')
+                    $toFilterFile = ($directory == '')
                         ? 'min/' . $combine
                         : 'min/' . $directory . '/' . $combine;
 
-                    $moveFilter = new Concentrate_Filter_CSSMover(
-                        $fromFilterFile,
-                        $toFilterFile
-                    );
-
-                    $filter->setNextFilter($moveFilter);
-                } else {
-                    $filter->clearNextFilter();
+                    $filter->get(Concentrate_Filter_CSSMover::class)
+                        ->setFromPath($fromFilterFile)
+                        ->setToPath($toFilterFile);
                 }
 
                 $this->writeMinifiedFile(
@@ -461,8 +468,11 @@ class Concentrate_CLI
         $toFilename,
         $type
     ) {
-        // cache key is unique on file path and file content
-        $key = md5($fromFilename . md5_file($fromFilename));
+        $key = md5(
+            $fromFilename                // file name
+            . md5_file($fromFilename)    // file content
+            . $filter->getChainId($type) // applied filter chain
+        );
 
         $cache = $this->minifiedCache;
 
@@ -610,7 +620,7 @@ class Concentrate_CLI
 
             // TODO: perform filtering before writing file
             if ($filter instanceof Concentrate_Filter_Abstract) {
-                $filter->filterFile($toFilename, $toFilename);
+                $filter->filterFile($toFilename, $toFilename, $type);
             }
 
             if ($cache instanceof Concentrate_FileCache

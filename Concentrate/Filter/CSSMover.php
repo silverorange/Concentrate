@@ -21,32 +21,39 @@ class Concentrate_Filter_CSSMover extends Concentrate_Filter_Abstract
      */
     protected $fromPath = '';
 
-    public function __construct($fromPath, $toPath)
+    public function __construct(string $fromPath, string $toPath)
     {
         $this->setFromPath($fromPath);
         $this->setToPath($toPath);
     }
 
-    public function setFromPath($fromPath)
+    public function setFromPath(string $fromPath): self
     {
-        $this->fromPath = (string)$fromPath;
+        $this->fromPath = $fromPath;
         return $this;
     }
 
-    public function setToPath($toPath)
+    public function setToPath(string $toPath): self
     {
-        $this->toPath = (string)$toPath;
+        $this->toPath = $toPath;
         return $this;
     }
 
-    protected function filterImplementation($input, $type = '')
+    public function isSuitable(string $type = ''): bool
     {
+        return ($type === 'css' || $type === 'less');
+    }
+
+    protected function filterImplementation(
+        string $input,
+        string $type = ''
+    ): string {
         return $this->updateURIs($input);
     }
 
-    protected function updateURIs($content)
+    protected function updateURIs(string $content): string
     {
-        if ($this->fromPath != $this->toPath) {
+        if ($this->fromPath !== $this->toPath) {
             $content = preg_replace_callback(
                 '/url\((.+?)\)/ui',
                 array($this, 'updateURIsCallback'),
@@ -56,7 +63,7 @@ class Concentrate_Filter_CSSMover extends Concentrate_Filter_Abstract
         return $content;
     }
 
-    protected function updateURIsCallback(array $matches)
+    protected function updateURIsCallback(array $matches): string
     {
         $uri    = $matches[1];
         $quoted = false;
@@ -115,7 +122,12 @@ class Concentrate_Filter_CSSMover extends Concentrate_Filter_Abstract
         return 'url(' . $uri . ')';
     }
 
-    protected function isRelative($uri)
+    public function getId(string $type): string
+    {
+        return get_class($this) . ':' . $this->fromPath . ':' . $this->toPath;
+    }
+
+    protected function isRelative(string $uri): bool
     {
         return (preg_match('!^(?:https?:|ftp:|data:)!', $uri) === 0);
     }

@@ -68,10 +68,6 @@ class Concentrate_Filter_Minifier_YUICompressor
         string $input,
         string $type = ''
     ): string {
-        if (!in_array($type, $this->types)) {
-            return $input;
-        }
-
         // default args
         $args = array(
             '--nomunge',

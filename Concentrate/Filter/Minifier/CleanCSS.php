@@ -60,10 +60,6 @@ class Concentrate_Filter_Minifier_CleanCSS
         // remove temp file
         unlink($filename);
 
-        if ($output === null) {
-            echo "**", $input, "**\n";
-        }
-
         return $output;
     }
 

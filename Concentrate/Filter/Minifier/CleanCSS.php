@@ -30,24 +30,48 @@ class Concentrate_Filter_Minifier_CleanCSS
         string $input,
         string $type = ''
     ): string {
+        if ($input === '') {
+            return $input;
+        }
+
         $args = [
             '-O1',
             '--inline=none'
         ];
 
+        // PHP seems to occassionally truncate or skip lines when passing large
+        // amounts of data to shell_exec, so we use temporary instead of
+        // echoing to STDIN. Using proc_open is also an option, but the added
+        // complexity is not worth the effort.
+        $filename = $this->writeTempFile($input);
+
         // Build command. Redirect STDERR to STDOUT so we can capture and parse
         // errors.
         $command = sprintf(
-            'printf %s | %s %s 2>&1',
-            escapeshellarg(str_replace(['\\', '%'], ['\\\\', '%%'], $input)),
+            '%s %s %s 2>&1',
             escapeshellarg($this->getCleanCSSBin()),
-            implode(' ', $args)
+            implode(' ', $args),
+            escapeshellarg($filename)
         );
 
         // run command
         $output = shell_exec($command);
 
+        // remove temp file
+        unlink($filename);
+
+        if ($output === null) {
+            echo "**", $input, "**\n";
+        }
+
         return $output;
+    }
+
+    protected function writeTempFile(string $content): string
+    {
+        $filename = tempnam(sys_get_temp_dir(), 'concentrate-');
+        file_put_contents($filename, $content);
+        return $filename;
     }
 
     protected function getCleanCSSBin(): string

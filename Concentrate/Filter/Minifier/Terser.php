@@ -27,34 +27,45 @@ class Concentrate_Filter_Minifier_Terser
         string $input,
         string $type = ''
     ): string {
+        if ($input === '') {
+            return $input;
+        }
+
         $args = [
             '--mangle',
             '--keep-classnames',
             '--keep-fnames',
         ];
 
+        // PHP seems to occassionally truncate or skip lines when passing large
+        // amounts of data to shell_exec, so we use temporary instead of
+        // echoing to STDIN. Using proc_open is also an option, but the added
+        // complexity is not worth the effort.
+        $filename = $this->writeTempFile($input);
+
         // Build command. Redirect STDERR to STDOUT so we can capture and parse
         // errors.
         $command = sprintf(
-            'printf %s | %s %s 2>&1',
-            escapeshellarg(str_replace(['\\', '%'], ['\\\\', '%%'], $input)),
+            '%s %s -- %s 2>&1',
             escapeshellarg($this->getTerserBin()),
-            implode(' ', $args)
+            implode(' ', $args),
+            escapeshellarg($filename)
         );
-        $command = sprintf(
-            'printf %s > foo.js',
-            escapeshellarg(str_replace(['\\', '%'], ['\\\\', '%%'], $input)),
-            // escapeshellarg($this->getTerserBin()),
-            // implode(' ', $args)
-        );
-
 
         // run command
-        $output = shell_exec($command);
-        echo $input;
-        //echo $command;
-        return null;
+        $output = exec($command);
+
+        // remove temp file
+        unlink($filename);
+
         return $output;
+    }
+
+    protected function writeTempFile(string $content): string
+    {
+        $filename = tempnam(sys_get_temp_dir(), 'concentrate-');
+        file_put_contents($filename, $content);
+        return $filename;
     }
 
     protected function getTerserBin(): string

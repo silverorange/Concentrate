@@ -12,7 +12,7 @@ class Concentrate_Filter_Minifier_CleanCSS
 {
     const DEFAULT_BIN_NAME = 'cleancss';
 
-    protected $cleanCSSBin = '';
+    protected $cleanCSSBin = null;
 
     public function __construct(array $options = [])
     {
@@ -52,7 +52,7 @@ class Concentrate_Filter_Minifier_CleanCSS
 
     protected function getCleanCSSBin(): string
     {
-        if ($this->cleanCSSBin == '') {
+        if ($this->cleanCSSBin === null) {
             $this->cleanCSSBin = $this->findCleanCSSBin();
         }
 
@@ -73,7 +73,6 @@ class Concentrate_Filter_Minifier_CleanCSS
         ];
 
         foreach ($paths as $path) {
-            echo "trying ", $path, "\n";
             if (is_dir($path)) {
                 $dir = dir($path);
                 while (false !== ($entry = $dir->read())) {

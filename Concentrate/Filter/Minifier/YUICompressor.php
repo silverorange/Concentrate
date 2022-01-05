@@ -13,7 +13,7 @@ class Concentrate_Filter_Minifier_YUICompressor
     const DEFAULT_JAR_NAME = '/yuicompressor(?:-[0-9]\.[0-9]\.[0-9])?\.jar/';
 
     protected $javaBin = 'java';
-    protected $jarFile = '';
+    protected $jarFile = null;
     protected $types = ['css', 'js'];
 
     public function __construct(array $options = [])
@@ -129,7 +129,7 @@ class Concentrate_Filter_Minifier_YUICompressor
 
     protected function getJarFile(): string
     {
-        if ($this->jarFile == '') {
+        if ($this->jarFile === null) {
             $this->jarFile = $this->findJarFile();
         }
 

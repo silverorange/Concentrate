@@ -12,7 +12,7 @@ class Concentrate_Filter_Minifier_Terser
 {
     const DEFAULT_BIN_NAME = 'terser';
 
-    protected $terserBin = '';
+    protected $terserBin = null;
 
     public function __construct(array $options = [])
     {
@@ -59,7 +59,7 @@ class Concentrate_Filter_Minifier_Terser
 
     protected function getTerserBin(): string
     {
-        if ($this->terserBin == '') {
+        if ($this->terserBin === null) {
             $this->terserBin = $this->findTerserBin();
         }
 

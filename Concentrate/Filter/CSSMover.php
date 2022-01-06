@@ -122,7 +122,7 @@ class Concentrate_Filter_CSSMover extends Concentrate_Filter_Abstract
         return 'url(' . $uri . ')';
     }
 
-    public function getId(string $type): string
+    public function getId(string $type = ''): string
     {
         return get_class($this) . ':' . $this->fromPath . ':' . $this->toPath;
     }

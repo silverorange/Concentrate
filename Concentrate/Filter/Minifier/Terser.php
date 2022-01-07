@@ -37,35 +37,17 @@ class Concentrate_Filter_Minifier_Terser
             '--keep-fnames',
         ];
 
-        // PHP seems to occassionally truncate or skip lines when passing large
-        // amounts of data to shell_exec, so we use temporary instead of
-        // echoing to STDIN. Using proc_open is also an option, but the added
-        // complexity is not worth the effort.
-        $filename = $this->writeTempFile($input);
-
-        // Build command. Redirect STDERR to STDOUT so we can capture and parse
-        // errors.
+        // Build command.
         $command = sprintf(
-            '%s %s -- %s 2>&1',
+            '%s %s',
             escapeshellarg($this->getTerserBin()),
-            implode(' ', $args),
-            escapeshellarg($filename)
+            implode(' ', $args)
         );
 
-        // run command
-        $output = exec($command);
-
-        // remove temp file
-        unlink($filename);
+        $process = new Concentrate_Process($command);
+        $output = $process->run($input);
 
         return $output;
-    }
-
-    protected function writeTempFile(string $content): string
-    {
-        $filename = tempnam(sys_get_temp_dir(), 'concentrate-');
-        file_put_contents($filename, $content);
-        return $filename;
     }
 
     protected function getTerserBin(): string

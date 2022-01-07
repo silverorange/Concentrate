@@ -22,11 +22,11 @@ class Concentrate_Process
 
     public function run(string $input): string
     {
-        $descriptorSpec = array(
+        $descriptorSpec = [
             self::FD_STDIN => ['pipe', 'r'],
             self::FD_STDOUT => ['pipe', 'w'],
             self::FD_STDERR => ['pipe', 'w'],
-        );
+        ];
 
         $pipes = [];
         $process = proc_open($this->command, $descriptorSpec, $pipes);

@@ -39,7 +39,6 @@ class Concentrate_Filter_Minifier_CleanCSS
             '--inline=none'
         ];
 
-        // Build command.
         $command = sprintf(
             '%s %s',
             escapeshellarg($this->getCleanCSSBin()),

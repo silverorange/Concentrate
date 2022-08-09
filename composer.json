@@ -17,7 +17,7 @@
     "pear/pear-core-minimal": "^1.9.0",
     "pear/console_commandline": "^1.1.10",
     "symfony/yaml": "^5.4.0",
-    "league/climate": "^3.5"
+    "league/climate": "^3.8"
   },
   "require-dev": {
     "silverorange/coding-standard": "^1.0.0"

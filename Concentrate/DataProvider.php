@@ -71,7 +71,7 @@ class Concentrate_DataProvider
         }
 
         try {
-            $data = Yaml::parse(file_get_contents($filename));
+            $data = Yaml::parseFile($filename);
             $this->loadedFiles[] = $filename;
         } catch (InvalidArgumentException $e) {
             throw new Concentrate_FileFormatException(

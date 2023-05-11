@@ -13,7 +13,7 @@ class Concentrate_Compiler_Less extends Concentrate_Compiler_Abstract
 
     public function isSuitable(string $type = ''): bool
     {
-        return ($type === 'js' && $this->getLesscBin() !== '');
+        return ($type === 'less' && $this->getLesscBin() !== '');
     }
 
     public function __construct(array $options = [])

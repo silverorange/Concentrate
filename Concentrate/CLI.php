@@ -617,7 +617,7 @@ class Concentrate_CLI
     }
 
     protected function writeCompiledFile(
-        Concentrate_CompilerAbstract $compiler,
+        Concentrate_Compiler_Abstract $compiler,
         Concentrate_Filter_Abstract $filter = null,
         $fromFilename,
         $toFilename,

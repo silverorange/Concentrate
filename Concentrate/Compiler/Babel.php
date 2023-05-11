@@ -69,6 +69,7 @@ class Concentrate_Compiler_Babel extends Concentrate_Compiler_Abstract
 
         // output
         if ($outputFile !== null) {
+            $args[] = '--out-file';
             $args[] = escapeshellarg($outputFile);
         }
 
@@ -76,7 +77,7 @@ class Concentrate_Compiler_Babel extends Concentrate_Compiler_Abstract
         $command = $this->getBabelBin() . ' ' . implode(' ', $args);
 
         // run command
-        $output = shell_exec($command);
+        $output = shell_exec($command) ?: '';
 
         // remove temp file
         if (!$isFile) {

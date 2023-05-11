@@ -4,14 +4,19 @@
  * @category  Tools
  * @package   Concentrate
  * @author    Michael Gauthier <mike@silverorange.com>
- * @copyright 2012 silverorange
+ * @copyright 2012-2023 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_CompilerLess extends Concentrate_CompilerAbstract
+class Concentrate_Compiler_Less extends Concentrate_Compiler_Abstract
 {
-    protected $lesscBin = '';
+    protected string $lesscBin = '';
 
-    public function __construct(array $options = array())
+    public function isSuitable(string $type = ''): bool
+    {
+        return ($type === 'js' && $this->getLesscBin() !== '');
+    }
+
+    public function __construct(array $options = [])
     {
         if (array_key_exists('lesscBin', $options)) {
             $this->setLesscBin($options['lesscBin']);
@@ -20,19 +25,22 @@ class Concentrate_CompilerLess extends Concentrate_CompilerAbstract
         }
     }
 
-    public function setLesscBin($lesscBin)
+    public function setLesscBin(string $lesscBin): self
     {
         $this->lesscBin = $lesscBin;
         return $this;
     }
 
-    public function compile($content, $type)
+    public function compile(string $content, string $type): string
     {
         return $this->compileInternal($content, false, null, $type);
     }
 
-    public function compileFile($fromFilename, $toFilename, $type)
-    {
+    public function compileFile(
+        string $fromFilename,
+        string $toFilename,
+        string $type
+    ): self {
         $path = new Concentrate_Path($toFilename);
         $path->writeDirectory();
 
@@ -41,8 +49,14 @@ class Concentrate_CompilerLess extends Concentrate_CompilerAbstract
         return $this;
     }
 
-    protected function compileInternal($data, $isFile, $outputFile, $type)
-    {
+    protected function compileInternal(
+        string $data,
+        bool $isFile,
+        string $outputFile,
+        string $type
+    ): string {
+        $args = [];
+
         // filename
         if ($isFile) {
             $filename = $data;
@@ -56,14 +70,8 @@ class Concentrate_CompilerLess extends Concentrate_CompilerAbstract
             $args[] = escapeshellarg($outputFile);
         }
 
-        if ($this->lesscBin == '') {
-            $lesscBin = $this->findLesscBin();
-        } else {
-            $lesscBin = $this->lesscBin;
-        }
-
         // build command
-        $command = $lesscBin . ' ' . implode(' ', $args);
+        $command = $this->getLesscBin() . ' ' . implode(' ', $args);
 
         // run command
         $output = shell_exec($command);
@@ -76,28 +84,30 @@ class Concentrate_CompilerLess extends Concentrate_CompilerAbstract
         return $output;
     }
 
-    protected function writeTempFile($content)
+    protected function writeTempFile(string $content): string
     {
         $filename = tempnam(sys_get_temp_dir(), 'concentrate-');
         file_put_contents($filename, $content);
         return $filename;
     }
 
-    protected function findLesscBin()
+    protected function getLesscBin(): string
+    {
+        if ($this->lesscBin === '') {
+            $this->setLesscBin($this->findLesscBin());
+        }
+
+        return $this->lesscBin;
+    }
+
+    protected function findLesscBin(): string
     {
         $output = array();
         $return = 1;
         exec('which lessc 2> /dev/null', $output, $return);
 
-        if ($return == 0) {
+        if ($return === 0) {
             $lesscBin = $output[0];
-        } else {
-            throw new Concentrate_FileException(
-                'LESS compiler not found. Either the LESS compiler is not '
-                . 'installed, or the location must be specified by using the '
-                . 'lessc_bin option or by calling the setLesscBin() method '
-                . 'on the Concentrate_CompilerLess object.'
-            );
         }
 
         return $lesscBin;

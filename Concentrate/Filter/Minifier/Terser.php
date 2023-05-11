@@ -70,6 +70,9 @@ class Concentrate_Filter_Minifier_Terser
             // Try to load Terser if Concentrate is installed as a library for
             // another root project.
             __DIR__ . '/../../../../../../node_modules/.bin',
+
+            // Try to load running from current dir
+            getcwd() . '/node_modules/.bin',
         ];
 
         foreach ($paths as $path) {

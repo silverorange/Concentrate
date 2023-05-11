@@ -74,7 +74,7 @@ class Concentrate_Compiler_Less extends Concentrate_Compiler_Abstract
         $command = $this->getLesscBin() . ' ' . implode(' ', $args);
 
         // run command
-        $output = shell_exec($command);
+        $output = shell_exec($command) ?: '';
 
         // remove temp file
         if (!$isFile) {

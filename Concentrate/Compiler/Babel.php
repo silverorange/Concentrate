@@ -114,6 +114,9 @@ class Concentrate_Compiler_Babel extends Concentrate_Compiler_Abstract
             // Try to load Babel if Concentrate is installed as a library for
             // another root project.
             __DIR__ . '/../../../../../../node_modules/.bin',
+
+            // Try to load running from current dir
+            getcwd() . '/node_modules/.bin',
         ];
 
         foreach ($paths as $path) {

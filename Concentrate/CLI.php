@@ -576,7 +576,6 @@ class Concentrate_CLI
                     continue;
                 }
 
-                // only compile LESS
                 $type = pathinfo($fromFilename, PATHINFO_EXTENSION);
                 $compiler = current(
                     array_filter(

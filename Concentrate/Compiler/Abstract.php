@@ -4,15 +4,20 @@
  * @category  Tools
  * @package   Concentrate
  * @author    Michael Gauthier <mike@silverorange.com>
- * @copyright 2012 silverorange
+ * @copyright 2012-2023 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-abstract class Concentrate_CompilerAbstract
+abstract class Concentrate_Compiler_Abstract
 {
-    abstract public function compile($content, $type);
+    abstract public function compile(string $content, string $type): string;
 
-    public function compileFile($fromFilename, $toFilename, $type)
-    {
+    abstract public function isSuitable(string $type = ''): bool;
+
+    public function compileFile(
+        string $fromFilename,
+        string $toFilename,
+        string $type
+    ): self {
         if (!is_readable($fromFilename)) {
             throw new Concentrate_FileException(
                 "Could not read {$fromFilename} for compilation.",

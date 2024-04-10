@@ -513,7 +513,10 @@ class Concentrate_CLI
             $this->climate->out('Writing compiled files:');
         }
 
-        $compiler = new Concentrate_CompilerLess();
+        $compilers = [
+            new Concentrate_Compiler_Less(),
+            new Concentrate_Compiler_Babel(),
+        ];
 
         $fileInfo = $this->concentrator->getFileInfo();
         foreach ($fileInfo as $file => $info) {
@@ -525,9 +528,16 @@ class Concentrate_CLI
                 continue;
             }
 
-            // only compile LESS
             $type = pathinfo($fromFilename, PATHINFO_EXTENSION);
-            if ($type !== 'less') {
+            $compiler = current(
+                array_filter(
+                    $compilers,
+                    fn($c) => $c->isSuitable($type)
+                )
+            );
+
+            // only compile supported files
+            if ($compiler === false) {
                 continue;
             }
 
@@ -539,10 +549,12 @@ class Concentrate_CLI
                 $this->climate->out(' * ' . $file);
             }
 
-            $filter = new Concentrate_Filter_CSSMover(
-                $file,
-                'compiled/' . $file
-            );
+            $filter = ($type === 'less')
+                ? new Concentrate_Filter_CSSMover(
+                    $file,
+                    'compiled/' . $file
+                )
+                : null;
 
             $this->writeCompiledFile(
                 $compiler,
@@ -564,9 +576,16 @@ class Concentrate_CLI
                     continue;
                 }
 
-                // only compile LESS
                 $type = pathinfo($fromFilename, PATHINFO_EXTENSION);
-                if ($type !== 'less') {
+                $compiler = current(
+                    array_filter(
+                        $compilers,
+                        fn($c) => $c->isSuitable($type)
+                    )
+                );
+
+                // only compile supported files
+                if ($compiler === false) {
                     continue;
                 }
 
@@ -578,10 +597,12 @@ class Concentrate_CLI
                     $this->climate->out(' * ' . $combine);
                 }
 
-                $filter = new Concentrate_Filter_CSSMover(
-                    $combine,
-                    'compiled/' . $combine
-                );
+                $filter = ($type === 'less')
+                    ? new Concentrate_Filter_CSSMover(
+                        $combine,
+                        'compiled/' . $combine
+                    )
+                    : null;
 
                 $this->writeCompiledFile(
                     $compiler,
@@ -595,7 +616,7 @@ class Concentrate_CLI
     }
 
     protected function writeCompiledFile(
-        Concentrate_CompilerAbstract $compiler,
+        Concentrate_Compiler_Abstract $compiler,
         Concentrate_Filter_Abstract $filter = null,
         $fromFilename,
         $toFilename,

@@ -31,5 +31,3 @@ $cli = new Concentrate_CLI();
 $cli->setCompiledCache($compiledCache);
 $cli->setMinifiedCache($minifiedCache);
 $cli->run();
-
-?>

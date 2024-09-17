@@ -16,6 +16,8 @@ $config = new Php82();
 // Set up the directories you want to process
 $finder = (new Finder())
     ->in(__DIR__)
+    // need to be explicit about files with no extension
+    ->name('concentrate')
     ->exclude([
         'node_modules',
     ]);

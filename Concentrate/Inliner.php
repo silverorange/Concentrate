@@ -2,18 +2,18 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010-2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_Inliner
 {
-    protected $inlinedFiles = null;
+    protected $inlinedFiles;
     protected $root = '';
     protected $destinationFilename = '';
     protected $sourceFilename = '';
-    protected $sourceDirectory= '.';
+    protected $sourceDirectory = '.';
     protected $destinationDirectory = '.';
     protected $filename = '';
     protected $content = '';
@@ -26,10 +26,10 @@ class Concentrate_Inliner
     ) {
         $this->root = $root;
 
-        $this->sourceFilename      = $sourceFilename;
+        $this->sourceFilename = $sourceFilename;
         $this->destinationFilename = $destinationFilename;
 
-        $this->sourceDirectory      = dirname($sourceFilename);
+        $this->sourceDirectory = dirname($sourceFilename);
         $this->destinationDirectory = dirname($destinationFilename);
 
         $this->filename = $root . DIRECTORY_SEPARATOR . $sourceFilename;
@@ -46,8 +46,8 @@ class Concentrate_Inliner
         $extension = pathinfo($sourceFilename, PATHINFO_EXTENSION);
 
         $class = match (mb_strtolower($extension)) {
-            'css' => Concentrate_InlinerCSS::class,
-            'less' => Concentrate_InlinerLESS::class,
+            'css'   => Concentrate_InlinerCSS::class,
+            'less'  => Concentrate_InlinerLESS::class,
             default => self::class,
         };
 
@@ -62,6 +62,7 @@ class Concentrate_Inliner
     public function getInlineContent()
     {
         $this->inlinedFiles->add($this->sourceFilename);
+
         return $this->load($this->filename);
     }
 
@@ -85,8 +86,6 @@ class Concentrate_Inliner
 
     protected function isRelative($uri)
     {
-        return (preg_match('!^(?:https?:|ftp:|data:)!', $uri) === 0);
+        return preg_match('!^(?:https?:|ftp:|data:)!', $uri) === 0;
     }
 }
-
-?>

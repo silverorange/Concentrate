@@ -4,7 +4,7 @@ use League\CLImate\CLImate;
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010-2020 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
@@ -270,8 +270,7 @@ class Concentrate_CLI
         Concentrate_Filter_Abstract $filter,
         $directory = '',
         array $types = ['css', 'js']
-    ): void
-    {
+    ): void {
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
             if ($directory != '') {
@@ -438,8 +437,7 @@ class Concentrate_CLI
         $fromFilename,
         $toFilename,
         $type
-    ): void
-    {
+    ): void {
         $key = md5(
             $fromFilename                // file name
             . md5_file($fromFilename)    // file content
@@ -593,8 +591,7 @@ class Concentrate_CLI
         string $toFilename,
         string $type,
         ?Concentrate_Filter_Abstract $filter = null
-    ): void
-    {
+    ): void {
         // cache key is unique on file path and file content
         $key = md5($fromFilename . md5_file($fromFilename));
 

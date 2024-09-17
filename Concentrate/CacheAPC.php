@@ -2,7 +2,7 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
@@ -15,7 +15,7 @@ class Concentrate_CacheAPC extends Concentrate_CacheHierarchyAbstract
 
     public function __construct($extraPrefix = '')
     {
-        $this->hasAPC      = extension_loaded('apc');
+        $this->hasAPC = extension_loaded('apc');
         $this->extraPrefix = strval($extraPrefix);
     }
 
@@ -70,5 +70,3 @@ class Concentrate_CacheAPC extends Concentrate_CacheHierarchyAbstract
         return $key;
     }
 }
-
-?>

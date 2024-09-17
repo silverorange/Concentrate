@@ -2,7 +2,7 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
@@ -11,12 +11,12 @@ class Concentrate_CacheMemcache extends Concentrate_CacheHierarchyAbstract
 {
     protected $extraPrefix = '';
     protected $prefix = '';
-    protected $memcache = null;
+    protected $memcache;
 
     public function __construct(Memcached $memcache, $extraPrefix = '')
     {
         $this->extraPrefix = strval($extraPrefix);
-        $this->memcache    = $memcache;
+        $this->memcache = $memcache;
     }
 
     public function setPrefixSelf($prefix)
@@ -52,5 +52,3 @@ class Concentrate_CacheMemcache extends Concentrate_CacheHierarchyAbstract
         return $key;
     }
 }
-
-?>

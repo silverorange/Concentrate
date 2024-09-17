@@ -2,12 +2,12 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_Path implements \Stringable
+class Concentrate_Path implements Stringable
 {
     /**
      * @var string
@@ -15,9 +15,9 @@ class Concentrate_Path implements \Stringable
     protected $path;
 
     /**
-     * Creates a new path object
+     * Creates a new path object.
      *
-     * @param string $path the path.
+     * @param string $path the path
      */
     public function __construct($path = '')
     {
@@ -25,9 +25,9 @@ class Concentrate_Path implements \Stringable
     }
 
     /**
-     * Gets a string representation of this path
+     * Gets a string representation of this path.
      *
-     * @return string a string representation of this path.
+     * @return string a string representation of this path
      */
     public function __toString(): string
     {
@@ -36,7 +36,7 @@ class Concentrate_Path implements \Stringable
 
     /**
      * Creates a directory for this path if such a directory does not already
-     * exist
+     * exist.
      *
      * The last item in this path is considered the file and is stripped off the
      * path before the directory is created. For example, this creates the
@@ -48,22 +48,22 @@ class Concentrate_Path implements \Stringable
      * ?>
      * </code>
      *
-     * @return Concentrate_Path the current object for fluent interface.
+     * @return Concentrate_Path the current object for fluent interface
      *
-     * @throws Concentrate_FileException if the directory could not be created.
+     * @throws Concentrate_FileException if the directory could not be created
      */
     public function writeDirectory()
     {
         $toDirectory = dirname($this->path);
 
         if (!file_exists($toDirectory)) {
-            mkdir($toDirectory, 0770, true);
+            mkdir($toDirectory, 0o770, true);
         }
 
         if (!is_dir($toDirectory)) {
             throw new Concentrate_FileException(
                 "Could not write to directory {$toDirectory} because it " .
-                "exists and is not a directory.",
+                'exists and is not a directory.',
                 0,
                 $toDirectory
             );
@@ -74,9 +74,9 @@ class Concentrate_Path implements \Stringable
 
     /**
      * Evaluates a path that contains relative references and removes
-     * superfluous current directory references
+     * superfluous current directory references.
      *
-     * @return Concentrate_Path a new path object.
+     * @return Concentrate_Path a new path object
      */
     public function evaluate()
     {
@@ -93,7 +93,7 @@ class Concentrate_Path implements \Stringable
                     // we've gone past the start of the relative path
                     array_push($prePath, '..');
                 }
-            } else if ($segment == '.') {
+            } elseif ($segment == '.') {
                 // no-op
             } else {
                 array_push($postPath, $segment);
@@ -111,5 +111,3 @@ class Concentrate_Path implements \Stringable
         );
     }
 }
-
-?>

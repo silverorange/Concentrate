@@ -2,7 +2,7 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2012-2023 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
@@ -10,11 +10,6 @@
 class Concentrate_Compiler_Less extends Concentrate_Compiler_Abstract
 {
     protected string $lesscBin = '';
-
-    public function isSuitable(string $type = ''): bool
-    {
-        return ($type === 'less' && $this->getLesscBin() !== '');
-    }
 
     public function __construct(array $options = [])
     {
@@ -25,9 +20,15 @@ class Concentrate_Compiler_Less extends Concentrate_Compiler_Abstract
         }
     }
 
+    public function isSuitable(string $type = ''): bool
+    {
+        return $type === 'less' && $this->getLesscBin() !== '';
+    }
+
     public function setLesscBin(string $lesscBin): self
     {
         $this->lesscBin = $lesscBin;
+
         return $this;
     }
 
@@ -88,6 +89,7 @@ class Concentrate_Compiler_Less extends Concentrate_Compiler_Abstract
     {
         $filename = tempnam(sys_get_temp_dir(), 'concentrate-');
         file_put_contents($filename, $content);
+
         return $filename;
     }
 
@@ -113,5 +115,3 @@ class Concentrate_Compiler_Less extends Concentrate_Compiler_Abstract
         return $lesscBin;
     }
 }
-
-?>

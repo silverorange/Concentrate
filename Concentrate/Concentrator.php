@@ -2,20 +2,16 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010-2015 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_Concentrator
 {
+    protected $dataProvider;
 
-
-    protected $dataProvider = null;
-
-    protected $cache = null;
-
-
+    protected $cache;
 
     public function __construct(array $options = [])
     {
@@ -34,41 +30,35 @@ class Concentrate_Concentrator
         }
     }
 
-
-
     public function setDataProvider(Concentrate_DataProvider $dataProvider): static
     {
         $this->dataProvider = $dataProvider;
+
         return $this;
     }
-
-
 
     public function setCache(Concentrate_CacheInterface $cache): static
     {
         $this->cache = $cache;
+
         return $this;
     }
-
-
 
     public function loadDataFile($filename): static
     {
         $this->dataProvider->loadFile($filename);
+
         return $this;
     }
-
-
 
     public function loadDataFiles(array $filenames): static
     {
         foreach ($filenames as $filename) {
             $this->loadDataFile($filename);
         }
+
         return $this;
     }
-
-
 
     public function compareFiles($file1, $file2): int
     {
@@ -101,8 +91,6 @@ class Concentrate_Concentrator
         return 0;
     }
 
-
-
     public function isMinified($file): bool
     {
         $minified = false;
@@ -123,8 +111,6 @@ class Concentrate_Concentrator
 
         return $minified;
     }
-
-
 
     public function getConflicts(array $files): array
     {
@@ -156,13 +142,11 @@ class Concentrate_Concentrator
         return $conflicts;
     }
 
-
-
     public function getCombines(array $files): array
     {
-        $superset    = $files;
+        $superset = $files;
         $combinedSet = [];
-        $combines    = [];
+        $combines = [];
 
         $combinesInfo = $this->getCombinesInfo();
         foreach ($combinesInfo as $combine => $combineInfo) {
@@ -179,11 +163,10 @@ class Concentrate_Concentrator
                 // make sure combining will not introduce conflicts
                 if (count($this->getConflicts($potentialSuperset)) === 0) {
                     $combinedSet = array_merge($combinedSet, $combinedFiles);
-                    $superset    = $potentialSuperset;
-                    $combines[]   = $combine;
+                    $superset = $potentialSuperset;
+                    $combines[] = $combine;
                 }
             }
-
         }
 
         // remove dupes from superset caused by combines
@@ -199,7 +182,7 @@ class Concentrate_Concentrator
             $files[] = $combine;
         }
 
-        $info = [
+        return [
             // 'combines' contains the combined files that will be included.
             'combines' => $combines,
             // 'superset' contains all original files plus files pulled in by
@@ -208,19 +191,14 @@ class Concentrate_Concentrator
             // 'files' contains combined files and files in the original set
             // that did not fit in any combined set. These are the actual files
             // that will be included.
-            'files'    => $files,
+            'files' => $files,
         ];
-
-        return $info;
     }
-
-
 
     public function getFileSortOrder(): array
     {
         $fileSortOrder = $this->getCachedValue('fileSortOrder');
         if ($fileSortOrder === false) {
-
             $data = $this->dataProvider->getData();
 
             $fileSortOrder = [];
@@ -256,7 +234,6 @@ class Concentrate_Concentrator
             // add combines to graph
             $combinesInfo = $this->getCombinesInfo();
             foreach ($combinesInfo as $combine => $combineInfo) {
-
                 $files = $combineInfo['Includes'];
 
                 if (!isset($nodes[$combine])) {
@@ -295,6 +272,7 @@ class Concentrate_Concentrator
             }
 
             $sorter = new Concentrate_Graph_TopologicalSorter();
+
             try {
                 $sortedNodes = $sorter->sort($graph);
             } catch (Concentrate_CyclicDependencyException $e) {
@@ -321,13 +299,10 @@ class Concentrate_Concentrator
         return $fileSortOrder;
     }
 
-
-
     public function getFileInfo(): array
     {
         $fileInfo = $this->getCachedValue('fileInfo');
         if ($fileInfo === false) {
-
             $data = $this->dataProvider->getData();
 
             $fileInfo = [];
@@ -353,13 +328,10 @@ class Concentrate_Concentrator
         return $fileInfo;
     }
 
-
-
     public function getCombinesInfo(): array
     {
         $combinesInfo = $this->getCachedValue('combinesInfo');
         if ($combinesInfo === false) {
-
             $data = $this->dataProvider->getData();
             $fileInfo = $this->getFileInfo();
 
@@ -368,13 +340,12 @@ class Concentrate_Concentrator
             foreach ($data as $packageId => $info) {
                 $combines = $this->getCombinesForPackage($packageId);
                 foreach ($combines as $combine => $combineInfo) {
-
                     // create entry for the combine set if it does
                     // not exist
                     if (!isset($combinesInfo[$combine])) {
                         $combinesInfo[$combine] = [
                             'Includes' => [],
-                            'Minify'   => true
+                            'Minify'   => true,
                         ];
                     }
 
@@ -391,7 +362,7 @@ class Concentrate_Concentrator
                     ) {
                         foreach ($combineInfo['Includes'] as $file) {
                             $combinesInfo[$combine]['Includes'][$file] = [
-                                'explicit' => true
+                                'explicit' => true,
                             ];
                         }
                     }
@@ -429,18 +400,13 @@ class Concentrate_Concentrator
         return $combinesInfo;
     }
 
-
-
     /**
-     * Gets a flat list of file dependencies for each file
-     *
-     * @return array
+     * Gets a flat list of file dependencies for each file.
      */
     public function getDependsInfo(): array
     {
         $dependsInfo = $this->getCachedValue('dependsInfo');
         if ($dependsInfo === false) {
-
             $data = $this->dataProvider->getData();
 
             $dependsInfo = [];
@@ -477,8 +443,6 @@ class Concentrate_Concentrator
 
         return $dependsInfo;
     }
-
-
 
     protected function getImplicitCombinedFiles(
         array $filesToCheck,
@@ -525,13 +489,10 @@ class Concentrate_Concentrator
         return $files;
     }
 
-
-
     protected function getPackageSortOrder()
     {
         $packageSortOrder = $this->getCachedValue('packageSortOrder');
         if ($packageSortOrder === false) {
-
             $data = $this->dataProvider->getData();
 
             // get flat list of package dependencies for each package
@@ -584,6 +545,7 @@ class Concentrate_Concentrator
             }
 
             $sorter = new Concentrate_Graph_TopologicalSorter();
+
             try {
                 $sortedNodes = $sorter->sort($graph);
             } catch (Concentrate_CyclicDependencyException $e) {
@@ -613,11 +575,9 @@ class Concentrate_Concentrator
         return $packageSortOrder;
     }
 
-
-
     protected function getProvidesForPackage($packageId): array
     {
-        $cacheKey = 'packageProvides.'.$packageId;
+        $cacheKey = 'packageProvides.' . $packageId;
         $packageProvides = $this->getCachedValue($cacheKey);
         if ($packageProvides === false) {
             $packageProvides = [];
@@ -636,11 +596,9 @@ class Concentrate_Concentrator
         return $packageProvides;
     }
 
-
-
     protected function getDependsForPackage($packageId): array
     {
-        $cacheKey = 'packageDepends.'.$packageId;
+        $cacheKey = 'packageDepends.' . $packageId;
         $packageDepends = $this->getCachedValue($cacheKey);
         if ($packageDepends === false) {
             $packageDepends = [];
@@ -659,11 +617,9 @@ class Concentrate_Concentrator
         return $packageDepends;
     }
 
-
-
     protected function getCombinesForPackage($packageId): array
     {
-        $cacheKey = 'packageCombines.'.$packageId;
+        $cacheKey = 'packageCombines.' . $packageId;
         $packageCombines = $this->getCachedValue($cacheKey);
         if ($packageCombines === false) {
             $packageCombines = [];
@@ -682,8 +638,6 @@ class Concentrate_Concentrator
         return $packageCombines;
     }
 
-
-
     protected function compareCombines(array $combine1, array $combine2): int
     {
         if (count($combine1['Includes']) < count($combine2['Includes'])) {
@@ -697,23 +651,19 @@ class Concentrate_Concentrator
         return 0;
     }
 
-
-
     protected function getCachedValue($key)
     {
         $this->cache->setPrefix($this->dataProvider->getCachePrefix());
+
         return $this->cache->get($key);
     }
-
-
 
     protected function setCachedValue($key, $value)
     {
         $this->cache->setPrefix($this->dataProvider->getCachePrefix());
+
         return $this->cache->set($key, $value);
     }
-
-
 
     protected function parseBoolean($string): bool
     {
@@ -722,7 +672,4 @@ class Concentrate_Concentrator
             default => true,
         };
     }
-
 }
-
-?>

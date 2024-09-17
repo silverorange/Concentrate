@@ -2,16 +2,16 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2022 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_Process
 {
-    const FD_STDIN = 0;
-    const FD_STDOUT = 1;
-    const FD_STDERR = 2;
+    public const FD_STDIN = 0;
+    public const FD_STDOUT = 1;
+    public const FD_STDERR = 2;
 
     protected $command = '';
 
@@ -23,7 +23,7 @@ class Concentrate_Process
     public function run(string $input): string
     {
         $descriptorSpec = [
-            self::FD_STDIN => ['pipe', 'r'],
+            self::FD_STDIN  => ['pipe', 'r'],
             self::FD_STDOUT => ['pipe', 'w'],
             self::FD_STDERR => ['pipe', 'w'],
         ];
@@ -59,5 +59,3 @@ class Concentrate_Process
         return $output;
     }
 }
-
-?>

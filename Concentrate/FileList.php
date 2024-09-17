@@ -2,7 +2,7 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
@@ -30,6 +30,7 @@ class Concentrate_FileList
 
         $this->fileList = array_merge($this->fileList, $file);
         $this->fileList = array_unique($this->fileList);
+
         return $this;
     }
 
@@ -40,8 +41,6 @@ class Concentrate_FileList
 
     public function contains($file)
     {
-        return (in_array($file, $this->fileList));
+        return in_array($file, $this->fileList);
     }
 }
-
-?>

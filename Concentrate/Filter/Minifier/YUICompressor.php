@@ -2,18 +2,17 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010-2022 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_Filter_Minifier_YUICompressor
-    extends Concentrate_Filter_Minifier_Abstract
+class Concentrate_Filter_Minifier_YUICompressor extends Concentrate_Filter_Minifier_Abstract
 {
-    const DEFAULT_JAR_NAME = '/yuicompressor(?:-[0-9]\.[0-9]\.[0-9])?\.jar/';
+    public const DEFAULT_JAR_NAME = '/yuicompressor(?:-[0-9]\.[0-9]\.[0-9])?\.jar/';
 
     protected $javaBin = 'java';
-    protected $jarFile = null;
+    protected $jarFile;
     protected $types = ['css', 'js'];
 
     public function __construct(array $options = [])
@@ -38,30 +37,34 @@ class Concentrate_Filter_Minifier_YUICompressor
     public function setJavaBin(string $javaBin): self
     {
         $this->javaBin = $javaBin;
+
         return $this;
     }
 
     public function setJarFile(string $jarFile): self
     {
         $this->jarFile = $jarFile;
+
         return $this;
     }
 
     public function setTypes(array $types): self
     {
         $this->types = $types;
+
         return $this;
     }
 
     public function addType(string $type): self
     {
         $this->types[] = $type;
+
         return $this;
     }
 
     public function isSuitable(string $type = ''): bool
     {
-        return (in_array($type, $this->types) && $this->getJarFile() !== '');
+        return in_array($type, $this->types) && $this->getJarFile() !== '';
     }
 
     protected function filterImplementation(
@@ -117,6 +120,7 @@ class Concentrate_Filter_Minifier_YUICompressor
     {
         $filename = tempnam(sys_get_temp_dir(), 'concentrate-');
         file_put_contents($filename, $content);
+
         return $filename;
     }
 
@@ -170,5 +174,3 @@ class Concentrate_Filter_Minifier_YUICompressor
         return $jarFile;
     }
 }
-
-?>

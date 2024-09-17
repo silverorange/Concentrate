@@ -4,7 +4,7 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
@@ -47,6 +47,7 @@ class Concentrate_DataProvider
     public function getData()
     {
         $this->loadPendingData();
+
         return $this->data;
     }
 
@@ -91,7 +92,7 @@ class Concentrate_DataProvider
             if ($this->stat) {
                 $statFiles = [];
                 foreach ($files as $filename) {
-                    $mtime       = filemtime($filename);
+                    $mtime = filemtime($filename);
                     $statFiles[] = $filename . '=' . $mtime;
                 }
                 $key = md5(implode(':', $statFiles));
@@ -104,7 +105,4 @@ class Concentrate_DataProvider
 
         return $this->cachePrefix;
     }
-
 }
-
-?>

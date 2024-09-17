@@ -2,15 +2,14 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2016 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_DataProvider_FileFinderComposer
-    implements Concentrate_DataProvider_FileFinderInterface
+class Concentrate_DataProvider_FileFinderComposer implements Concentrate_DataProvider_FileFinderInterface
 {
-    protected $wwwPath = null;
+    protected $wwwPath;
 
     public function __construct($wwwPath)
     {
@@ -19,7 +18,8 @@ class Concentrate_DataProvider_FileFinderComposer
 
     public function setWwwPath($wwwPath)
     {
-        $this->wwwPath = (string)$wwwPath;
+        $this->wwwPath = (string) $wwwPath;
+
         return $this;
     }
 
@@ -85,5 +85,3 @@ class Concentrate_DataProvider_FileFinderComposer
         return $paths;
     }
 }
-
-?>

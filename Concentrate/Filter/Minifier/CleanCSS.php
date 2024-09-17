@@ -2,28 +2,24 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2022 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_Filter_Minifier_CleanCSS
-    extends Concentrate_Filter_Minifier_Abstract
+class Concentrate_Filter_Minifier_CleanCSS extends Concentrate_Filter_Minifier_Abstract
 {
-    const DEFAULT_BIN_NAME = 'cleancss';
+    public const DEFAULT_BIN_NAME = 'cleancss';
 
-    protected $cleanCSSBin = null;
+    protected $cleanCSSBin;
 
-    public function __construct(array $options = [])
-    {
-    }
+    public function __construct(array $options = []) {}
 
     public function isSuitable(string $type = ''): bool
     {
-        return (
+        return
             ($type === 'css' || $type === 'less')
-            && $this->getCleanCSSBin() !== ''
-        );
+            && $this->getCleanCSSBin() !== '';
     }
 
     protected function filterImplementation(
@@ -36,7 +32,7 @@ class Concentrate_Filter_Minifier_CleanCSS
 
         $args = [
             '-O1',
-            '--inline=none'
+            '--inline=none',
         ];
 
         $command = sprintf(
@@ -46,9 +42,8 @@ class Concentrate_Filter_Minifier_CleanCSS
         );
 
         $process = new Concentrate_Process($command);
-        $output = $process->run($input);
 
-        return $output;
+        return $process->run($input);
     }
 
     protected function getCleanCSSBin(): string
@@ -88,5 +83,3 @@ class Concentrate_Filter_Minifier_CleanCSS
         return $cleanCSSBin;
     }
 }
-
-?>

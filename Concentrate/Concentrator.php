@@ -9,14 +9,13 @@
  */
 class Concentrate_Concentrator
 {
-    // {{{ protected properties
+
 
     protected $dataProvider = null;
 
     protected $cache = null;
 
-    // }}}
-    // {{{ __construct()
+
 
     public function __construct(array $options = [])
     {
@@ -35,8 +34,7 @@ class Concentrate_Concentrator
         }
     }
 
-    // }}}
-    // {{{ setDataProvider()
+
 
     public function setDataProvider(Concentrate_DataProvider $dataProvider): static
     {
@@ -44,8 +42,7 @@ class Concentrate_Concentrator
         return $this;
     }
 
-    // }}}
-    // {{{ setCache()
+
 
     public function setCache(Concentrate_CacheInterface $cache): static
     {
@@ -53,8 +50,7 @@ class Concentrate_Concentrator
         return $this;
     }
 
-    // }}}
-    // {{{ loadDataFile()
+
 
     public function loadDataFile($filename): static
     {
@@ -62,8 +58,7 @@ class Concentrate_Concentrator
         return $this;
     }
 
-    // }}}
-    // {{{ loadDataFiles()
+
 
     public function loadDataFiles(array $filenames): static
     {
@@ -73,8 +68,7 @@ class Concentrate_Concentrator
         return $this;
     }
 
-    // }}}
-    // {{{ compareFiles()
+
 
     public function compareFiles($file1, $file2): int
     {
@@ -107,8 +101,7 @@ class Concentrate_Concentrator
         return 0;
     }
 
-    // }}}
-    // {{{ isMinified()
+
 
     public function isMinified($file): bool
     {
@@ -131,8 +124,7 @@ class Concentrate_Concentrator
         return $minified;
     }
 
-    // }}}
-    // {{{ getConflicts()
+
 
     public function getConflicts(array $files): array
     {
@@ -164,8 +156,7 @@ class Concentrate_Concentrator
         return $conflicts;
     }
 
-    // }}}
-    // {{{ getCombines()
+
 
     public function getCombines(array $files): array
     {
@@ -223,8 +214,7 @@ class Concentrate_Concentrator
         return $info;
     }
 
-    // }}}
-    // {{{ getFileSortOrder()
+
 
     public function getFileSortOrder(): array
     {
@@ -331,8 +321,7 @@ class Concentrate_Concentrator
         return $fileSortOrder;
     }
 
-    // }}}
-    // {{{ getFileInfo()
+
 
     public function getFileInfo(): array
     {
@@ -364,8 +353,7 @@ class Concentrate_Concentrator
         return $fileInfo;
     }
 
-    // }}}
-    // {{{ getCombinesInfo()
+
 
     public function getCombinesInfo(): array
     {
@@ -441,8 +429,7 @@ class Concentrate_Concentrator
         return $combinesInfo;
     }
 
-    // }}}
-    // {{{ getDependsInfo()
+
 
     /**
      * Gets a flat list of file dependencies for each file
@@ -491,8 +478,7 @@ class Concentrate_Concentrator
         return $dependsInfo;
     }
 
-    // }}}
-    // {{{ getImplicitCombinedFiles()
+
 
     protected function getImplicitCombinedFiles(
         array $filesToCheck,
@@ -539,8 +525,7 @@ class Concentrate_Concentrator
         return $files;
     }
 
-    // }}}
-    // {{{ getPackageSortOrder()
+
 
     protected function getPackageSortOrder()
     {
@@ -628,8 +613,7 @@ class Concentrate_Concentrator
         return $packageSortOrder;
     }
 
-    // }}}
-    // {{{ getProvidesForPackage()
+
 
     protected function getProvidesForPackage($packageId): array
     {
@@ -652,8 +636,7 @@ class Concentrate_Concentrator
         return $packageProvides;
     }
 
-    // }}}
-    // {{{ getDependsForPackage()
+
 
     protected function getDependsForPackage($packageId): array
     {
@@ -676,8 +659,7 @@ class Concentrate_Concentrator
         return $packageDepends;
     }
 
-    // }}}
-    // {{{ getCombinesForPackage()
+
 
     protected function getCombinesForPackage($packageId): array
     {
@@ -700,8 +682,7 @@ class Concentrate_Concentrator
         return $packageCombines;
     }
 
-    // }}}
-    // {{{ compareCombines()
+
 
     protected function compareCombines(array $combine1, array $combine2): int
     {
@@ -716,8 +697,7 @@ class Concentrate_Concentrator
         return 0;
     }
 
-    // }}}
-    // {{{ getCachedValue()
+
 
     protected function getCachedValue($key)
     {
@@ -725,8 +705,7 @@ class Concentrate_Concentrator
         return $this->cache->get($key);
     }
 
-    // }}}
-    // {{{ setCachedValue()
+
 
     protected function setCachedValue($key, $value)
     {
@@ -734,8 +713,7 @@ class Concentrate_Concentrator
         return $this->cache->set($key, $value);
     }
 
-    // }}}
-    // {{{ parseBoolean()
+
 
     protected function parseBoolean($string): bool
     {
@@ -745,7 +723,6 @@ class Concentrate_Concentrator
         };
     }
 
-    // }}}
 }
 
 ?>

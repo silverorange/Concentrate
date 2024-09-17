@@ -7,7 +7,7 @@
  * @copyright 2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_Path
+class Concentrate_Path implements \Stringable
 {
     /**
      * @var string
@@ -29,7 +29,7 @@ class Concentrate_Path
      *
      * @return string a string representation of this path.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->path;
     }
@@ -80,8 +80,8 @@ class Concentrate_Path
      */
     public function evaluate()
     {
-        $postPath = array();
-        $prePath = array();
+        $postPath = [];
+        $prePath = [];
 
         $path = rtrim($this->path, '/');
         $pathSegments = explode('/', $path);

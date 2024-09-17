@@ -19,7 +19,7 @@ class Concentrate_DataProvider_FileFinderDirectory
 
     public function getDataFiles()
     {
-        $files = array();
+        $files = [];
 
         if (!file_exists($this->directory) || !is_dir($this->directory)) {
             return $files;

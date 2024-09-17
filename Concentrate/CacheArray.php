@@ -9,7 +9,7 @@
  */
 class Concentrate_CacheArray extends Concentrate_CacheHierarchyAbstract
 {
-    protected $data = array();
+    protected $data = [];
 
     public function setPrefixSelf($prefix)
     {

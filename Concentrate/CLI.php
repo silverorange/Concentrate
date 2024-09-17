@@ -11,64 +11,31 @@ use League\CLImate\CLImate;
  */
 class Concentrate_CLI
 {
-    const VERBOSITY_NONE     = 0;
-    const VERBOSITY_MESSAGES = 1;
-    const VERBOSITY_DETAILS  = 2;
+    public const VERBOSITY_NONE = 0;
+    public const VERBOSITY_MESSAGES = 1;
+    public const VERBOSITY_DETAILS = 2;
 
-    /**
-     * @var Console_CommandLine
-     */
-    protected $parser = null;
+    protected ?Console_CommandLine $parser = null;
 
-    /**
-     * @var CLImate
-     */
-    protected $climate = null;
+    protected ?CLImate $climate = null;
 
-    /**
-     * @var Concentrate_Concentrator
-     */
-    protected $concentrator = null;
+    protected ?Concentrate_Concentrator $concentrator = null;
 
-    /**
-     * @var boolean
-     */
-    protected $minify = false;
+    protected bool $minify = false;
 
-    /**
-     * @var boolean
-     */
-    protected $combine = false;
+    protected bool $combine = false;
 
-    /**
-     * @var boolean
-     */
-    protected $compile = false;
+    protected bool $compile = false;
 
-    /**
-     * @var string
-     */
-    protected $webroot = './';
+    protected string $webroot = './';
 
-    /**
-     * @var string
-     */
-    protected $directory = '';
+    protected string $directory = '';
 
-    /**
-     * @var integer
-     */
-    protected $verbosity = self::VERBOSITY_NONE;
+    protected int $verbosity = self::VERBOSITY_NONE;
 
-    /**
-     * @var Concentrate_FileCache
-     */
-    protected $compiledCache = null;
+    protected ?Concentrate_FileCache $compiledCache = null;
 
-    /**
-     * @var Concentrate_FileCache
-     */
-    protected $minifiedCache = null;
+    protected ?Concentrate_FileCache $minifiedCache = null;
 
     public function run()
     {
@@ -76,6 +43,7 @@ class Concentrate_CLI
 
         $this->parser = Console_CommandLine::fromXmlFile($this->getUiXml());
         $this->climate = new CLImate();
+
         try {
             $result = $this->parser->parse();
 
@@ -107,19 +75,21 @@ class Concentrate_CLI
         }
     }
 
-    public function setCompiledCache(Concentrate_FileCache $cache)
+    public function setCompiledCache(Concentrate_FileCache $cache): static
     {
         $this->compiledCache = $cache;
+
         return $this;
     }
 
-    public function setMinifiedCache(Concentrate_FileCache $cache)
+    public function setMinifiedCache(Concentrate_FileCache $cache): static
     {
         $this->minifiedCache = $cache;
+
         return $this;
     }
 
-    protected function setWebRoot($webroot)
+    protected function setWebRoot($webroot): static
     {
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
@@ -136,7 +106,7 @@ class Concentrate_CLI
         return $this;
     }
 
-    protected function setOptions(array $options)
+    protected function setOptions(array $options): static
     {
         if (array_key_exists('verbose', $options)
             && $options['verbose'] !== null
@@ -196,7 +166,7 @@ class Concentrate_CLI
         return $this;
     }
 
-    protected function loadDataFiles()
+    protected function loadDataFiles(): static
     {
         // load data files from composer vendor dir
         $fileFinder = new Concentrate_DataProvider_FileFinderComposer(
@@ -219,14 +189,14 @@ class Concentrate_CLI
         return $this;
     }
 
-    protected function writeCombinedFiles()
+    protected function writeCombinedFiles(): void
     {
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
             $this->climate->out('Writing combined files:');
         }
 
-        $packer       = new Concentrate_Packer();
+        $packer = new Concentrate_Packer();
         $combinesInfo = $this->concentrator->getCombinesInfo();
 
         if (count($combinesInfo) === 0
@@ -244,14 +214,14 @@ class Concentrate_CLI
             $files = $info['Includes'];
 
             $this->checkForConflicts(array_keys($files));
-            uksort($files, array($this->concentrator, 'compareFiles'));
+            uksort($files, $this->concentrator->compareFiles(...));
 
             if ($this->verbosity >= self::VERBOSITY_DETAILS) {
                 foreach ($files as $file => $info) {
                     $this->climate->inline(' * ' . $file);
                     if (!$info['explicit']) {
                         $this->climate->cyan()->inline(' (implicit)');
-                    };
+                    }
                     $this->climate->br();
                 }
                 $this->climate->br();
@@ -261,7 +231,7 @@ class Concentrate_CLI
         }
     }
 
-    protected function writeMinifiedFiles()
+    protected function writeMinifiedFiles(): void
     {
         $filter = new Concentrate_Filter_Minifier_YUICompressor(['types' => []]);
         $filter->chain(new Concentrate_Filter_Minifier_Terser());
@@ -269,7 +239,7 @@ class Concentrate_CLI
         $filter->chain(new Concentrate_Filter_CSSMover('', ''));
 
         $yuiFallbacks = [
-            'js' => Concentrate_Filter_Minifier_Terser::class,
+            'js'  => Concentrate_Filter_Minifier_Terser::class,
             'css' => Concentrate_Filter_Minifier_CleanCSS::class,
         ];
 
@@ -287,11 +257,11 @@ class Concentrate_CLI
             $this->writeMinifiedFilesFromDirectory(
                 $filter,
                 'compiled',
-                array(
+                [
                     'css',
                     'js',
-                    'less'
-                )
+                    'less',
+                ]
             );
         }
     }
@@ -299,8 +269,9 @@ class Concentrate_CLI
     protected function writeMinifiedFilesFromDirectory(
         Concentrate_Filter_Abstract $filter,
         $directory = '',
-        array $types = array('css', 'js')
-    ) {
+        array $types = ['css', 'js']
+    ): void
+    {
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
             if ($directory != '') {
@@ -371,7 +342,7 @@ class Concentrate_CLI
                     ? $file
                     : $directory . '/' . $file;
 
-                $toFilterFile = ($directory =='')
+                $toFilterFile = ($directory == '')
                     ? 'min/' . $file
                     : 'min/' . $directory . '/' . $file;
 
@@ -467,7 +438,8 @@ class Concentrate_CLI
         $fromFilename,
         $toFilename,
         $type
-    ) {
+    ): void
+    {
         $key = md5(
             $fromFilename                // file name
             . md5_file($fromFilename)    // file content
@@ -506,7 +478,7 @@ class Concentrate_CLI
         }
     }
 
-    protected function writeCompiledFiles()
+    protected function writeCompiledFiles(): void
     {
         if ($this->verbosity >= self::VERBOSITY_MESSAGES) {
             $this->climate->br();
@@ -532,7 +504,7 @@ class Concentrate_CLI
             $compiler = current(
                 array_filter(
                     $compilers,
-                    fn($c) => $c->isSuitable($type)
+                    fn ($c) => $c->isSuitable($type)
                 )
             );
 
@@ -558,10 +530,10 @@ class Concentrate_CLI
 
             $this->writeCompiledFile(
                 $compiler,
-                $filter,
                 $fromFilename,
                 $toFilename,
-                $type
+                $type,
+                $filter
             );
         }
 
@@ -580,7 +552,7 @@ class Concentrate_CLI
                 $compiler = current(
                     array_filter(
                         $compilers,
-                        fn($c) => $c->isSuitable($type)
+                        fn ($c) => $c->isSuitable($type)
                     )
                 );
 
@@ -606,10 +578,10 @@ class Concentrate_CLI
 
                 $this->writeCompiledFile(
                     $compiler,
-                    $filter,
                     $fromFilename,
                     $toFilename,
-                    $type
+                    $type,
+                    $filter
                 );
             }
         }
@@ -617,11 +589,12 @@ class Concentrate_CLI
 
     protected function writeCompiledFile(
         Concentrate_Compiler_Abstract $compiler,
-        Concentrate_Filter_Abstract $filter = null,
-        $fromFilename,
-        $toFilename,
-        $type
-    ) {
+        string $fromFilename,
+        string $toFilename,
+        string $type,
+        ?Concentrate_Filter_Abstract $filter = null
+    ): void
+    {
         // cache key is unique on file path and file content
         $key = md5($fromFilename . md5_file($fromFilename));
 
@@ -662,22 +635,22 @@ class Concentrate_CLI
         }
     }
 
-    protected function writeCombinedFlagFile()
+    protected function writeCombinedFlagFile(): void
     {
         $this->writeFlagFile(Concentrate_FlagFile::COMBINED);
     }
 
-    protected function writeMinifiedFlagFile()
+    protected function writeMinifiedFlagFile(): void
     {
         $this->writeFlagFile(Concentrate_FlagFile::MINIFIED);
     }
 
-    protected function writeCompiledFlagFile()
+    protected function writeCompiledFlagFile(): void
     {
         $this->writeFlagFile(Concentrate_FlagFile::COMPILED);
     }
 
-    protected function writeFlagFile($filename)
+    protected function writeFlagFile($filename): void
     {
         $filename = $this->webroot
             . DIRECTORY_SEPARATOR . $filename;
@@ -704,7 +677,7 @@ class Concentrate_CLI
         }
     }
 
-    protected function getUiXml()
+    protected function getUiXml(): string
     {
         return __DIR__ . DIRECTORY_SEPARATOR . '..'
             . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR
@@ -712,24 +685,23 @@ class Concentrate_CLI
     }
 
     /**
-     * @param array $files
-     *
-     * @throws Exception if one or more conflicts are present.
+     * @throws Exception if one or more conflicts are present
      */
-    protected function checkForConflicts(array $files)
+    protected function checkForConflicts(array $files): void
     {
         $conflicts = $this->concentrator->getConflicts($files);
         if (count($conflicts) > 0) {
             $conflictList = '';
             $count = 0;
             foreach ($conflicts as $file => $conflict) {
-                $conflictList.= sprintf(
+                $conflictList .= sprintf(
                     "\n- %s conflicts with %s",
                     $file,
                     implode(', ', $conflict)
                 );
                 $count++;
             }
+
             throw new Exception(
                 'The following conflicts were detected: ' . $conflictList
             );

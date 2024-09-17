@@ -12,7 +12,7 @@ class Concentrate_DataProvider_FileFinderDevelopment
 {
     public function getDataFiles()
     {
-        $files = array();
+        $files = [];
 
         foreach ($this->getIncludeDirs() as $includeDir) {
             $dependencyDir = $includeDir . DIRECTORY_SEPARATOR . 'dependencies';

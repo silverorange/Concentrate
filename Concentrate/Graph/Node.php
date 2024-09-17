@@ -28,13 +28,13 @@
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_Graph_Node
+class Concentrate_Graph_Node implements \Stringable
 {
     protected $data = null;
 
-    protected $inArcs = array();
+    protected $inArcs = [];
 
-    protected $outArcs = array();
+    protected $outArcs = [];
 
     protected $graph = null;
 
@@ -47,8 +47,8 @@ class Concentrate_Graph_Node
     public function setGraph(Concentrate_Graph $graph)
     {
         if ($this->graph !== $graph) {
-            $this->inArcs  = array();
-            $this->outArcs = array();
+            $this->inArcs  = [];
+            $this->outArcs = [];
             $this->graph   = $graph;
             $this->graph->addNode($this);
         }
@@ -116,7 +116,7 @@ class Concentrate_Graph_Node
         return spl_object_hash($this);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return strval($this->getData());
     }

@@ -145,7 +145,7 @@ abstract class Concentrate_Filter_Abstract
      */
     public function getId(string $type = ''): string
     {
-        return get_class($this);
+        return static::class;
     }
 
     /**

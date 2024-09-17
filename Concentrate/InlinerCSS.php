@@ -26,7 +26,7 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
         if ($this->sourceDirectory != $this->destinationDirectory) {
             $content = preg_replace_callback(
                 '/url\((.+?)\)/ui',
-                array($this, 'updateUrisCallback'),
+                $this->updateUrisCallback(...),
                 $content
             );
         }
@@ -75,7 +75,7 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
     {
         $content = preg_replace_callback(
             '/@import\s+(?:url\((.+?)\)|(.+?));/ui',
-            array($this, 'inlineImportCallback'),
+            $this->inlineImportCallback(...),
             $content
         );
         return $content;

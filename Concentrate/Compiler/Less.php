@@ -102,7 +102,7 @@ class Concentrate_Compiler_Less extends Concentrate_Compiler_Abstract
 
     protected function findLesscBin(): string
     {
-        $output = array();
+        $output = [];
         $return = 1;
         exec('which lessc 2> /dev/null', $output, $return);
 

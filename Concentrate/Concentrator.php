@@ -18,7 +18,7 @@ class Concentrate_Concentrator
     // }}}
     // {{{ __construct()
 
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         if (array_key_exists('cache', $options)) {
             $this->setCache($options['cache']);
@@ -38,7 +38,7 @@ class Concentrate_Concentrator
     // }}}
     // {{{ setDataProvider()
 
-    public function setDataProvider(Concentrate_DataProvider $dataProvider)
+    public function setDataProvider(Concentrate_DataProvider $dataProvider): static
     {
         $this->dataProvider = $dataProvider;
         return $this;
@@ -47,7 +47,7 @@ class Concentrate_Concentrator
     // }}}
     // {{{ setCache()
 
-    public function setCache(Concentrate_CacheInterface $cache)
+    public function setCache(Concentrate_CacheInterface $cache): static
     {
         $this->cache = $cache;
         return $this;
@@ -56,7 +56,7 @@ class Concentrate_Concentrator
     // }}}
     // {{{ loadDataFile()
 
-    public function loadDataFile($filename)
+    public function loadDataFile($filename): static
     {
         $this->dataProvider->loadFile($filename);
         return $this;
@@ -65,7 +65,7 @@ class Concentrate_Concentrator
     // }}}
     // {{{ loadDataFiles()
 
-    public function loadDataFiles(array $filenames)
+    public function loadDataFiles(array $filenames): static
     {
         foreach ($filenames as $filename) {
             $this->loadDataFile($filename);
@@ -76,7 +76,7 @@ class Concentrate_Concentrator
     // }}}
     // {{{ compareFiles()
 
-    public function compareFiles($file1, $file2)
+    public function compareFiles($file1, $file2): int
     {
         if ($file1 == $file2) {
             return 0;
@@ -110,7 +110,7 @@ class Concentrate_Concentrator
     // }}}
     // {{{ isMinified()
 
-    public function isMinified($file)
+    public function isMinified($file): bool
     {
         $minified = false;
 
@@ -134,9 +134,9 @@ class Concentrate_Concentrator
     // }}}
     // {{{ getConflicts()
 
-    public function getConflicts(array $files)
+    public function getConflicts(array $files): array
     {
-        $conflicts = array();
+        $conflicts = [];
 
         // flip so the files are hash keys to speed lookups
         $files = array_flip($files);
@@ -152,7 +152,7 @@ class Concentrate_Concentrator
                     foreach ($fileFileInfo['Conflicts'] as $conflict) {
                         if (array_key_exists($conflict, $files)) {
                             if (!isset($conflicts[$file])) {
-                                $conflicts[$file] = array();
+                                $conflicts[$file] = [];
                             }
                             $conflicts[$file][] = $conflict;
                         }
@@ -167,11 +167,11 @@ class Concentrate_Concentrator
     // }}}
     // {{{ getCombines()
 
-    public function getCombines(array $files)
+    public function getCombines(array $files): array
     {
         $superset    = $files;
-        $combinedSet = array();
-        $combines    = array();
+        $combinedSet = [];
+        $combines    = [];
 
         $combinesInfo = $this->getCombinesInfo();
         foreach ($combinesInfo as $combine => $combineInfo) {
@@ -208,19 +208,17 @@ class Concentrate_Concentrator
             $files[] = $combine;
         }
 
-        $info = array(
+        $info = [
             // 'combines' contains the combined files that will be included.
             'combines' => $combines,
-
             // 'superset' contains all original files plus files pulled in by
             // the combined sets. The content of these files will be included.
             'superset' => $superset,
-
             // 'files' contains combined files and files in the original set
             // that did not fit in any combined set. These are the actual files
             // that will be included.
             'files'    => $files,
-        );
+        ];
 
         return $info;
     }
@@ -228,21 +226,21 @@ class Concentrate_Concentrator
     // }}}
     // {{{ getFileSortOrder()
 
-    public function getFileSortOrder()
+    public function getFileSortOrder(): array
     {
         $fileSortOrder = $this->getCachedValue('fileSortOrder');
         if ($fileSortOrder === false) {
 
             $data = $this->dataProvider->getData();
 
-            $fileSortOrder = array();
+            $fileSortOrder = [];
 
             // get flat list of file dependencies for each file
             $dependsInfo = $this->getDependsInfo();
 
             // build into graph
             $graph = new Concentrate_Graph();
-            $nodes = array();
+            $nodes = [];
             foreach ($dependsInfo as $file => $dependencies) {
                 if (!isset($nodes[$file])) {
                     $nodes[$file] = new Concentrate_Graph_Node(
@@ -280,7 +278,7 @@ class Concentrate_Concentrator
 
                 // get combine dependencies as difference of union of
                 // dependencies of contained files and combined set
-                $depends = array();
+                $depends = [];
                 foreach ($files as $file => $info) {
                     if (isset($dependsInfo[$file])) {
                         $depends = array_merge(
@@ -318,7 +316,7 @@ class Concentrate_Concentrator
                 );
             }
 
-            $fileSortOrder = array();
+            $fileSortOrder = [];
             foreach ($sortedNodes as $node) {
                 $fileSortOrder[] = $node->getData();
             }
@@ -336,14 +334,14 @@ class Concentrate_Concentrator
     // }}}
     // {{{ getFileInfo()
 
-    public function getFileInfo()
+    public function getFileInfo(): array
     {
         $fileInfo = $this->getCachedValue('fileInfo');
         if ($fileInfo === false) {
 
             $data = $this->dataProvider->getData();
 
-            $fileInfo = array();
+            $fileInfo = [];
 
             foreach ($data as $packageId => $info) {
                 $provides = $this->getProvidesForPackage($packageId);
@@ -369,7 +367,7 @@ class Concentrate_Concentrator
     // }}}
     // {{{ getCombinesInfo()
 
-    public function getCombinesInfo()
+    public function getCombinesInfo(): array
     {
         $combinesInfo = $this->getCachedValue('combinesInfo');
         if ($combinesInfo === false) {
@@ -377,7 +375,7 @@ class Concentrate_Concentrator
             $data = $this->dataProvider->getData();
             $fileInfo = $this->getFileInfo();
 
-            $combinesInfo = array();
+            $combinesInfo = [];
 
             foreach ($data as $packageId => $info) {
                 $combines = $this->getCombinesForPackage($packageId);
@@ -386,10 +384,10 @@ class Concentrate_Concentrator
                     // create entry for the combine set if it does
                     // not exist
                     if (!isset($combinesInfo[$combine])) {
-                        $combinesInfo[$combine] = array(
-                            'Includes' => array(),
-                            'Minify'   => true,
-                        );
+                        $combinesInfo[$combine] = [
+                            'Includes' => [],
+                            'Minify'   => true
+                        ];
                     }
 
                     // set additional attributes
@@ -404,9 +402,9 @@ class Concentrate_Concentrator
                         && is_array($combineInfo['Includes'])
                     ) {
                         foreach ($combineInfo['Includes'] as $file) {
-                            $combinesInfo[$combine]['Includes'][$file] = array(
+                            $combinesInfo[$combine]['Includes'][$file] = [
                                 'explicit' => true
-                            );
+                            ];
                         }
                     }
                 }
@@ -435,7 +433,7 @@ class Concentrate_Concentrator
             }
 
             // sort largest sets first
-            uasort($combinesInfo, array($this, 'compareCombines'));
+            uasort($combinesInfo, $this->compareCombines(...));
 
             $this->setCachedValue('combinesInfo', $combinesInfo);
         }
@@ -451,14 +449,14 @@ class Concentrate_Concentrator
      *
      * @return array
      */
-    public function getDependsInfo()
+    public function getDependsInfo(): array
     {
         $dependsInfo = $this->getCachedValue('dependsInfo');
         if ($dependsInfo === false) {
 
             $data = $this->dataProvider->getData();
 
-            $dependsInfo = array();
+            $dependsInfo = [];
 
             foreach ($this->getPackageSortOrder() as $packageId => $order) {
                 if (!isset($data[$packageId])) {
@@ -468,7 +466,7 @@ class Concentrate_Concentrator
                 $provides = $this->getProvidesForPackage($packageId);
                 foreach ($provides as $file => $fileInfo) {
                     if (!isset($dependsInfo[$file])) {
-                        $dependsInfo[$file] = array();
+                        $dependsInfo[$file] = [];
                     }
                     if (isset($fileInfo['Depends'])) {
                         $dependsInfo[$file] = array_merge(
@@ -503,7 +501,7 @@ class Concentrate_Concentrator
         $dependsInfo = $this->getDependsInfo();
 
         // get depends
-        $depends = array();
+        $depends = [];
         foreach ($filesToCheck as $file => $info) {
             if (isset($dependsInfo[$file])) {
                 $depends = array_merge($depends, $dependsInfo[$file]);
@@ -514,7 +512,7 @@ class Concentrate_Concentrator
         $depends = array_diff($depends, array_keys($files));
 
         // check sub-dependencies to see any are in the set
-        $implicitFiles = array();
+        $implicitFiles = [];
         foreach ($depends as $file) {
             if (isset($dependsInfo[$file])) {
                 $subDepends = array_intersect(
@@ -524,9 +522,7 @@ class Concentrate_Concentrator
                 if (count($subDepends) > 0
                     && !isset($implicitFiles[$file])
                 ) {
-                    $files[$file] = array(
-                        'explicit' => false,
-                    );
+                    $files[$file] = ['explicit' => false];
                     $implicitFiles[$file] = $file;
                 }
             }
@@ -554,10 +550,10 @@ class Concentrate_Concentrator
             $data = $this->dataProvider->getData();
 
             // get flat list of package dependencies for each package
-            $packageDependencies = array();
+            $packageDependencies = [];
             foreach ($data as $packageId => $info) {
                 if (!isset($packageDependencies[$packageId])) {
-                    $packageDependencies[$packageId] = array();
+                    $packageDependencies[$packageId] = [];
                 }
                 $depends = $this->getDependsForPackage($packageId);
                 $packageDependencies[$packageId] = array_merge(
@@ -568,7 +564,7 @@ class Concentrate_Concentrator
 
             // build into a graph
             $graph = new Concentrate_Graph();
-            $nodes = array();
+            $nodes = [];
             foreach ($packageDependencies as $packageId => $dependencies) {
                 if ($packageId === '__site__') {
                     // special package '__site__' is not sorted with other
@@ -614,7 +610,7 @@ class Concentrate_Concentrator
                 );
             }
 
-            $order = array();
+            $order = [];
             foreach ($sortedNodes as $node) {
                 $order[] = $node->getData();
             }
@@ -635,12 +631,12 @@ class Concentrate_Concentrator
     // }}}
     // {{{ getProvidesForPackage()
 
-    protected function getProvidesForPackage($packageId)
+    protected function getProvidesForPackage($packageId): array
     {
         $cacheKey = 'packageProvides.'.$packageId;
         $packageProvides = $this->getCachedValue($cacheKey);
         if ($packageProvides === false) {
-            $packageProvides = array();
+            $packageProvides = [];
 
             $data = $this->dataProvider->getData();
             if (isset($data[$packageId])) {
@@ -659,12 +655,12 @@ class Concentrate_Concentrator
     // }}}
     // {{{ getDependsForPackage()
 
-    protected function getDependsForPackage($packageId)
+    protected function getDependsForPackage($packageId): array
     {
         $cacheKey = 'packageDepends.'.$packageId;
         $packageDepends = $this->getCachedValue($cacheKey);
         if ($packageDepends === false) {
-            $packageDepends = array();
+            $packageDepends = [];
 
             $data = $this->dataProvider->getData();
             if (isset($data[$packageId])) {
@@ -683,12 +679,12 @@ class Concentrate_Concentrator
     // }}}
     // {{{ getCombinesForPackage()
 
-    protected function getCombinesForPackage($packageId)
+    protected function getCombinesForPackage($packageId): array
     {
         $cacheKey = 'packageCombines.'.$packageId;
         $packageCombines = $this->getCachedValue($cacheKey);
         if ($packageCombines === false) {
-            $packageCombines = array();
+            $packageCombines = [];
 
             $data = $this->dataProvider->getData();
             if (isset($data[$packageId])) {
@@ -707,7 +703,7 @@ class Concentrate_Concentrator
     // }}}
     // {{{ compareCombines()
 
-    protected function compareCombines(array $combine1, array $combine2)
+    protected function compareCombines(array $combine1, array $combine2): int
     {
         if (count($combine1['Includes']) < count($combine2['Includes'])) {
             return 1;
@@ -741,20 +737,12 @@ class Concentrate_Concentrator
     // }}}
     // {{{ parseBoolean()
 
-    protected function parseBoolean($string)
+    protected function parseBoolean($string): bool
     {
-        switch (mb_strtolower($string)) {
-        case 'no':
-        case 'false':
-        case 'off':
-        case '0':
-            $value = false;
-            break;
-        default:
-            $value = true;
-        }
-
-        return $value;
+        return match (mb_strtolower($string)) {
+            'no', 'false', 'off', '0' => false,
+            default => true,
+        };
     }
 
     // }}}

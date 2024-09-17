@@ -73,20 +73,13 @@ class Concentrate_Filter_Minifier_YUICompressor
         }
 
         // default args
-        $args = array(
-            '--nomunge',
-            '--preserve-semi',
-        );
+        $args = ['--nomunge', '--preserve-semi'];
 
         // type
-        switch ($type) {
-        case 'css':
+        if ($type == 'css') {
             $args[] = '--type css';
-            break;
-        case 'js':
-        default:
+        } else {
             $args[] = '--type js';
-            break;
         }
 
         // filename

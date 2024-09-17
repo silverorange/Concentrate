@@ -51,7 +51,7 @@ class Concentrate_CacheAPC extends Concentrate_CacheHierarchyAbstract
         $response = false;
 
         if ($this->hasAPC) {
-            $response = apc_delete($this->getAPCKey(key));
+            $response = apc_delete($this->getAPCKey($key));
         }
 
         return $response;

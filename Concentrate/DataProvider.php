@@ -11,13 +11,13 @@ use Symfony\Component\Yaml\Yaml;
  */
 class Concentrate_DataProvider
 {
-    protected $data = array();
-    protected $pendingFiles = array();
-    protected $loadedFiles = array();
-    protected $stat = true;
-    protected $cachePrefix = '';
+    protected array $data = [];
+    protected array $pendingFiles = [];
+    protected array $loadedFiles = [];
+    protected bool $stat = true;
+    protected string $cachePrefix = '';
 
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         if (array_key_exists('stat', $options)) {
             $this->setStat($options['stat']);
@@ -89,7 +89,7 @@ class Concentrate_DataProvider
         if ($this->cachePrefix === '') {
             $files = array_merge($this->loadedFiles, $this->pendingFiles);
             if ($this->stat) {
-                $statFiles = array();
+                $statFiles = [];
                 foreach ($files as $filename) {
                     $mtime       = filemtime($filename);
                     $statFiles[] = $filename . '=' . $mtime;

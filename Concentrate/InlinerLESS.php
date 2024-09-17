@@ -20,7 +20,7 @@ class Concentrate_InlinerLESS extends Concentrate_InlinerCSS
         }
 
         // check if it contains an interpolated LESS variable
-        $uriMatches = array();
+        $uriMatches = [];
         if (preg_match('/@{[\w-]+}/', $uri, $uriMatches) === 1) {
             $replacement = $matches[0];
         } else {

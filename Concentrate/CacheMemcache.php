@@ -36,7 +36,7 @@ class Concentrate_CacheMemcache extends Concentrate_CacheHierarchyAbstract
 
     protected function deleteSelf($key)
     {
-        return $this->memcache->delete($this->getMemcacheKey(key));
+        return $this->memcache->delete($this->getMemcacheKey($key));
     }
 
     protected function getMemcacheKey($key)

@@ -56,7 +56,7 @@ class Concentrate_Filter_CSSMover extends Concentrate_Filter_Abstract
         if ($this->fromPath !== $this->toPath) {
             $content = preg_replace_callback(
                 '/url\((.+?)\)/ui',
-                array($this, 'updateURIsCallback'),
+                $this->updateURIsCallback(...),
                 $content
             );
         }
@@ -124,7 +124,7 @@ class Concentrate_Filter_CSSMover extends Concentrate_Filter_Abstract
 
     public function getId(string $type = ''): string
     {
-        return get_class($this) . ':' . $this->fromPath . ':' . $this->toPath;
+        return static::class . ':' . $this->fromPath . ':' . $this->toPath;
     }
 
     protected function isRelative(string $uri): bool

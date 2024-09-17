@@ -25,7 +25,7 @@ class Concentrate_DataProvider_FileFinderComposer
 
     public function getDataFiles()
     {
-        $files = array();
+        $files = [];
 
         $basePath = dirname($this->wwwPath) . DIRECTORY_SEPARATOR . 'vendor';
         foreach ($this->getVendorPaths($basePath) as $vendorPath) {
@@ -45,7 +45,7 @@ class Concentrate_DataProvider_FileFinderComposer
 
     protected function getVendorPaths($basePath)
     {
-        $paths = array();
+        $paths = [];
 
         if (is_dir($basePath)) {
             $baseDir = dir($basePath);
@@ -70,7 +70,7 @@ class Concentrate_DataProvider_FileFinderComposer
 
     protected function getPackagePaths($vendorPath)
     {
-        $paths = array();
+        $paths = [];
 
         $vendorDir = dir($vendorPath);
         while (false !== ($packageName = $vendorDir->read())) {

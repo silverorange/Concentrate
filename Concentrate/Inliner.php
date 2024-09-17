@@ -44,17 +44,11 @@ class Concentrate_Inliner
     ) {
         $extension = pathinfo($sourceFilename, PATHINFO_EXTENSION);
 
-        switch (mb_strtolower($extension)) {
-        case 'css':
-            $class = 'Concentrate_InlinerCSS';
-            break;
-        case 'less':
-            $class = 'Concentrate_InlinerLESS';
-            break;
-        default:
-            $class = __CLASS__;
-            break;
-        }
+        $class = match (mb_strtolower($extension)) {
+            'css' => Concentrate_InlinerCSS::class,
+            'less' => Concentrate_InlinerLESS::class,
+            default => self::class,
+        };
 
         return new $class(
             $root,

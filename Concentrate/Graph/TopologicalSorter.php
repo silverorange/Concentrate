@@ -37,7 +37,7 @@ class Concentrate_Graph_TopologicalSorter
     {
         $graph = clone $graph;
 
-        $sorted = array();
+        $sorted = [];
 
         $nodes = $this->getZeroInDegreeNodes($graph);
         while (count($nodes) > 0) {
@@ -63,7 +63,7 @@ class Concentrate_Graph_TopologicalSorter
 
     protected function getZeroInDegreeNodes(Concentrate_Graph $graph)
     {
-        $nodes = array();
+        $nodes = [];
 
         foreach ($graph->getNodes() as $node) {
             if ($node->getInDegree() === 0) {
@@ -76,7 +76,7 @@ class Concentrate_Graph_TopologicalSorter
 
     protected function getOutDegreeNodes(Concentrate_Graph $graph)
     {
-        $nodes = array();
+        $nodes = [];
 
         foreach ($graph->getNodes() as $node) {
             if ($node->getOutDegree() > 0) {

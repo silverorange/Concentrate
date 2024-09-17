@@ -9,9 +9,9 @@
  */
 class Concentrate_FileList
 {
-    protected $fileList = array();
+    protected array $fileList = [];
 
-    public function __construct(array $fileList = array())
+    public function __construct(array $fileList = [])
     {
         $this->add($fileList);
     }
@@ -19,7 +19,7 @@ class Concentrate_FileList
     public function add($file)
     {
         if (is_string($file)) {
-            $file = array($file);
+            $file = [$file];
         }
 
         if (!is_array($file)) {

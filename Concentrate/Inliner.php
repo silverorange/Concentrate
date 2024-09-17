@@ -15,6 +15,7 @@ class Concentrate_Inliner
     protected $sourceFilename = '';
     protected $sourceDirectory= '.';
     protected $destinationDirectory = '.';
+    protected $filename = '';
     protected $content = '';
 
     public function __construct(

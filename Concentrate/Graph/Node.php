@@ -23,20 +23,20 @@
  *   02111-1307 USA
  *
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_Graph_Node
+class Concentrate_Graph_Node implements Stringable
 {
-    protected $data = null;
+    protected $data;
 
-    protected $inArcs = array();
+    protected $inArcs = [];
 
-    protected $outArcs = array();
+    protected $outArcs = [];
 
-    protected $graph = null;
+    protected $graph;
 
     public function __construct(Concentrate_Graph $graph, $data = null)
     {
@@ -47,9 +47,9 @@ class Concentrate_Graph_Node
     public function setGraph(Concentrate_Graph $graph)
     {
         if ($this->graph !== $graph) {
-            $this->inArcs  = array();
-            $this->outArcs = array();
-            $this->graph   = $graph;
+            $this->inArcs = [];
+            $this->outArcs = [];
+            $this->graph = $graph;
             $this->graph->addNode($this);
         }
     }
@@ -57,6 +57,7 @@ class Concentrate_Graph_Node
     public function setData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
@@ -70,7 +71,7 @@ class Concentrate_Graph_Node
         $key = $node->getKey();
 
         if (!isset($this->outArcs[$key])) {
-            $this->outArcs[$key]           = $node;
+            $this->outArcs[$key] = $node;
             $node->inArcs[$this->getKey()] = $this;
             if (!$this->graph->isDirected()) {
                 $node->connectTo($this);
@@ -82,8 +83,8 @@ class Concentrate_Graph_Node
     {
         $key = $node->getKey();
         if (isset($this->outArcs[$key])) {
-            unset($this->outArcs[$key]);
-            unset($node->inArcs[$this->getKey()]);
+            unset($this->outArcs[$key], $node->inArcs[$this->getKey()]);
+
             if (!$this->graph->isDirected()) {
                 $node->disconnectFrom($this);
             }
@@ -98,7 +99,8 @@ class Concentrate_Graph_Node
     public function isConnectedTo(Concentrate_Graph_Node $node)
     {
         $key = $node->getKey();
-        return ($node->graph === $this->graph && isset($this->outArcs[$key]));
+
+        return $node->graph === $this->graph && isset($this->outArcs[$key]);
     }
 
     public function getOutDegree()
@@ -116,10 +118,8 @@ class Concentrate_Graph_Node
         return spl_object_hash($this);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return strval($this->getData());
     }
 }
-
-?>

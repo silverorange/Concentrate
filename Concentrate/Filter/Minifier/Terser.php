@@ -2,25 +2,22 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2022 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_Filter_Minifier_Terser
-    extends Concentrate_Filter_Minifier_Abstract
+class Concentrate_Filter_Minifier_Terser extends Concentrate_Filter_Minifier_Abstract
 {
-    const DEFAULT_BIN_NAME = 'terser';
+    public const DEFAULT_BIN_NAME = 'terser';
 
-    protected $terserBin = null;
+    protected $terserBin;
 
-    public function __construct(array $options = [])
-    {
-    }
+    public function __construct(array $options = []) {}
 
     public function isSuitable(string $type = ''): bool
     {
-        return ($type === 'js' && $this->getTerserBin() !== '');
+        return $type === 'js' && $this->getTerserBin() !== '';
     }
 
     protected function filterImplementation(
@@ -45,9 +42,8 @@ class Concentrate_Filter_Minifier_Terser
         );
 
         $process = new Concentrate_Process($command);
-        $output = $process->run($input);
 
-        return $output;
+        return $process->run($input);
     }
 
     protected function getTerserBin(): string
@@ -90,5 +86,3 @@ class Concentrate_Filter_Minifier_Terser
         return $terserBin;
     }
 }
-
-?>

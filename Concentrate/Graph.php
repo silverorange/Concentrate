@@ -23,16 +23,16 @@
  *   02111-1307 USA
  *
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-class Concentrate_Graph
+class Concentrate_Graph implements Stringable
 {
     protected $directed = true;
 
-    protected $nodes = array();
+    protected array $nodes = [];
 
     public function __construct($directed = true)
     {
@@ -51,6 +51,7 @@ class Concentrate_Graph
             $this->nodes[$key] = $node;
             $node->setGraph($this);
         }
+
         return $this;
     }
 
@@ -61,23 +62,23 @@ class Concentrate_Graph
 
     public function __clone()
     {
-        $map = array();
+        $map = [];
 
-        $newNodes = array();
+        $newNodes = [];
         $oldNodes = $this->nodes;
 
         foreach ($oldNodes as $oldNode) {
-            $newNode           = clone $oldNode;
-            $newKey            = $newNode->getKey();
+            $newNode = clone $oldNode;
+            $newKey = $newNode->getKey();
             $newNodes[$newKey] = $newNode;
-            $oldKey            = $oldNode->getKey();
-            $map[$oldKey]      = $newKey;
+            $oldKey = $oldNode->getKey();
+            $map[$oldKey] = $newKey;
             $newNode->setGraph($this);
         }
 
         foreach ($oldNodes as $oldNode) {
-            $oldKey  = $oldNode->getKey();
-            $newKey  = $map[$oldKey];
+            $oldKey = $oldNode->getKey();
+            $newKey = $map[$oldKey];
             $newNode = $newNodes[$map[$oldKey]];
             foreach ($oldNode->getNeighbors() as $oldNeighbor) {
                 $newNeighbor = $newNodes[$map[$oldNeighbor->getKey()]];
@@ -88,7 +89,7 @@ class Concentrate_Graph
         $this->nodes = $newNodes;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $string = '';
 
@@ -107,5 +108,3 @@ class Concentrate_Graph
         return $string;
     }
 }
-
-?>

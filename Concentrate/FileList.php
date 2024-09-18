@@ -2,16 +2,16 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_FileList
 {
-    protected $fileList = array();
+    protected array $fileList = [];
 
-    public function __construct(array $fileList = array())
+    public function __construct(array $fileList = [])
     {
         $this->add($fileList);
     }
@@ -19,7 +19,7 @@ class Concentrate_FileList
     public function add($file)
     {
         if (is_string($file)) {
-            $file = array($file);
+            $file = [$file];
         }
 
         if (!is_array($file)) {
@@ -30,6 +30,7 @@ class Concentrate_FileList
 
         $this->fileList = array_merge($this->fileList, $file);
         $this->fileList = array_unique($this->fileList);
+
         return $this;
     }
 
@@ -40,8 +41,6 @@ class Concentrate_FileList
 
     public function contains($file)
     {
-        return (in_array($file, $this->fileList));
+        return in_array($file, $this->fileList);
     }
 }
-
-?>

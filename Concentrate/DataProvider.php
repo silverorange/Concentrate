@@ -4,20 +4,20 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_DataProvider
 {
-    protected $data = array();
-    protected $pendingFiles = array();
-    protected $loadedFiles = array();
-    protected $stat = true;
-    protected $cachePrefix = '';
+    protected array $data = [];
+    protected array $pendingFiles = [];
+    protected array $loadedFiles = [];
+    protected bool $stat = true;
+    protected string $cachePrefix = '';
 
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         if (array_key_exists('stat', $options)) {
             $this->setStat($options['stat']);
@@ -47,6 +47,7 @@ class Concentrate_DataProvider
     public function getData()
     {
         $this->loadPendingData();
+
         return $this->data;
     }
 
@@ -89,9 +90,9 @@ class Concentrate_DataProvider
         if ($this->cachePrefix === '') {
             $files = array_merge($this->loadedFiles, $this->pendingFiles);
             if ($this->stat) {
-                $statFiles = array();
+                $statFiles = [];
                 foreach ($files as $filename) {
-                    $mtime       = filemtime($filename);
+                    $mtime = filemtime($filename);
                     $statFiles[] = $filename . '=' . $mtime;
                 }
                 $key = md5(implode(':', $statFiles));
@@ -104,7 +105,4 @@ class Concentrate_DataProvider
 
         return $this->cachePrefix;
     }
-
 }
-
-?>

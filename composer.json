@@ -11,32 +11,48 @@
       "email" : "mike@silverorange.com"
     }
   ],
-  "require": {
-    "php": ">=7.1.0",
-    "ext-mbstring": "*",
-    "pear/pear-core-minimal": "^1.9.0",
-    "pear/console_commandline": "^1.1.10",
-    "symfony/yaml": "^5.4.0",
-    "league/climate": "^3.8"
-  },
-  "require-dev": {
-    "silverorange/coding-standard": "^1.0.0"
-  },
-  "suggest": {
-    "ext-memcached": "Allows caching resource definition YAML files between requests.",
-    "packagelist/yuicompressor-bin": "Use YUI Compressor for minification of assets."
-  },
-  "scripts": {
-    "lint": "./vendor/bin/phpcs",
-    "post-install-cmd": "./vendor/bin/phpcs --config-set installed_paths vendor/silverorange/coding-standard/src",
-    "post-update-cmd": "./vendor/bin/phpcs --config-set installed_paths vendor/silverorange/coding-standard/src"
-  },
   "bin": [
     "scripts/concentrate"
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://composer.silverorange.com",
+      "only": ["silverorange/*"]
+    }
   ],
   "autoload": {
     "psr-0": {
       "Concentrate" : ""
     }
+  },
+  "require": {
+    "php": ">=8.2",
+    "ext-mbstring": "*",
+    "league/climate": "^3.8",
+    "pear/console_commandline": "^1.1.10",
+    "pear/pear-core-minimal": "^1.9.0",
+    "symfony/yaml": "^7.1"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.64",
+    "phpstan/phpstan": "^1.12",
+    "rector/rector": "^1.2",
+    "silverorange/php-coding-tools": "^1.4"
+  },
+  "suggest": {
+    "ext-apcu": "Allows caching resource definition YAML files between requests using APC.",
+    "ext-memcached": "Allows caching resource definition YAML files between requests using memcached.",
+    "packagelist/yuicompressor-bin": "Use YUI Compressor for minification of assets."
+  },
+  "scripts": {
+    "lint": "./vendor/bin/php-cs-fixer check -v",
+    "lint:fix": "./vendor/bin/php-cs-fixer fix -v",
+    "phpstan": "./vendor/bin/phpstan analyze",
+    "rector": "./vendor/bin/rector --dry-run",
+    "rector:fix": "./vendor/bin/rector"
+  },
+  "config": {
+    "sort-packages": true
   }
 }

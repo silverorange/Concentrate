@@ -2,14 +2,14 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2023 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
 class Concentrate_Compiler_Babel extends Concentrate_Compiler_Abstract
 {
-    const DEFAULT_BIN_NAME = 'babel';
+    public const DEFAULT_BIN_NAME = 'babel';
 
     protected string $babelBin = '';
 
@@ -24,12 +24,13 @@ class Concentrate_Compiler_Babel extends Concentrate_Compiler_Abstract
 
     public function isSuitable(string $type = ''): bool
     {
-        return ($type === 'js' && $this->getBabelBin() !== '');
+        return $type === 'js' && $this->getBabelBin() !== '';
     }
 
     public function setBabelBin(string $babelBin): self
     {
         $this->babelBin = $babelBin;
+
         return $this;
     }
 
@@ -91,6 +92,7 @@ class Concentrate_Compiler_Babel extends Concentrate_Compiler_Abstract
     {
         $filename = tempnam(sys_get_temp_dir(), 'concentrate-');
         file_put_contents($filename, $content);
+
         return $filename;
     }
 
@@ -134,5 +136,3 @@ class Concentrate_Compiler_Babel extends Concentrate_Compiler_Abstract
         return $babelBin;
     }
 }
-
-?>

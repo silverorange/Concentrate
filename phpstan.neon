@@ -1,0 +1,15 @@
+#includes:
+#  - phpstan-baseline.neon
+
+parameters:
+  phpVersion: 80200
+  level: 0
+  paths:
+    - Concentrate
+    - scripts
+    - tests
+  excludePaths:
+    # relies on a deleted package, and some specific paths
+    - tests/test.php
+  editorUrl: '%%file%%:%%line%%'
+  editorUrlTitle: '%%file%%:%%line%%'

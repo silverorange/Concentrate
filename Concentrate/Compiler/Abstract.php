@@ -2,7 +2,7 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2012-2023 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
@@ -36,5 +36,3 @@ abstract class Concentrate_Compiler_Abstract
         return $this;
     }
 }
-
-?>

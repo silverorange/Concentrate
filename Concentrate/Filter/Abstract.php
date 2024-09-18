@@ -2,7 +2,7 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2012-2022 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
@@ -12,24 +12,24 @@ abstract class Concentrate_Filter_Abstract
     /**
      * @var Concentrate_FilterAbstract
      */
-    protected $nextFilter = null;
+    protected $nextFilter;
 
     /**
-     * Whether or not this filter is suitable to run for the given file type
+     * Whether or not this filter is suitable to run for the given file type.
      *
-     * @param string $type the file type.
+     * @param string $type the file type
      *
-     * @return bool true if this filter is suitable to run, otherwise false.
+     * @return bool true if this filter is suitable to run, otherwise false
      */
-    public abstract function isSuitable(string $type = ''): bool;
+    abstract public function isSuitable(string $type = ''): bool;
 
     /**
-     * Applies this filter to an input string, producing an output string
+     * Applies this filter to an input string, producing an output string.
      *
-     * @param string $input the input string.
+     * @param string $input the input string
      * @param string $type  optional. The type of the input.
      *
-     * @return string the filtered output.
+     * @return string the filtered output
      */
     public function filter(string $input, string $type = ''): string
     {
@@ -48,13 +48,13 @@ abstract class Concentrate_Filter_Abstract
 
     /**
      * Applies this filter to a file's content and saves the output to another
-     * file
+     * file.
      *
-     * @param string $fromFilename the input file.
-     * @param string toFilename    the output file.
-     * @param string $type         optional. The type of the input file.
+     * @param string $fromFilename the input file
+     * @param string toFilename    the output file
+     * @param string $type optional. The type of the input file.
      *
-     * @return self this filter.
+     * @return self this filter
      */
     public function filterFile(
         string $fromFilename,
@@ -82,15 +82,16 @@ abstract class Concentrate_Filter_Abstract
     public function setNextFilter(Concentrate_Filter_Abstract $filter): self
     {
         $this->nextFilter = $filter;
+
         return $this;
     }
 
     /**
-     * Adds a filter to the end of the filter chain for this filter
+     * Adds a filter to the end of the filter chain for this filter.
      *
-     * @param Concentrate_Filter_Abstract $filter the filter to add.
+     * @param Concentrate_Filter_Abstract $filter the filter to add
      *
-     * @return Concentrate_Filter_Abstract the added filter.
+     * @return Concentrate_Filter_Abstract the added filter
      */
     public function chain(
         Concentrate_Filter_Abstract $filter
@@ -107,16 +108,17 @@ abstract class Concentrate_Filter_Abstract
     public function clearNextFilter(): self
     {
         $this->nextFilter = null;
+
         return $this;
     }
 
     /**
-     * Gets a filter from the fitler chain by its class name
+     * Gets a filter from the fitler chain by its class name.
      *
-     * @param string $class the class name of the filter to get.
+     * @param string $class the class name of the filter to get
      *
      * @return Concentrate_Filter_Abstract the first filter in the chain that
-     *         matches the requested class or null if no such filter exists.
+     *                                     matches the requested class or null if no such filter exists
      */
     public function get(string $class): ?Concentrate_Filter_Abstract
     {
@@ -139,21 +141,17 @@ abstract class Concentrate_Filter_Abstract
     }
 
     /**
-     * Gets an id for this filter
-     *
-     * @return string
+     * Gets an id for this filter.
      */
     public function getId(string $type = ''): string
     {
-        return get_class($this);
+        return static::class;
     }
 
     /**
-     * Gets a full id for this filter's filter chain
+     * Gets a full id for this filter's filter chain.
      *
      * This can be used as a cache identifier.
-     *
-     * @return string
      */
     public function getChainId(string $type = ''): string
     {
@@ -180,5 +178,3 @@ abstract class Concentrate_Filter_Abstract
         string $type = ''
     ): string;
 }
-
-?>

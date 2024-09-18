@@ -2,7 +2,7 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010-2012 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
@@ -15,10 +15,8 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
         $content = $this->inlineImports($content);
         $content = $this->updateUris($content);
 
-        $content = "\n/* inlined file \"{$this->sourceFilename}\" */\n" .
+        return "\n/* inlined file \"{$this->sourceFilename}\" */\n" .
             $content;
-
-        return $content;
     }
 
     protected function updateUris($content)
@@ -26,16 +24,17 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
         if ($this->sourceDirectory != $this->destinationDirectory) {
             $content = preg_replace_callback(
                 '/url\((.+?)\)/ui',
-                array($this, 'updateUrisCallback'),
+                $this->updateUrisCallback(...),
                 $content
             );
         }
+
         return $content;
     }
 
     protected function updateUrisCallback(array $matches)
     {
-        $uri    = $matches[1];
+        $uri = $matches[1];
         $quoted = false;
 
         // check if the URI is quoted
@@ -46,7 +45,6 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
 
         // check if it is a relative URI; if so, rewrite it
         if ($this->isRelative($uri)) {
-
             // get path relative to root
             $directory = $this->sourceDirectory . '/' . dirname($uri);
 
@@ -57,7 +55,7 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
 
             // evaluate relative paths
             $directory = new Concentrate_Path($directory);
-            $directory = (string)$directory->evaluate();
+            $directory = (string) $directory->evaluate();
 
             $uri = $directory . '/' . basename($uri);
         }
@@ -73,12 +71,11 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
 
     protected function inlineImports($content)
     {
-        $content = preg_replace_callback(
+        return preg_replace_callback(
             '/@import\s+(?:url\((.+?)\)|(.+?));/ui',
-            array($this, 'inlineImportCallback'),
+            $this->inlineImportCallback(...),
             $content
         );
-        return $content;
     }
 
     protected function inlineImportCallback($matches)
@@ -96,11 +93,10 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
         if ($this->isRelative($uri)) {
             $uri = $this->sourceDirectory . '/' . $uri;
             $uri = new Concentrate_Path($uri);
-            $uri = (string)$uri->evaluate();
+            $uri = (string) $uri->evaluate();
         }
 
         if (!$this->inlinedFiles->contains($uri)) {
-
             // recursively inline the import
             $inliner = Concentrate_Inliner::factory(
                 $this->root,
@@ -109,8 +105,8 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
                 $this->inlinedFiles
             );
 
-            $content      = $inliner->load($inliner->filename);
-            $replacement  = "\n/* at-import inlined file \"{$uri}\" */\n";
+            $content = $inliner->load($inliner->filename);
+            $replacement = "\n/* at-import inlined file \"{$uri}\" */\n";
             $replacement .= $inliner->inlineImports($content);
 
             $this->inlinedFiles->add($uri);
@@ -119,5 +115,3 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
         return $replacement;
     }
 }
-
-?>

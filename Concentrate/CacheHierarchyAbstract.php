@@ -2,19 +2,19 @@
 
 /**
  * @category  Tools
- * @package   Concentrate
+ *
  * @author    Michael Gauthier <mike@silverorange.com>
  * @copyright 2010 silverorange
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  */
-abstract class Concentrate_CacheHierarchyAbstract
-    implements Concentrate_CacheInterface
+abstract class Concentrate_CacheHierarchyAbstract implements Concentrate_CacheInterface
 {
-    protected $subcache = null;
+    protected $subcache;
 
     public function setSubcache(Concentrate_CacheInterface $cache)
     {
         $this->subcache = $cache;
+
         return $cache;
     }
 
@@ -64,9 +64,10 @@ abstract class Concentrate_CacheHierarchyAbstract
     }
 
     abstract protected function setSelf($key, $value);
+
     abstract protected function getSelf($key);
+
     abstract protected function deleteSelf($key);
+
     abstract protected function setPrefixSelf($prefix);
 }
-
-?>

@@ -41,7 +41,7 @@
     "silverorange/php-coding-tools": "^1.4"
   },
   "suggest": {
-    "ext-apcu": "Allows cachgin resource definition YAML files between requests using APC.",
+    "ext-apcu": "Allows caching resource definition YAML files between requests using APC.",
     "ext-memcached": "Allows caching resource definition YAML files between requests using memcached.",
     "packagelist/yuicompressor-bin": "Use YUI Compressor for minification of assets."
   },

@@ -14,13 +14,6 @@
   "bin": [
     "scripts/concentrate"
   ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://composer.silverorange.com",
-      "only": ["silverorange/*"]
-    }
-  ],
   "autoload": {
     "psr-0": {
       "Concentrate" : ""
@@ -35,10 +28,9 @@
     "symfony/yaml": "^7.1"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.64",
-    "phpstan/phpstan": "^1.12",
-    "rector/rector": "^1.2",
-    "silverorange/php-coding-tools": "^1.4"
+    "friendsofphp/php-cs-fixer": "3.88.2",
+    "phpstan/phpstan": "^2.2",
+    "rector/rector": "^2.4"
   },
   "suggest": {
     "ext-apcu": "Allows caching resource definition YAML files between requests using APC.",
@@ -46,9 +38,12 @@
     "packagelist/yuicompressor-bin": "Use YUI Compressor for minification of assets."
   },
   "scripts": {
-    "lint": "./vendor/bin/php-cs-fixer check -v",
-    "lint:fix": "./vendor/bin/php-cs-fixer fix -v",
+    "phpcs": "./vendor/bin/php-cs-fixer check -v",
+    "phpcs:ci": "./vendor/bin/php-cs-fixer check --config=.php-cs-fixer.php --no-interaction --show-progress=none --diff --using-cache=no -vvv",
+    "phpcs:fix": "./vendor/bin/php-cs-fixer fix -v",
     "phpstan": "./vendor/bin/phpstan analyze",
+    "phpstan:ci": "./vendor/bin/phpstan analyze -vvv --no-progress --memory-limit 2G",
+    "phpstan:baseline": "./vendor/bin/phpstan analyze --generate-baseline",
     "rector": "./vendor/bin/rector --dry-run",
     "rector:fix": "./vendor/bin/rector"
   },

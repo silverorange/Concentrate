@@ -1,0 +1,28 @@
+name: Pull Requests
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  runner:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with tools
+        uses: silverorange/actions-setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install PHP dependencies
+        run: 'composer install'
+
+      - name: Run tests
+        timeout-minutes: 5
+        run: |
+          composer run phpcs:ci
+          composer run phpstan:ci

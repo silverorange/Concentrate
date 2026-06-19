@@ -13,5 +13,11 @@ pipeline {
                 sh 'composer phpcs:ci'
             }
         }
+
+        stage('Check PHP Static Analysis') {
+            steps {
+                sh 'composer run phpstan:ci'
+            }
+        }
     }
 }

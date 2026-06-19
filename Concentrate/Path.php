@@ -62,8 +62,8 @@ class Concentrate_Path implements Stringable
 
         if (!is_dir($toDirectory)) {
             throw new Concentrate_FileException(
-                "Could not write to directory {$toDirectory} because it " .
-                'exists and is not a directory.',
+                "Could not write to directory {$toDirectory} because it "
+                . 'exists and is not a directory.',
                 0,
                 $toDirectory
             );

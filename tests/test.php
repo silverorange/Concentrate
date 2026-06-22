@@ -4,9 +4,9 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 error_reporting(E_ALL);
 
-$pearrc = '/so/sites/dutch-bulbs/work-gauthierm' .
-    DIRECTORY_SEPARATOR . 'pear' .
-    DIRECTORY_SEPARATOR . 'pearrc';
+$pearrc = '/so/sites/dutch-bulbs/work-gauthierm'
+    . DIRECTORY_SEPARATOR . 'pear'
+    . DIRECTORY_SEPARATOR . 'pearrc';
 
 $fileFinder = new Concentrate_DataProvider_FileFinderPear($pearrc);
 $concentrator = new Concentrate_Concentrator();

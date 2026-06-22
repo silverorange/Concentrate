@@ -15,8 +15,8 @@ class Concentrate_InlinerCSS extends Concentrate_Inliner
         $content = $this->inlineImports($content);
         $content = $this->updateUris($content);
 
-        return "\n/* inlined file \"{$this->sourceFilename}\" */\n" .
-            $content;
+        return "\n/* inlined file \"{$this->sourceFilename}\" */\n"
+            . $content;
     }
 
     protected function updateUris($content)

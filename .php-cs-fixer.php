@@ -1,30 +1,58 @@
 <?php
 
+use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
-use Silverorange\PhpCodingTools\Standards\PhpCsFixer\Php82;
 
-// Choose the appropriate base configuration for your project
-$config = new Php82();
-
-// If you have a set of custom rules you'd like to add to the
-// base configuration, or specific rules you'd like to override
-// for this project, you can define them here. e.g.:
-//
-// $config->setCustomRules(['yoda_style' => true]);
-
-// Set up the directories you want to process
 $finder = (new Finder())
     ->in(__DIR__)
-    // need to be explicit about files with no extension
-    ->name('concentrate')
     ->exclude([
         'node_modules',
     ]);
 
-return $config
-    // comment the following if you don't want to use parallelism to speed up processing
-    ->setParallelConfig(ParallelConfigFactory::detect())
+return (new Config())
+    ->setParallelConfig(ParallelConfigFactory::detect(null, null, 2 ** 18 - 1))
+    ->setRules([
+        '@PhpCsFixer'      => true,
+        '@PHP8x2Migration' => true,
+        'indentation_type' => true,
+
+        // Overrides for (opinionated) @PhpCsFixer and @Symfony rules:
+
+        // Align "=>" in multi-line array definitions, unless a blank line exists between elements
+        'binary_operator_spaces' => ['operators' => ['=>' => 'align_single_space_minimal']],
+
+        // Subset of statements that should be proceeded with blank line
+        'blank_line_before_statement' => ['statements' => ['case', 'continue', 'declare', 'default', 'return', 'throw', 'try', 'yield', 'yield_from']],
+
+        // Allow class list for multiple extends/implements to span multiple lines
+        'class_definition' => ['multi_line_extends_each_single_line' => true],
+
+        // Enforce space around concatenation operator
+        'concat_space' => ['spacing' => 'one'],
+
+        // Use {} for empty loop bodies
+        'empty_loop_body' => ['style' => 'braces'],
+
+        // Don't change any increment/decrement styles
+        'increment_style' => false,
+
+        // Forbid multi-line whitespace before the closing semicolon
+        'multiline_whitespace_before_semicolons' => ['strategy' => 'no_multi_line'],
+
+        // Clean up PHPDocs, but leave @inheritDoc entries alone
+        'no_superfluous_phpdoc_tags' => ['allow_mixed' => true, 'remove_inheritdoc' => false],
+
+        // Ensure that traits are listed first in classes
+        // (it would be nice to enforce more, but we'll start simple)
+        'ordered_class_elements' => ['order' => ['use_trait']],
+
+        // Ensure that param and return types are sorted consistently, with null at end
+        'phpdoc_types_order' => ['sort_algorithm' => 'alpha', 'null_adjustment' => 'always_last'],
+
+        // Yoda style is too weird
+        'yoda_style' => false,
+    ])
     ->setIndent('    ')
     ->setLineEnding("\n")
     ->setFinder($finder);

@@ -28,8 +28,8 @@ class Concentrate_DataProvider_FileFinderDirectory implements Concentrate_DataPr
         while (false !== ($file = $dirObject->read())) {
             // if it is a YAML file, add it to the list
             if (preg_match('/\.yaml$/i', $file) === 1) {
-                $files[] = $this->directory .
-                    DIRECTORY_SEPARATOR . $file;
+                $files[] = $this->directory
+                    . DIRECTORY_SEPARATOR . $file;
             }
         }
         $dirObject->close();

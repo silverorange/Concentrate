@@ -2,7 +2,7 @@
  * @see https://prettier.io/docs/en/configuration.html
  * @type {import("prettier").Config}
  */
-module.exports = {
+const config = {
   singleQuote: true,
   tabWidth: 2,
   trailingComma: 'none',
@@ -18,3 +18,5 @@ module.exports = {
     }
   ]
 };
+
+export default config;

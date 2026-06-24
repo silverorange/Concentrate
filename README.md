@@ -1,8 +1,10 @@
-Concentrate
-===========
-This package provides a command-line tool to bundle and minify static resources for a website using silverorange's Site package. Files are combined according to configuration files passed on the command-line.
+# Concentrate
 
-<pre>
+This package provides a command-line tool to bundle and minify static
+resources for a website using silverorange's Site package. Files are
+combined according to configuration files passed on the command-line.
+
+```
 Usage:
   /usr/bin/concentrate [options] &lt;webroot&gt;
 
@@ -12,7 +14,7 @@ Options:
   -C, --combine                        Write combined files.
   -m, --minify                         Write minified files.
   -l, --compile                        Write compiled LESS files. See
-                                       http://www.lesscss.org/.
+                                       https://lesscss.org/.
   -v, --verbose                        Sets verbosity level. Use multiples
                                        for more detail (e.g. "-vv").
   -h, --help                           show this help message and exit
@@ -20,10 +22,9 @@ Options:
 
 Arguments:
   webroot  The directory to which files will be written.
-</pre>
+```
 
-Installation
-------------
+## Installation
 
 ```sh
 composer require silverorange/concentrate

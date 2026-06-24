@@ -1,41 +1,52 @@
-<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
 <command>
-	<description>Combines and and minifies static resources for a website, storing them in the specified directory.</description>
-	<version>@package-version@</version>
-	<messages>
-		<message name="ARGUMENT_REQUIRED">No web root specified. Try &quot;concentrate --help&quot;.</message>
-	</messages>
-	<option name="directory">
-		<short_name>-d</short_name>
-		<long_name>--directory</long_name>
-		<description>Optional additional directory to search for dependency data files.</description>
-		<action>StoreString</action>
-	</option>
-	<option name="combine">
-		<short_name>-C</short_name>
-		<long_name>--combine</long_name>
-		<description>Write combined files.</description>
-		<action>StoreTrue</action>
-	</option>
-	<option name="minify">
-		<short_name>-m</short_name>
-		<long_name>--minify</long_name>
-		<description>Write minified files.</description>
-		<action>StoreTrue</action>
-	</option>
-	<option name="compile">
-		<short_name>-l</short_name>
-		<long_name>--compile</long_name>
-		<description>Write compiled LESS files. See http://www.lesscss.org/.</description>
-		<action>StoreTrue</action>
-	</option>
-	<option name="verbose">
-		<short_name>-v</short_name>
-		<long_name>--verbose</long_name>
-		<description>Sets verbosity level. Use multiples for more detail (e.g. "-vv").</description>
-		<action>Counter</action>
-	</option>
-	<argument name="webroot">
-		<description>The directory to which files will be written.</description>
-	</argument>
+    <description>
+        Combines and minifies static resources for a website, storing them in
+        the specified directory.
+    </description>
+    <version>@package-version@</version>
+    <messages>
+        <message name="ARGUMENT_REQUIRED">
+            No web root specified. Try &quot; concentrate --help &quot; .
+        </message>
+    </messages>
+    <option name="directory">
+        <short_name>-d</short_name>
+        <long_name>--directory</long_name>
+        <description>
+            Optional additional directory to search for dependency data files.
+        </description>
+        <action>StoreString</action>
+    </option>
+    <option name="combine">
+        <short_name>-C</short_name>
+        <long_name>--combine</long_name>
+        <description>Write combined files.</description>
+        <action>StoreTrue</action>
+    </option>
+    <option name="minify">
+        <short_name>-m</short_name>
+        <long_name>--minify</long_name>
+        <description>Write minified files.</description>
+        <action>StoreTrue</action>
+    </option>
+    <option name="compile">
+        <short_name>-l</short_name>
+        <long_name>--compile</long_name>
+        <description>
+            Write compiled LESS files. See https://lesscss.org/.
+        </description>
+        <action>StoreTrue</action>
+    </option>
+    <option name="verbose">
+        <short_name>-v</short_name>
+        <long_name>--verbose</long_name>
+        <description>
+            Sets verbosity level. Use multiples for more detail (e.g. "-vv").
+        </description>
+        <action>Counter</action>
+    </option>
+    <argument name="webroot">
+        <description>The directory to which files will be written.</description>
+    </argument>
 </command>

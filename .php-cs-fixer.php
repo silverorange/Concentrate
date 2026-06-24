@@ -6,9 +6,12 @@ use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
 $finder = (new Finder())
     ->in(__DIR__)
-    ->append([__DIR__.'/scripts/concentrate'])
     ->exclude([
         'node_modules',
+    ])
+    ->append([
+        __DIR__ . '/scripts/concentrate',
+        __FILE__,
     ]);
 
 return (new Config())

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
 <command>
     <description>
-        Combines and minifies static resources for a website, storing them in
-        the specified directory.
+        Combines and minifies static resources for a website, storing them in the specified directory.
     </description>
     <version>@package-version@</version>
     <messages>
         <message name="ARGUMENT_REQUIRED">
-            No web root specified. Try &quot; concentrate --help &quot; .
+            No web root specified. Try &quot;concentrate --help&quot;.
         </message>
     </messages>
     <option name="directory">
@@ -21,13 +20,17 @@
     <option name="combine">
         <short_name>-C</short_name>
         <long_name>--combine</long_name>
-        <description>Write combined files.</description>
+        <description>
+          Write combined files.
+        </description>
         <action>StoreTrue</action>
     </option>
     <option name="minify">
         <short_name>-m</short_name>
         <long_name>--minify</long_name>
-        <description>Write minified files.</description>
+        <description>
+          Write minified files.
+        </description>
         <action>StoreTrue</action>
     </option>
     <option name="compile">
@@ -47,6 +50,8 @@
         <action>Counter</action>
     </option>
     <argument name="webroot">
-        <description>The directory to which files will be written.</description>
+        <description>
+          The directory to which files will be written.
+        </description>
     </argument>
 </command>

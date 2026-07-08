@@ -6,7 +6,7 @@ combined according to configuration files passed on the command-line.
 
 ```
 Usage:
-  /usr/bin/concentrate [options] &lt;webroot&gt;
+  /usr/bin/concentrate [options] <webroot>
 
 Options:
   -d directory, --directory=directory  Optional additional directory to

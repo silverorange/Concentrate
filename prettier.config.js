@@ -15,6 +15,12 @@ const config = {
         xmlQuoteAttributes: 'double',
         xmlWhitespaceSensitivity: 'ignore'
       }
+    },
+    {
+      files: 'data/cli.xml',
+      options: {
+        xmlWhitespaceSensitivity: 'preserve'
+      }
     }
   ]
 };

@@ -53,7 +53,7 @@ class Concentrate_Compiler_Less extends Concentrate_Compiler_Abstract
     protected function compileInternal(
         string $data,
         bool $isFile,
-        string $outputFile,
+        ?string $outputFile,
         string $type
     ): string {
         $args = [];

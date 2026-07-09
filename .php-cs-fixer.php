@@ -8,6 +8,10 @@ $finder = (new Finder())
     ->in(__DIR__)
     ->exclude([
         'node_modules',
+    ])
+    ->append([
+        __DIR__ . '/scripts/concentrate',
+        __FILE__,
     ]);
 
 return (new Config())
